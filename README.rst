@@ -26,13 +26,13 @@ Installing from PyPI_:
 
 .. code-block:: bash
 
-   pip3 install base-http-client
+   pip install base-http-client
 
 Installing from github.com:
 
 .. code-block:: bash
 
-   pip3 install git+https://github.com/andy-takker/base_http_client
+   pip install git+https://github.com/andy-takker/base_http_client
 
 The package contains several extras and you can install additional dependencies
 if you specify them in this way.
@@ -45,18 +45,52 @@ For example, with msgspec_:
 
 Complete table of extras below:
 
-+-----------------------------------------------+----------------------------------+
-| example                                       | description                      |
-+===============================================+==================================+
-| ``pip3 install "base-http-client[msgspec]"``  | For using msgspec_ structs       |
-+-----------------------------------------------+----------------------------------+
-| ``pip3 install "base-http-client[orjson]"``   | For fast parsing json by orjson_ |
-+-----------------------------------------------+----------------------------------+
-| ``pip3 install "base-http-client[pydantic]"`` | For using pydantic_ models       |
-+-----------------------------------------------+----------------------------------+
++----------------------------------------------+----------------------------------+
+| example                                      | description                      |
++==============================================+==================================+
+| ``pip install "base-http-client[msgspec]"``  | For using msgspec_ structs       |
++----------------------------------------------+----------------------------------+
+| ``pip install "base-http-client[orjson]"``   | For fast parsing json by orjson_ |
++----------------------------------------------+----------------------------------+
+| ``pip install "base-http-client[pydantic]"`` | For using pydantic_ models       |
++----------------------------------------------+----------------------------------+
 
-Using
-~~~~~
+Quick start guide
+-----------------
+
+BaseHttpClient
+~~~~~~~~~~~~~~
+
+Simple HTTP Client for `https://catfact.ninja`. See full example in `examples/base_http_client.py`_
+
+.. code-block:: python
+
+   from base_http_client.client import (
+       DEFAULT_TIMEOUT,
+       BaseHttpClient,
+       ResponseHandlersType,
+   )
+   from base_http_client.handlers.pydantic import parse_model
+   from base_http_client.timeout import TimeoutType
+
+
+   class CatfactClient(BaseHttpClient):
+       RANDOM_CATFACT_HANDLERS: ResponseHandlersType = MappingProxyType(
+            {
+                 HTTPStatus.OK: parse_model(CatfactSchema),
+            }
+       )
+
+      async def fetch_random_cat_fact(
+          self,
+          timeout: TimeoutType = DEFAULT_TIMEOUT,
+      ) -> CatfactSchema:
+          return await self._make_req(
+              method=hdrs.METH_GET,
+              url=self._url / "fact",
+              handlers=self.RANDOM_CATFACT_HANDLERS,
+              timeout=timeout,
+          )
 
 
 
@@ -66,3 +100,5 @@ Using
 .. _msgspec: https://github.com/jcrist/msgspec
 .. _orjson: https://github.com/ijl/orjson
 .. _pydantic: https://github.com/pydantic/pydantic
+
+.. _examples/base_http_client.py: https://github.com/andy-takker/base_http_client/blob/master/examples/base_http_client.py

@@ -8,6 +8,7 @@ from base_http_client.handlers.base import (
     ResponseHandlersType,
     apply_handler,
 )
+
 from .timeout import TimeoutType, get_timeout
 
 

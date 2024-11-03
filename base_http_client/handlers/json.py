@@ -4,14 +4,13 @@ from typing import Any
 
 from aiohttp import ClientResponse
 
-
 try:
     import orjson as json
 except ImportError:
     import json  # type: ignore
 
 
-def json_parser(
+def parse_json(
     parser: Callable,
     loads: Callable = json.loads,
 ) -> Callable[[ClientResponse], Awaitable[Any]]:

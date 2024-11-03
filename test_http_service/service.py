@@ -5,8 +5,8 @@ from contextlib import asynccontextmanager
 from aiohttp.test_utils import TestServer
 from aiohttp.web_app import Application
 
-from test_http_service.models import MockRoute, MockService
 from test_http_service.handlers import get_default_handler
+from test_http_service.models import MockRoute, MockService
 
 
 @asynccontextmanager
