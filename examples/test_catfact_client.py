@@ -41,7 +41,7 @@ class CatfactClient(BaseHttpClient):
 
 
 @pytest.fixture
-async def catafact_service() -> AsyncIterator[MockService]:
+async def catfact_service() -> AsyncIterator[MockService]:
     routes = [
         MockRoute("GET", "/fact", "random_catfact"),
     ]
@@ -54,8 +54,8 @@ async def catafact_service() -> AsyncIterator[MockService]:
 
 
 @pytest.fixture
-def catfact_url(catafact_service: MockService) -> URL:
-    return catafact_service.url
+def catfact_url(catfact_service: MockService) -> URL:
+    return catfact_service.url
 
 
 @pytest.fixture
