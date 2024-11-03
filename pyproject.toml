@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "asyncly"
-version = "0.3.0"
+version = "0.3.2"
 description = "Simple HTTP client and server for your integrations based on aiohttp"
 authors = ["Sergey Natalenko <sergey.natalenko@mail.ru>"]
 license = "MIT"
@@ -56,6 +56,7 @@ restructuredtext-lint = "^1.4.0"
 pygments = "^2.18.0"
 pytest = "^8.3.3"
 pytest-asyncio = "^0.24.0"
+pytest-cov = "^6.0.0"
 
 [build-system]
 requires = ["poetry-core"]
