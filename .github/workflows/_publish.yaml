@@ -7,10 +7,9 @@ jobs:
   publish-to-pypi:
     name: Publish Python distribution to PyPI
     runs-on: ubuntu-22.04
-    # if: github.repository == 'andy-takker/base-http-client'
     environment:
       name: pypi
-      url: https://pypi.org/p/base-http-client/
+      url: https://pypi.org/p/asyncly/
     permissions:
       id-token: write
       contents: write

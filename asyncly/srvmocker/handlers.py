@@ -1,10 +1,13 @@
+from collections.abc import Awaitable, Callable
+
 from aiohttp.web_request import Request
+from aiohttp.web_response import Response
 
-from test_http_service.models import MockService, RequestHistory
+from asyncly.srvmocker.models import MockService, RequestHistory
 
 
-def get_default_handler(handler_name: str):
-    async def _handler(request: Request):
+def get_default_handler(handler_name: str) -> Callable[[Request], Awaitable[Response]]:
+    async def _handler(request: Request) -> Response:
         history = RequestHistory(
             request=request,
             body=await request.read(),

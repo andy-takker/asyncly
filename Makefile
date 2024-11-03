@@ -1,4 +1,4 @@
-PROJECT_NAME = base_http_client
+PROJECT_NAME = asyncly
 
 develop: clean_dev
 	python3.10 -m venv .venv

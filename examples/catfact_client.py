@@ -5,13 +5,9 @@ from types import MappingProxyType
 from aiohttp import ClientSession, hdrs
 from pydantic import BaseModel
 
-from base_http_client.client import (
-    DEFAULT_TIMEOUT,
-    BaseHttpClient,
-    ResponseHandlersType,
-)
-from base_http_client.handlers.pydantic import parse_model
-from base_http_client.timeout import TimeoutType
+from asyncly import DEFAULT_TIMEOUT, BaseHttpClient, ResponseHandlersType
+from asyncly.client.handlers.pydantic import parse_model
+from asyncly.client.timeout import TimeoutType
 
 
 class CatfactSchema(BaseModel):
@@ -40,7 +36,11 @@ class CatfactClient(BaseHttpClient):
 
 async def main() -> None:
     async with ClientSession() as session:
-        client = CatfactClient(session=session, url="https://catfact.ninja")
+        client = CatfactClient(
+            client_name="catfact",
+            session=session,
+            url="https://catfact.ninja",
+        )
         fact = await client.fetch_random_cat_fact()
         print(fact)  # noqa: T201
 

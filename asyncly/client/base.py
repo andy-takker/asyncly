@@ -4,12 +4,11 @@ from aiohttp import ClientSession
 from aiohttp.client import DEFAULT_TIMEOUT
 from yarl import URL
 
-from base_http_client.handlers.base import (
+from asyncly.client.handlers.base import (
     ResponseHandlersType,
     apply_handler,
 )
-
-from .timeout import TimeoutType, get_timeout
+from asyncly.client.timeout import TimeoutType, get_timeout
 
 
 class BaseHttpClient:
@@ -19,8 +18,10 @@ class BaseHttpClient:
     _session: ClientSession
     _client_name: str
 
-    def __init__(self, url: URL, session: ClientSession, client_name: str) -> None:
-        self._url = url
+    def __init__(
+        self, url: URL | str, session: ClientSession, client_name: str
+    ) -> None:
+        self._url = url if isinstance(url, URL) else URL(url)
         self._session = session
         self._client_name = client_name
 
