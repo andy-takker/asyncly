@@ -33,5 +33,5 @@ class MockService:
     url: URL
     handlers: MutableMapping[str, BaseMockResponse]
 
-    def register(self, name: str, resp: BaseMockResponse):
+    def register(self, name: str, resp: BaseMockResponse) -> None:
         self.handlers[name] = resp

@@ -1,6 +1,6 @@
-PROJECT_NAME = base_http_client
+PROJECT_NAME = asyncly
 
-develop:
+develop: clean_dev
 	python3.10 -m venv .venv
 	.venv/bin/pip install -U pip poetry
 	.venv/bin/poetry config virtualenvs.create false
@@ -22,3 +22,6 @@ mypy-ci: ##@Linting Run mypy
 
 rst-ci: ##@Linting Run rst-lint
 	rst-lint --encoding utf-8 README.rst
+
+clean_dev:
+	rm -rf .venv

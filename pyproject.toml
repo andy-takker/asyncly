@@ -1,10 +1,10 @@
 [tool.poetry]
-name = "base-http-client"
-version = "0.2.5"
-description = "Typical HTTP Client based on aiohttp"
+name = "asyncly"
+version = "0.3.0"
+description = "Simple HTTP client and server for your integrations based on aiohttp"
 authors = ["Sergey Natalenko <sergey.natalenko@mail.ru>"]
 license = "MIT"
-homepage = "https://github.com/andy-takker/base_http_client"
+homepage = "https://github.com/andy-takker/asyncly"
 readme = "README.rst"
 keywords = ["aiohttp", "http", "client"]
 classifiers = [
@@ -29,12 +29,12 @@ classifiers = [
     "Topic :: Software Development",
 ]
 packages = [
-    { include = "base_http_client" },
-    { include = "test_http_service" },
+    { include = "asyncly" },
 ]
 
 [tool.poetry.urls]
-"Source" = "https://github.com/andy-takker/base_http_client"
+"Source" = "https://github.com/andy-takker/asyncly"
+"Bug Tracker" = "https://github.com/andy-takker/v/issues"
 
 [tool.poetry.dependencies]
 python = "^3.10"
@@ -55,10 +55,70 @@ ruff = ">=0.5.2,<0.8.0"
 restructuredtext-lint = "^1.4.0"
 pygments = "^2.18.0"
 pytest = "^8.3.3"
+pytest-asyncio = "^0.24.0"
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+python_files = "test_*"
+python_functions = "test_*"
+python_classes = "TestSuite*"
+addopts = "-p no:cacheprovider"
+
+[tool.coverage.run]
+branch = true
+source = ["asyncly"]
+command_line = "-m pytest"
+
+[tool.coverage.report]
+show_missing = true
+
+[tool.coverage.xml]
+output = "coverage.xml"
+
+[tool.ruff]
+line-length = 88
+exclude = [
+    ".git",
+    ".mypy_cache",
+    ".ruff_cache",
+    ".venv",
+]
+indent-width = 4
+target-version = "py310"
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+
+[tool.ruff.lint]
+select = [
+    "BLE",
+    "C90",
+    "E",
+    "F",
+    "G",
+    "I",
+    "ICN",
+    "ISC",
+    "PLE",
+    "Q",
+    "RUF006",
+    "RUF100",
+    "T10",
+    "T20",
+    "TID",
+    "UP",
+    "W",
+]
+ignore = ["ISC001"]
+fixable = ["ALL"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["asyncly", "tests"]
 
 [tool.mypy]
 plugins = ["pydantic.mypy"]

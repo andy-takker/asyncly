@@ -8,8 +8,8 @@ from aiohttp import hdrs
 from aiohttp.web_request import Request
 from aiohttp.web_response import Response
 
-from test_http_service.models import BaseMockResponse
-from test_http_service.serialization import Serializer
+from asyncly.srvmocker.models import BaseMockResponse
+from asyncly.srvmocker.serialization import JsonSerializer, Serializer
 
 TimeoutType = int | float
 
@@ -21,7 +21,7 @@ class ContentResponse(BaseMockResponse):
     headers: Mapping[str, str] | None = None
     serializer: Serializer | None = None
 
-    async def response(self, request: Request):
+    async def response(self, request: Request) -> Response:
         headers: MutableMapping[str, str] = dict()
         if self.headers:
             headers.update(self.headers)
@@ -44,7 +44,7 @@ class LatencyResponse(BaseMockResponse):
     wrapped: BaseMockResponse
     latency: TimeoutType
 
-    async def response(self, request: Request):
+    async def response(self, request: Request) -> Response:
         await sleep(self.latency)
         return await self.wrapped.response(request)
 
@@ -52,9 +52,29 @@ class LatencyResponse(BaseMockResponse):
 class MockSeqResponse(BaseMockResponse):
     responses: Iterator[BaseMockResponse]
 
-    def __init__(self, responses: Iterable[BaseMockResponse]):
+    def __init__(self, responses: Iterable[BaseMockResponse]) -> None:
         self.responses = iter(responses)
 
-    async def response(self, request: Request):
+    async def response(self, request: Request) -> Response:
         resp = next(self.responses)
         return await resp.response(request)
+
+
+class JsonResponse(BaseMockResponse):
+    __content: ContentResponse
+
+    def __init__(
+        self,
+        body: Any,
+        status: int = HTTPStatus.OK,
+        headers: Mapping[str, str] | None = None,
+    ) -> None:
+        self.__content = ContentResponse(
+            body=body,
+            status=status,
+            headers=headers,
+            serializer=JsonSerializer,
+        )
+
+    async def response(self, request: Request) -> Response:
+        return await self.__content.response(request)

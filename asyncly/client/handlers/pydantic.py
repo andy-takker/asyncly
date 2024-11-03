@@ -7,7 +7,7 @@ from pydantic import BaseModel
 T = TypeVar("T", bound=BaseModel)
 
 
-def model_parser(model: type[T]) -> Callable[[ClientResponse], Awaitable[T]]:
+def parse_model(model: type[T]) -> Callable[[ClientResponse], Awaitable[T]]:
     async def _parse(response: ClientResponse) -> T:
         return model.model_validate_json(await response.read())
 
