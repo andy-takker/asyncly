@@ -9,7 +9,9 @@ from pydantic import BaseModel
 from yarl import URL
 
 from asyncly import DEFAULT_TIMEOUT, BaseHttpClient, ResponseHandlersType
-from asyncly.client.handlers import parse_json, parse_model, parse_struct
+from asyncly.client.handlers.json import parse_json
+from asyncly.client.handlers.msgspec import parse_struct
+from asyncly.client.handlers.pydantic import parse_model
 from asyncly.client.timeout import TimeoutType
 
 
