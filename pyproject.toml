@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "asyncly"
-version = "0.3.2"
+version = "0.3.3"
 description = "Simple HTTP client and server for your integrations based on aiohttp"
 authors = ["Sergey Natalenko <sergey.natalenko@mail.ru>"]
 license = "MIT"
