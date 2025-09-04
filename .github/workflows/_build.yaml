@@ -21,7 +21,7 @@ jobs:
         run: make develop-ci
 
       - name: Build distribution
-        run: poetry build
+        run: make build-ci
 
       - name: Store the distribution packages
         uses: actions/upload-artifact@v4

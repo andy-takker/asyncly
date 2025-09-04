@@ -35,3 +35,6 @@ class MockService:
 
     def register(self, name: str, resp: BaseMockResponse) -> None:
         self.handlers[name] = resp
+
+    def set_url(self, url: URL) -> None:
+        object.__setattr__(self, "url", url)
