@@ -23,4 +23,4 @@ jobs:
         run: make develop-ci
 
       - name: Run tests
-        run: pytest -v ./tests
+        run: make test-ci
