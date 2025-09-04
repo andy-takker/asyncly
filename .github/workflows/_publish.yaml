@@ -14,6 +14,17 @@ jobs:
       id-token: write
       contents: write
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: make develop-ci
+
       - name: Download distribution
         uses: actions/download-artifact@v4
         with:
@@ -21,10 +32,7 @@ jobs:
           path: dist/
 
       - name: Publish distribution to PyPI
-        uses: pypa/gh-action-pypi-publish@release/v1.10
-        with:
-          verbose: true
-          skip-existing: true
+        run: uv publish
 
   github-release:
     name: >-
