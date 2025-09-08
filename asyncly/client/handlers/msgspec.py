@@ -39,7 +39,7 @@ def parse_struct(
 
 def _choose_decoder(data_format: DataFormat) -> DataFormatDecode:
     if data_format == "json":
-        return decode_json
+        return decode_json  # type: ignore[return-value]
     elif data_format == "msgpack":
         return decode_msgpack  # type: ignore[return-value]
     elif data_format == "toml":

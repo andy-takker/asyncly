@@ -59,7 +59,7 @@ Quick start guide
 -----------------
 
 HttpClient
-~~~~~~~~~~~~~~
+~~~~~~~~~~
 
 Simple HTTP Client for `https://catfact.ninja`. See full example in `examples/catfact_client.py`_
 
@@ -90,6 +90,9 @@ Simple HTTP Client for `https://catfact.ninja`. See full example in `examples/ca
 
 Test Async Server for client
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Example
+*******
 
 For the HTTP client, we create a server to which he will go and simulate real
 responses. You can dynamically change the responses from the server in
@@ -152,12 +155,43 @@ Now we can use them in tests. See full example in `examples/test_catfact_client.
         with pytest.raises(asyncio.TimeoutError):
             await catfact_client.fetch_random_cat_fact(timeout=1)
 
+Useful responses and serializers
+********************************
+
+- JsonResponse_: simple JSON response from any object.
+  You can setup status code and serializer for it. Using JsonSerializer_
+
+- MsgpackResponse_: response in msgpack_ format with It's like JSON.
+  But fast and small. Using MsgpackSerializer_.
+
+- SequenceResponse_: useful response if you want return different responses
+  on next request. Accepts BaseMockResponse_'s input.
+
+- TimeoutResponse_: response with latency. For slow testing
+
+- TomlResponse_: return TOML format text response. Using TomlSerializer_.
+
+- YamlResponse_: return YAML format text response. Using YamlSerializer_.
 
 .. _PyPI: https://pypi.org/
 .. _aiohttp: https://pypi.org/project/aiohttp/
+.. _msgpack: https://msgpack.org
 .. _msgspec: https://github.com/jcrist/msgspec
 .. _orjson: https://github.com/ijl/orjson
 .. _pydantic: https://github.com/pydantic/pydantic
 
 .. _examples/catfact_client.py: https://github.com/andy-takker/asyncly/blob/master/examples/catfact_client.py
 .. _examples/test_catfact_client.py: https://github.com/andy-takker/asyncly/blob/master/examples/test_catfact_client.py
+
+.. _BaseMockResponse: https://github.com/andy-takker/asyncly/blob/master/asyncly/srvmocker/responses/base.py
+.. _JsonResponse: https://github.com/andy-takker/asyncly/blob/master/asyncly/srvmocker/responses/json.py
+.. _MsgpackResponse: https://github.com/andy-takker/asyncly/blob/master/asyncly/srvmocker/responses/msgpack.py
+.. _SequenceResponse: https://github.com/andy-takker/asyncly/blob/master/asyncly/srvmocker/responses/sequence.py
+.. _TimeoutResponse: https://github.com/andy-takker/asyncly/blob/master/asyncly/srvmocker/responses/timeout.py
+.. _TomlResponse: https://github.com/andy-takker/asyncly/blob/master/asyncly/srvmocker/responses/toml.py
+.. _YamlResponse: https://github.com/andy-takker/asyncly/blob/master/asyncly/srvmocker/responses/yaml.py
+
+.. _JsonSerializer: https://github.com/andy-takker/asyncly/blob/master/asyncly/srvmocker/serialization/json.py
+.. _MsgpackSerializer: https://github.com/andy-takker/asyncly/blob/master/asyncly/srvmocker/serialization/msgpack.py
+.. _TomlSerializer: https://github.com/andy-takker/asyncly/blob/master/asyncly/srvmocker/serialization/toml.py
+.. _YamlSerializer: https://github.com/andy-takker/asyncly/blob/master/asyncly/srvmocker/serialization/yaml.py
