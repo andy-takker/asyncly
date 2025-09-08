@@ -1,4 +1,5 @@
-from collections.abc import AsyncIterator
+from collections.abc import AsyncIterator, Sequence
+from datetime import datetime
 from http import HTTPStatus
 from types import MappingProxyType
 
@@ -18,27 +19,46 @@ from asyncly.client.timeout import TimeoutType
 class CatfactSchema(BaseModel):
     fact: str
     length: int
+    created_at: datetime
+    colors: Sequence[str]
 
 
 class CatfactStruct(Struct):
     fact: str
     length: int
+    created_at: datetime
+    colors: Sequence[str]
 
 
 class CatfactClient(BaseHttpClient):
     PYDANTIC_SCHEMA_HANDLERS: ResponseHandlersType = MappingProxyType(
         {
-            HTTPStatus.OK: parse_model(CatfactSchema),
+            "*": parse_model(CatfactSchema),
         }
     )
-    MSGSPEC_STRUCT_HANDLERS: ResponseHandlersType = MappingProxyType(
+    MSGSPEC_JSON_STRUCT_HANDLERS: ResponseHandlersType = MappingProxyType(
         {
             HTTPStatus.OK: parse_struct(CatfactStruct),
         }
     )
+    MSGSPEC_TOML_STRUCT_HANDLERS: ResponseHandlersType = MappingProxyType(
+        {
+            HTTPStatus.OK: parse_struct(CatfactStruct, data_format="toml"),
+        }
+    )
+    MSGSPEC_YAML_STRUCT_HANDLERS: ResponseHandlersType = MappingProxyType(
+        {
+            HTTPStatus.OK: parse_struct(CatfactStruct, data_format="yaml"),
+        }
+    )
+    MSGSPEC_MSGPACK_STRUCT_HANDLERS: ResponseHandlersType = MappingProxyType(
+        {
+            HTTPStatus.OK: parse_struct(CatfactStruct, data_format="msgpack"),
+        }
+    )
     JSON_HANDLERS: ResponseHandlersType = MappingProxyType(
         {
-            HTTPStatus.OK: parse_json(lambda data: data["fact"]),
+            "2xx": parse_json(lambda data: data["fact"]),
         }
     )
 
@@ -48,19 +68,19 @@ class CatfactClient(BaseHttpClient):
     ) -> CatfactSchema:
         return await self._make_req(
             method=hdrs.METH_GET,
-            url=self._url / "fact",
+            url=self._url / "fact/json",
             handlers=self.PYDANTIC_SCHEMA_HANDLERS,
             timeout=timeout,
         )
 
-    async def fetch_msgspec_cat_fact(
+    async def fetch_json_msgspec_cat_fact(
         self,
         timeout: TimeoutType = DEFAULT_TIMEOUT,
     ) -> CatfactStruct:
         return await self._make_req(
             method=hdrs.METH_GET,
-            url=self._url / "fact",
-            handlers=self.MSGSPEC_STRUCT_HANDLERS,
+            url=self._url / "fact/json",
+            handlers=self.MSGSPEC_JSON_STRUCT_HANDLERS,
             timeout=timeout,
         )
 
@@ -70,8 +90,41 @@ class CatfactClient(BaseHttpClient):
     ) -> str:
         return await self._make_req(
             method=hdrs.METH_GET,
-            url=self._url / "fact",
+            url=self._url / "fact/json",
             handlers=self.JSON_HANDLERS,
+            timeout=timeout,
+        )
+
+    async def fetch_toml_cat_fact(
+        self,
+        timeout: TimeoutType = DEFAULT_TIMEOUT,
+    ) -> CatfactStruct:
+        return await self._make_req(
+            method=hdrs.METH_GET,
+            url=self._url / "fact/toml",
+            handlers=self.MSGSPEC_TOML_STRUCT_HANDLERS,
+            timeout=timeout,
+        )
+
+    async def fetch_yaml_cat_fact(
+        self,
+        timeout: TimeoutType = DEFAULT_TIMEOUT,
+    ) -> CatfactStruct:
+        return await self._make_req(
+            method=hdrs.METH_GET,
+            url=self._url / "fact/yaml",
+            handlers=self.MSGSPEC_YAML_STRUCT_HANDLERS,
+            timeout=timeout,
+        )
+
+    async def fetch_msgpack_cat_fact(
+        self,
+        timeout: TimeoutType = DEFAULT_TIMEOUT,
+    ) -> CatfactStruct:
+        return await self._make_req(
+            method=hdrs.METH_GET,
+            url=self._url / "fact/msgpack",
+            handlers=self.MSGSPEC_MSGPACK_STRUCT_HANDLERS,
             timeout=timeout,
         )
 
