@@ -1,5 +1,5 @@
 from asyncly.srvmocker.models import MockRoute
-from asyncly.srvmocker.responses import JsonResponse
+from asyncly.srvmocker.responses.json import JsonResponse
 from asyncly.srvmocker.service import start_service
 
 

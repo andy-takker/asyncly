@@ -1,10 +1,10 @@
-from abc import ABC, abstractmethod
 from collections.abc import MutableMapping, MutableSequence
 from dataclasses import dataclass
 
 from aiohttp.web_request import Request
-from aiohttp.web_response import Response
 from yarl import URL
+
+from asyncly.srvmocker.responses.base import BaseMockResponse
 
 
 @dataclass(frozen=True)
@@ -18,12 +18,6 @@ class MockRoute:
 class RequestHistory:
     request: Request
     body: bytes
-
-
-class BaseMockResponse(ABC):
-    @abstractmethod
-    async def response(self, request: Request) -> Response:
-        pass
 
 
 @dataclass(frozen=True)
