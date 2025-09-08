@@ -17,7 +17,7 @@ async def apply_handler(
     handler = _find_handler(handlers=handlers, status=response.status)
     if not handler:
         raise UnhandledStatusException(
-            f"Unexpected resposne {response.status} from {response.url}",
+            f"Unexpected response {response.status} from {response.url}",
             status=response.status,
             url=response.url,
             client_name=client_name,

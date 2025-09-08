@@ -28,7 +28,7 @@ class CatfactClient(BaseHttpClient):
     ) -> CatfactSchema:
         return await self._make_req(
             method=hdrs.METH_GET,
-            url=self._url / "fact",
+            url=self._url / "fact/json",
             handlers=self.RANDOM_CATFACT_HANDLERS,
             timeout=timeout,
         )

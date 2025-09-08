@@ -56,11 +56,11 @@ async def test_latency_response__timeout(
     content_response: ContentResponse,
 ) -> None:
     catfact_service.register(
-        "json_catfact", LatencyResponse(content_response, latency=1)
+        "json_catfact", LatencyResponse(content_response, latency=0.5)
     )
 
     with pytest.raises(asyncio.TimeoutError):
-        await catfact_client.fetch_json_cat_fact(timeout=0.5)
+        await catfact_client.fetch_json_cat_fact(timeout=0.1)
 
 
 async def test_latency_response__ok(
