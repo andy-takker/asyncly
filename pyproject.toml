@@ -1,6 +1,6 @@
 [project]
 name = "asyncly"
-version = "0.4.0"
+version = "0.4.1"
 description = "Simple HTTP client and server for your integrations based on aiohttp"
 authors = [{ name = "Sergey Natalenko", email = "sergey.natalenko@mail.ru" }]
 requires-python = ">=3.10, <4"
