@@ -93,7 +93,11 @@ class InstrumentableHttpClient(BaseHttpClient):
         status_for_metrics: int | str = "unknown"
         try:
             result = await super()._make_req(
-                method=method, url=url, handlers=wrapped_handlers, timeout=timeout
+                method=method,
+                url=url,
+                handlers=wrapped_handlers,
+                timeout=timeout,
+                **kwargs,
             )
             v = chosen_status["value"]
             if isinstance(v, HTTPStatus):
