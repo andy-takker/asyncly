@@ -45,15 +45,19 @@ For example, with msgspec_:
 
 Complete table of extras below:
 
-+-------------------------------------+----------------------------------+
-| example                             | description                      |
-+=====================================+==================================+
-| ``pip install "asyncly[msgspec]"``  | For using msgspec_ structs       |
-+-------------------------------------+----------------------------------+
-| ``pip install "asyncly[orjson]"``   | For fast parsing json by orjson_ |
-+-------------------------------------+----------------------------------+
-| ``pip install "asyncly[pydantic]"`` | For using pydantic_ models       |
-+-------------------------------------+----------------------------------+
++------------------------------------------+-----------------------------------+
+| example                                  | description                       |
++==========================================+===================================+
+| ``pip install "asyncly[msgspec]"``       | For using msgspec_ structs        |
++------------------------------------------+-----------------------------------+
+| ``pip install "asyncly[orjson]"``        | For fast parsing json by orjson_  |
++------------------------------------------+-----------------------------------+
+| ``pip install "asyncly[pydantic]"``      | For using pydantic_ models        |
++------------------------------------------+-----------------------------------+
+| ``pip install "asyncly[prometheus]"``    | To collect Prometheus_ metrics    |
++------------------------------------------+-----------------------------------+
+| ``pip install "asyncly[opentelemetry]"`` | To collect OpenTelemetry_ metrics |
++------------------------------------------+-----------------------------------+
 
 Quick start guide
 -----------------
@@ -179,6 +183,8 @@ Useful responses and serializers
 .. _msgspec: https://github.com/jcrist/msgspec
 .. _orjson: https://github.com/ijl/orjson
 .. _pydantic: https://github.com/pydantic/pydantic
+.. _Prometheus: https://prometheus.io
+.. _OpenTelemetry: https://opentelemetry.io
 
 .. _examples/catfact_client.py: https://github.com/andy-takker/asyncly/blob/master/examples/catfact_client.py
 .. _examples/test_catfact_client.py: https://github.com/andy-takker/asyncly/blob/master/examples/test_catfact_client.py

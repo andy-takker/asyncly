@@ -1,5 +1,4 @@
-import sys
-from typing import Any, Literal
+from typing import Any
 
 from aiohttp import ClientSession
 from aiohttp.client import DEFAULT_TIMEOUT
@@ -10,13 +9,7 @@ from asyncly.client.handlers.base import (
     apply_handler,
 )
 from asyncly.client.timeout import TimeoutType, get_timeout
-
-if sys.version_info >= (3, 11):
-    from http import HTTPMethod
-
-    MethodType = HTTPMethod | Literal["GET", "POST", "PUT", "DELETE", "PATCH", "HEAD"]
-else:
-    MethodType = Literal["GET", "POST", "PUT", "DELETE", "PATCH", "HEAD"]
+from asyncly.client.typing import MethodType
 
 
 class BaseHttpClient:

@@ -1,6 +1,6 @@
 [project]
 name = "asyncly"
-version = "0.4.1"
+version = "0.5.0"
 description = "Simple HTTP client and server for your integrations based on aiohttp"
 authors = [{ name = "Sergey Natalenko", email = "sergey.natalenko@mail.ru" }]
 requires-python = ">=3.10, <4"
@@ -39,6 +39,12 @@ dependencies = ["aiohttp>=3.9.5,<4"]
 msgspec = ["msgspec>=0.19.0,<0.20"]
 pydantic = ["pydantic>=2.8.2,<3"]
 orjson = ["orjson>=3.10.6,<4"]
+prometheus = [
+    "prometheus-client>=0.22.1",
+]
+opentelemetry = [
+    "opentelemetry-sdk>=1.37.0",
+]
 
 [project.urls]
 Homepage = "https://github.com/andy-takker/asyncly"
@@ -83,7 +89,23 @@ source = ["asyncly"]
 command_line = "-m pytest"
 
 [tool.coverage.report]
+fail_under = 90
 show_missing = true
+skip_covered = false
+skip_empty = true
+exclude_also = [
+    "def __repr__",
+    "if self.debug:",
+    "if settings.DEBUG",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if 0:",
+    "if __name__ == __main__:",
+    "if TYPE_CHECKING:",
+    "class .*\\bProtocol\\):",
+    "@(abc\\.)?abstractmethod",
+    "pass",
+]
 
 [tool.coverage.xml]
 output = "coverage.xml"
