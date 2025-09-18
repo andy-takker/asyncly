@@ -1,12 +1,10 @@
-from collections.abc import Callable, Mapping
-from http import HTTPStatus
+from collections.abc import Callable
 from typing import Any
 
 from aiohttp import ClientResponse
 
 from asyncly.client.handlers.exceptions import UnhandledStatusException
-
-ResponseHandlersType = Mapping[HTTPStatus | int | str, Callable]
+from asyncly.client.typing import ResponseHandlersType
 
 
 async def apply_handler(

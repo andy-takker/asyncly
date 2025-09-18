@@ -3,7 +3,7 @@ from functools import singledispatch
 
 from aiohttp import ClientTimeout
 
-TimeoutType = ClientTimeout | timedelta | int | float
+from asyncly.client.typing import TimeoutType
 
 
 @singledispatch

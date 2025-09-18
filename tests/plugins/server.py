@@ -2,13 +2,17 @@ from collections.abc import AsyncIterator
 from datetime import datetime
 
 import pytest
+from aiohttp.web import Request, Response
 from yarl import URL
 
 from asyncly.srvmocker import JsonResponse
 from asyncly.srvmocker.models import MockRoute, MockService
+from asyncly.srvmocker.responses.base import BaseMockResponse
+from asyncly.srvmocker.responses.content import ContentResponse
 from asyncly.srvmocker.responses.msgpack import MsgpackResponse
 from asyncly.srvmocker.responses.toml import TomlResponse
 from asyncly.srvmocker.responses.yaml import YamlResponse
+from asyncly.srvmocker.serialization.json import JsonSerializer
 from asyncly.srvmocker.service import start_service
 
 
@@ -19,6 +23,7 @@ async def catfact_service() -> AsyncIterator[MockService]:
         MockRoute("GET", "/fact/toml", "toml_catfact"),
         MockRoute("GET", "/fact/yaml", "yaml_catfact"),
         MockRoute("GET", "/fact/msgpack", "msgpack_catfact"),
+        MockRoute("GET", "/cats/{cat_id}", "get_cat"),
     ]
     async with start_service(routes) as service:
         service.register(
@@ -65,9 +70,24 @@ async def catfact_service() -> AsyncIterator[MockService]:
                 },
             ),
         )
+        service.register("get_cat", CatResponse())
         yield service
 
 
 @pytest.fixture
 def catfact_url(catfact_service: MockService) -> URL:
     return catfact_service.url
+
+
+class CatResponse(BaseMockResponse):
+    _content: ContentResponse
+
+    async def response(self, request: Request) -> Response:
+        cat_id = request.match_info["cat_id"]
+        cat = {
+            "id": cat_id,
+            "name": f"cat: {cat_id}",
+        }
+        return await ContentResponse(body=cat, serializer=JsonSerializer).response(
+            request
+        )
