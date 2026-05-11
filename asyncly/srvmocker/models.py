@@ -45,3 +45,48 @@ class MockService:
 
     def set_url(self, url: URL) -> None:
         object.__setattr__(self, "url", url)
+
+    def get_calls(self, name: str) -> list[RequestHistory]:
+        return list(self.history_map.get(name, []))
+
+    def last_call(self, name: str) -> RequestHistory:
+        calls = self.history_map.get(name) or []
+        if not calls:
+            raise AssertionError(f"no calls recorded for handler {name!r}")
+        return calls[-1]
+
+    def assert_called(
+        self,
+        name: str,
+        *,
+        times: int | None = None,
+        json: object = None,
+        body: bytes | None = None,
+        headers: dict[str, str] | None = None,
+        query: dict[str, str] | None = None,
+    ) -> None:
+        from asyncly.srvmocker.assertions import call_matches
+
+        calls = self.get_calls(name)
+        if times is not None:
+            if len(calls) != times:
+                raise AssertionError(
+                    f"handler {name!r}: expected {times} call(s), got {len(calls)}"
+                )
+            if all(v is None for v in (json, body, headers, query)):
+                return
+        if not calls:
+            raise AssertionError(f"handler {name!r}: expected at least one call, got 0")
+        for call in calls:
+            if call_matches(call, json=json, body=body, headers=headers, query=query):
+                return
+        raise AssertionError(
+            f"handler {name!r}: none of {len(calls)} call(s) matched the given criteria"
+        )
+
+    def assert_not_called(self, name: str) -> None:
+        calls = self.get_calls(name)
+        if calls:
+            raise AssertionError(
+                f"handler {name!r}: expected no calls, got {len(calls)}"
+            )
