@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.6.1] - 2026-05-11
+
+### Security
+- Bump minimum `aiohttp` to `>=3.13.3` to address
+  [CVE-2025-69223](https://nvd.nist.gov/vuln/detail/CVE-2025-69223): a
+  zip-bomb DoS in `aiohttp`'s handling of compressed request/response
+  bodies (affects aiohttp `<= 3.13.2`). Thanks to
+  [@loganaden](https://github.com/loganaden) for the report and fix
+  ([#29](https://github.com/andy-takker/asyncly/pull/29)).
+
 ## [0.6.0] - 2026-05-11
 
 ### Added
@@ -26,5 +36,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - `SequenceResponse([])` now raises `ValueError` eagerly instead of failing on first use.
 
-[Unreleased]: https://github.com/andy-takker/asyncly/compare/0.6.0...HEAD
+[Unreleased]: https://github.com/andy-takker/asyncly/compare/0.6.1...HEAD
+[0.6.1]: https://github.com/andy-takker/asyncly/compare/0.6.0...0.6.1
 [0.6.0]: https://github.com/andy-takker/asyncly/compare/0.5.1...0.6.0
