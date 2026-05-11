@@ -24,7 +24,7 @@ mypy-ci: ##@Linting Run mypy
 	.venv/bin/mypy ./$(PROJECT_NAME) --config-file ./pyproject.toml
 
 rst-ci: ##@Linting Run rst-lint
-	rst-lint --encoding utf-8 README.rst
+	.venv/bin/rst-lint README.rst
 
 build-ci: ##@Build Build distribution
 	uv build

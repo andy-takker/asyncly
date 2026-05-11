@@ -54,7 +54,7 @@ repos:
           - types-toml
       - id: rst
         name: rst
-        entry: rst-lint --encoding utf-8
+        entry: rst-lint
         files: README.rst
         language: python
-        additional_dependencies: [pygments, restructuredtext_lint]
+        additional_dependencies: [pygments, "restructuredtext_lint>=2.0"]
