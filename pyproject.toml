@@ -33,7 +33,7 @@ classifiers = [
     "Topic :: Software Development :: Libraries",
     "Topic :: Software Development",
 ]
-dependencies = ["aiohttp>=3.9.5,<4"]
+dependencies = ["aiohttp>=3.13.3,<4"]
 
 [project.optional-dependencies]
 msgspec = ["msgspec>=0.19.0,<0.20"]
