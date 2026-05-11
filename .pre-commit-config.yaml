@@ -43,6 +43,15 @@ repos:
         language_version: python3.10
         require_serial: true
         pass_filenames: false
+        additional_dependencies:
+          - mypy>=1.17.1
+          - pydantic>=2.8.2
+          - aiohttp>=3.9.5
+          - prometheus-client>=0.22.1
+          - opentelemetry-sdk>=1.37.0
+          - pytest>=8.3.3
+          - types-pyyaml
+          - types-toml
       - id: rst
         name: rst
         entry: rst-lint --encoding utf-8
