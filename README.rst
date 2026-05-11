@@ -95,6 +95,41 @@ Simple HTTP Client for `https://catfact.ninja`. See full example in `examples/ca
 Test Async Server for client
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+Pytest plugin (recommended)
+***************************
+
+Asyncly ships a pytest plugin auto-registered via entry-point. Override
+``mock_routes`` to declare your test server's API surface, then use the
+``mock_service`` fixture in tests:
+
+.. code-block:: python
+
+   import pytest
+   from asyncly.srvmocker import JsonResponse, MockRoute
+
+
+   @pytest.fixture
+   def mock_routes():
+       return [MockRoute("GET", "/fact", "random_catfact")]
+
+
+   async def test_fetch_random_catfact(mock_service, catfact_client):
+       mock_service.register(
+           "random_catfact",
+           JsonResponse({"fact": "test", "length": 4}),
+       )
+       fact = await catfact_client.fetch_random_cat_fact()
+       assert fact.fact == "test"
+
+The plugin removes the boilerplate of writing your own ``start_service``
+fixture for each test module.
+
+Manual fixture (without the plugin)
+***********************************
+
+If you prefer not to use the plugin (e.g. you need finer control over the
+server lifetime), wire ``start_service`` yourself.
+
 Example
 *******
 
@@ -159,8 +194,45 @@ Now we can use them in tests. See full example in `examples/test_catfact_client.
         with pytest.raises(asyncio.TimeoutError):
             await catfact_client.fetch_random_cat_fact(timeout=1)
 
+How is this different from other mocking tools?
+-----------------------------------------------
+
++----------------------+--------------------+----------------+------------------+---------------------+
+| Tool                 | Mechanism          | Real HTTP      | Coupled to       | Best for            |
++======================+====================+================+==================+=====================+
+| ``aioresponses``     | Patches aiohttp    | No             | aiohttp          | Fast unit tests     |
+|                      | transport          |                |                  | without timeouts /  |
+|                      |                    |                |                  | streaming           |
++----------------------+--------------------+----------------+------------------+---------------------+
+| ``respx``            | Patches httpx      | No             | httpx            | Same as above for   |
+|                      | transport          |                |                  | httpx               |
++----------------------+--------------------+----------------+------------------+---------------------+
+| ``vcrpy`` (VCR.py)   | Record / replay    | Yes (on first  | aiohttp, httpx,  | When real API is    |
+|                      | cassettes          | record)        | requests         | available           |
++----------------------+--------------------+----------------+------------------+---------------------+
+| ``pytest-httpserver``| Real WSGI          | Yes            | Any              | Sync / mixed stacks |
+|                      | server (werkzeug,  |                |                  | with rich           |
+|                      | thread)            |                |                  | expectations API    |
++----------------------+--------------------+----------------+------------------+---------------------+
+| ``asyncly.srvmocker``| Real aiohttp test  | Yes            | Any (best with   | Async aiohttp apps  |
+|                      | server, same loop  |                | aiohttp)         | needing realistic   |
+|                      |                    |                |                  | latencies / WS / SSE|
++----------------------+--------------------+----------------+------------------+---------------------+
+
+The trade-off is realism vs. setup cost. Patching libraries are fastest but
+miss sockets, real timeouts, header auto-injection, and serialization quirks.
+Asyncly runs a real ``aiohttp.TestServer`` inside your test loop, catches
+those classes of bugs, and pairs naturally with the bundled
+``BaseHttpClient``.
+
+When to pick something else:
+
+- Pure unit tests of retry logic with dozens of cases — ``aioresponses`` or ``respx`` are cheaper.
+- Sync codebase or you need WireMock-style expectations across HTTP clients — ``pytest-httpserver``.
+- You have access to the real upstream and want golden recordings — ``vcrpy``.
+
 Useful responses and serializers
-********************************
+--------------------------------
 
 - JsonResponse_: simple JSON response from any object.
   You can setup status code and serializer for it. Using JsonSerializer_
@@ -176,6 +248,96 @@ Useful responses and serializers
 - TomlResponse_: return TOML format text response. Using TomlSerializer_.
 
 - YamlResponse_: return YAML format text response. Using YamlSerializer_.
+
+Request matching with ``Match``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Multiple ``MockRoute``\ s can share ``(method, path)``; the request is
+dispatched to the first route whose ``Match`` succeeds. Routes without a
+``match=`` act as fallbacks and must be listed **last** in their group.
+
+.. code-block:: python
+
+   from asyncly.srvmocker import Match, MockRoute
+
+   routes = [
+       MockRoute("POST", "/items", "premium",
+                 match=Match(headers={"X-Plan": "premium"})),
+       MockRoute("POST", "/items", "basic",
+                 match=Match(headers={"X-Plan": "basic"})),
+       MockRoute("POST", "/items", "default"),  # fallback
+
+   ]
+
+``Match`` supports four predicates, all optional and combinable:
+
+- ``json``: parsed body must equal this value exactly
+- ``body``: raw body bytes must equal this value exactly
+- ``headers``: every header listed must be present in the request (subset)
+- ``query``: every query parameter listed must be present (subset)
+
+If no route matches and there is no fallback, the server responds ``404``.
+
+Asserting what your client sent
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+``MockService`` exposes helpers that read from the recorded request history:
+
+.. code-block:: python
+
+   async def test_creates_item(mock_service, client):
+       mock_service.register("create", JsonResponse({"id": 1}))
+       await client.create_item(name="Whiskers")
+
+       mock_service.assert_called(
+           "create",
+           json={"name": "Whiskers"},
+           headers={"Content-Type": "application/json"},
+       )
+       assert mock_service.last_call("create").body == b'{"name": "Whiskers"}'
+
+Available methods:
+
+- ``get_calls(name) -> list[RequestHistory]``
+- ``last_call(name) -> RequestHistory`` (raises ``AssertionError`` if empty)
+- ``assert_called(name, *, times=, json=, body=, headers=, query=)``
+- ``assert_not_called(name)``
+
+``RawResponse`` — malformed or arbitrary bytes
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+For testing client behavior on broken payloads, unexpected content types,
+or empty bodies:
+
+.. code-block:: python
+
+   from asyncly.srvmocker import RawResponse
+
+   mock_service.register(
+       "broken_json",
+       RawResponse(
+           body=b'{"truncated":',
+           status=200,
+           headers={"Content-Type": "application/json"},
+       ),
+   )
+
+HTTPS / TLS
+~~~~~~~~~~~
+
+Pass an ``ssl.SSLContext`` to ``start_service`` to serve over HTTPS.
+``MockService.url`` will then report ``scheme="https"``.
+
+.. code-block:: python
+
+   import ssl
+   from asyncly.srvmocker import start_service
+
+   ctx = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+   ctx.load_cert_chain("cert.pem", "key.pem")
+
+   async with start_service(routes, ssl_context=ctx) as service:
+       ...
 
 .. _PyPI: https://pypi.org/
 .. _aiohttp: https://pypi.org/project/aiohttp/
