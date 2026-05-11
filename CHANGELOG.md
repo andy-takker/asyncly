@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.6.2] - 2026-05-11
+
+### Security
+- Re-release of 0.6.1 with the `aiohttp>=3.13.3` constraint actually
+  included in the published wheel. Version 0.6.1 was tagged before the
+  dependency bump from
+  [#29](https://github.com/andy-takker/asyncly/pull/29) merged, so the
+  uploaded artifact still allowed vulnerable `aiohttp<3.13.3`. Both
+  0.6.0 and 0.6.1 are yanked from PyPI. Install `asyncly>=0.6.2` to
+  receive the [CVE-2025-69223](https://nvd.nist.gov/vuln/detail/CVE-2025-69223)
+  mitigation.
+
 ## [0.6.1] - 2026-05-11
 
 ### Security
@@ -36,6 +48,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - `SequenceResponse([])` now raises `ValueError` eagerly instead of failing on first use.
 
-[Unreleased]: https://github.com/andy-takker/asyncly/compare/0.6.1...HEAD
+[Unreleased]: https://github.com/andy-takker/asyncly/compare/0.6.2...HEAD
+[0.6.2]: https://github.com/andy-takker/asyncly/compare/0.6.1...0.6.2
 [0.6.1]: https://github.com/andy-takker/asyncly/compare/0.6.0...0.6.1
 [0.6.0]: https://github.com/andy-takker/asyncly/compare/0.5.1...0.6.0
