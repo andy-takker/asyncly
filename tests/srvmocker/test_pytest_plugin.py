@@ -79,6 +79,7 @@ def test_mock_service_fixture_is_available(pytester: pytest.Pytester) -> None:
             """
             [tool.pytest.ini_options]
             asyncio_mode = "auto"
+            asyncio_default_fixture_loop_scope = "function"
             """
         )
     )
@@ -101,6 +102,7 @@ def test_no_mock_routes_uses_empty_service(pytester: pytest.Pytester) -> None:
             """
             [tool.pytest.ini_options]
             asyncio_mode = "auto"
+            asyncio_default_fixture_loop_scope = "function"
             """
         )
     )
