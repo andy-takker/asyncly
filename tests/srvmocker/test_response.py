@@ -3,8 +3,10 @@ from datetime import datetime
 from http import HTTPStatus
 
 import pytest
+from aiohttp.test_utils import make_mocked_request
 
 from asyncly.client.handlers.exceptions import UnhandledStatusException
+from asyncly.srvmocker.exceptions import SequenceExhausted
 from asyncly.srvmocker.models import MockService
 from asyncly.srvmocker.responses.content import ContentResponse
 from asyncly.srvmocker.responses.json import JsonResponse
@@ -112,3 +114,54 @@ async def test_unhandled_status_exception(
     )
     with pytest.raises(UnhandledStatusException):
         await catfact_client.fetch_json_cat_fact()
+
+
+async def test_sequence_response__raises_sequence_exhausted_on_exhaustion(
+    json_response: JsonResponse,
+) -> None:
+    # Unit test: exhaustion happens inside an aiohttp request handler, where
+    # aiohttp wraps any non-HTTPException into a 500. From the client side
+    # you'd see UnhandledStatusException, not SequenceExhausted. To assert
+    # the typed exception, drive .response() directly with a mocked request.
+    seq = SequenceResponse([json_response])
+    req = make_mocked_request("GET", "/")
+    await seq.response(req)
+    with pytest.raises(SequenceExhausted):
+        await seq.response(req)
+
+
+async def test_sequence_response__cycles_when_configured(
+    catfact_client: CatfactClient,
+    catfact_service: MockService,
+    json_response: JsonResponse,
+    content_response: ContentResponse,
+) -> None:
+    catfact_service.register(
+        "json_catfact",
+        SequenceResponse([json_response, content_response], on_exhausted="cycle"),
+    )
+    a = await catfact_client.fetch_json_cat_fact()
+    b = await catfact_client.fetch_json_cat_fact()
+    c = await catfact_client.fetch_json_cat_fact()
+    assert [a, b, c] == ["another fact", "test", "another fact"]
+
+
+async def test_sequence_response__returns_last_when_configured(
+    catfact_client: CatfactClient,
+    catfact_service: MockService,
+    json_response: JsonResponse,
+    content_response: ContentResponse,
+) -> None:
+    catfact_service.register(
+        "json_catfact",
+        SequenceResponse([json_response, content_response], on_exhausted="last"),
+    )
+    await catfact_client.fetch_json_cat_fact()
+    await catfact_client.fetch_json_cat_fact()
+    repeat = await catfact_client.fetch_json_cat_fact()
+    assert repeat == "test"
+
+
+async def test_sequence_response__empty_raises_value_error() -> None:
+    with pytest.raises(ValueError):
+        SequenceResponse([])
