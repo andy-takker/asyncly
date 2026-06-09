@@ -3,7 +3,7 @@ from time import perf_counter
 from types import TracebackType
 from typing import Any
 
-from aiohttp import ClientResponse, ClientSession
+from aiohttp import BasicAuth, ClientResponse, ClientSession
 from aiohttp.client import DEFAULT_TIMEOUT
 from yarl import URL
 
@@ -16,15 +16,24 @@ from asyncly.client.typing import ResponseHandler, ResponseHandlersType, RouteRe
 
 
 class InstrumentableHttpClient(BaseHttpClient):
-    __slots__ = ("_metrics_sink", "_resolve_route") + BaseHttpClient.__slots__
+    __slots__ = ("_metrics_sink", "_resolve_route")
 
     def __init__(
         self,
         url: URL | str,
         session: ClientSession,
         client_name: str,
+        *,
+        proxy: URL | str | None = None,
+        proxy_auth: BasicAuth | None = None,
     ) -> None:
-        super().__init__(url=url, session=session, client_name=client_name)
+        super().__init__(
+            url=url,
+            session=session,
+            client_name=client_name,
+            proxy=proxy,
+            proxy_auth=proxy_auth,
+        )
         self._metrics_sink: MetricsSink = NoopSink()
         self._resolve_route: RouteResolver = default_route_resolver
 

@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.7.0] - 2026-06-10
+
+### Added
+- **Proxy support in `BaseHttpClient`**: new keyword-only `proxy` and
+  `proxy_auth` arguments (also on `InstrumentableHttpClient`). Set them once on
+  the client or override per request; both are forwarded to aiohttp.
+- **Forwarding mock proxy** `start_proxy(*, auth=...)` and `MockProxyService` in
+  `asyncly.srvmocker`. Spins up an in-process HTTP proxy that records every
+  request passing through it and forwards it to the real target, so tests can
+  assert a client genuinely routes through a proxy. Supports `Proxy-Authorization`
+  validation (returns `407` and does not forward on mismatch). Mirrors
+  `MockService`'s assertion helpers (`assert_called`, `assert_not_called`,
+  `get_calls`, `last_call`). HTTP targets only (no `CONNECT`/HTTPS tunnelling).
+- **`mock_proxy` pytest fixture** exposing a ready-to-use forwarding proxy.
+
 ## [0.6.2] - 2026-05-11
 
 ### Security
@@ -48,7 +63,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - `SequenceResponse([])` now raises `ValueError` eagerly instead of failing on first use.
 
-[Unreleased]: https://github.com/andy-takker/asyncly/compare/0.6.2...HEAD
+[Unreleased]: https://github.com/andy-takker/asyncly/compare/0.7.0...HEAD
+[0.7.0]: https://github.com/andy-takker/asyncly/compare/0.6.2...0.7.0
 [0.6.2]: https://github.com/andy-takker/asyncly/compare/0.6.1...0.6.2
 [0.6.1]: https://github.com/andy-takker/asyncly/compare/0.6.0...0.6.1
 [0.6.0]: https://github.com/andy-takker/asyncly/compare/0.5.1...0.6.0

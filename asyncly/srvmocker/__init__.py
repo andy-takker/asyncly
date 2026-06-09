@@ -5,6 +5,7 @@ from asyncly.srvmocker.exceptions import (
 )
 from asyncly.srvmocker.matching import Match
 from asyncly.srvmocker.models import MockRoute, MockService
+from asyncly.srvmocker.proxy import MockProxyService, start_proxy
 from asyncly.srvmocker.responses.base import BaseMockResponse
 from asyncly.srvmocker.responses.content import ContentResponse
 from asyncly.srvmocker.responses.json import JsonResponse
@@ -17,6 +18,7 @@ __all__ = (
     "ContentResponse",
     "JsonResponse",
     "Match",
+    "MockProxyService",
     "MockRoute",
     "MockService",
     "RawResponse",
@@ -24,5 +26,6 @@ __all__ = (
     "SequenceResponse",
     "SrvMockerError",
     "UnknownHandlerError",
+    "start_proxy",
     "start_service",
 )

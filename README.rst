@@ -339,6 +339,69 @@ Pass an ``ssl.SSLContext`` to ``start_service`` to serve over HTTPS.
    async with start_service(routes, ssl_context=ctx) as service:
        ...
 
+Testing through a proxy
+~~~~~~~~~~~~~~~~~~~~~~~
+
+``BaseHttpClient`` accepts ``proxy`` and ``proxy_auth`` (forwarded to aiohttp_).
+Set them once on the client, or override per request:
+
+.. code-block:: python
+
+   from aiohttp import BasicAuth, ClientSession
+   from asyncly import BaseHttpClient
+
+   async with ClientSession() as session:
+       client = CatfactClient(
+           url=url,
+           session=session,
+           client_name="catfact",
+           proxy="http://127.0.0.1:8080",
+           proxy_auth=BasicAuth("user", "secret"),
+       )
+
+To test that a client genuinely routes through a proxy, ``start_proxy`` spins
+up an in-process forwarding HTTP proxy. It records every request passing
+through it and forwards it to the real target (typically another
+``start_service``). Pair it with the ``mock_proxy`` fixture or use it directly:
+
+.. code-block:: python
+
+   from aiohttp import BasicAuth, ClientSession
+   from asyncly.srvmocker import (
+       JsonResponse,
+       MockRoute,
+       start_proxy,
+       start_service,
+   )
+
+   async def test_routes_through_proxy() -> None:
+       routes = [MockRoute("GET", "/fact", "fact")]
+       async with start_service(routes) as target:
+           target.register("fact", JsonResponse({"fact": "ok"}))
+           async with start_proxy(auth=BasicAuth("user", "secret")) as proxy:
+               async with ClientSession() as s:
+                   resp = await s.get(
+                       target.url / "fact",
+                       proxy=proxy.url,
+                       proxy_auth=BasicAuth("user", "secret"),
+                   )
+                   assert (await resp.json()) == {"fact": "ok"}
+
+           proxy.assert_called(times=1, method="GET")
+
+``MockProxyService`` mirrors ``MockService``'s assertion helpers, reading from
+the recorded history of forwarded requests:
+
+- ``get_calls() -> list[RequestHistory]``
+- ``last_call() -> RequestHistory`` (raises ``AssertionError`` if empty)
+- ``assert_called(*, times=, target=, method=, json=, body=, headers=, query=)``
+- ``assert_not_called()``
+
+When ``start_proxy(auth=...)`` is set, requests missing or carrying a wrong
+``Proxy-Authorization`` header get a ``407 Proxy Authentication Required`` and
+are **not** forwarded. Only plain HTTP targets are supported (no ``CONNECT`` /
+HTTPS tunnelling).
+
 .. _PyPI: https://pypi.org/
 .. _aiohttp: https://pypi.org/project/aiohttp/
 .. _msgpack: https://msgpack.org

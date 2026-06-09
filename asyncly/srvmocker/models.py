@@ -1,7 +1,7 @@
 from collections.abc import MutableMapping, MutableSequence
 from dataclasses import dataclass
 
-from aiohttp.web_request import Request
+from aiohttp.web_request import BaseRequest
 from yarl import URL
 
 from asyncly.srvmocker.matching import Match
@@ -18,7 +18,7 @@ class MockRoute:
 
 @dataclass
 class RequestHistory:
-    request: Request
+    request: BaseRequest
     body: bytes
 
 
