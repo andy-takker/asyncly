@@ -29,6 +29,22 @@ def parse_struct(
     data_format: DataFormat = "json",
     strict: bool = True,
 ) -> Callable[[ClientResponse], Awaitable[T]]:
+    """Build a response handler that decodes the body into a msgspec struct.
+
+    Requires the ``msgspec`` extra.
+
+    Args:
+        struct: The `msgspec.Struct` subclass to decode into.
+        data_format: Wire format of the body: ``"json"``, ``"msgpack"``,
+            ``"toml"``, or ``"yaml"``.
+        strict: Pass-through to msgspec strict decoding (no implicit coercion).
+
+    Returns:
+        An async handler usable as a value in a response-handlers mapping.
+
+    Raises:
+        msgspec.ValidationError: If the payload does not match ``struct``.
+    """
     decode = _choose_decoder(data_format)
 
     async def _parse(response: ClientResponse) -> T:

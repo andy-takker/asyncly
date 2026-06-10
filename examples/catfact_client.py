@@ -64,7 +64,7 @@ async def main() -> None:
             session=session,
             url="https://catfact.ninja",
         )
-        fact = await client.fetch_random_cat_fact()
+        fact = await client.fetch_catfact_model()
         print(fact)  # noqa: T201
 
 

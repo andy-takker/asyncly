@@ -11,6 +11,14 @@ from asyncly.srvmocker.serialization.json import JsonSerializer
 
 
 class JsonResponse(BaseMockResponse):
+    """A mock response that serializes ``body`` to JSON.
+
+    Args:
+        body: Any JSON-serializable object.
+        status: HTTP status code to return.
+        headers: Extra response headers; ``Content-Type`` is set automatically.
+    """
+
     _content: ContentResponse
 
     def __init__(

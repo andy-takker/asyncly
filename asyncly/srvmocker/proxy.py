@@ -54,6 +54,13 @@ _HOP_BY_HOP_RESPONSE = _HOP_BY_HOP | frozenset({"content-length"})
 
 @dataclass(frozen=True)
 class MockProxyService:
+    """Handle to a running mock forwarding proxy.
+
+    Returned by [`start_proxy`][asyncly.srvmocker.start_proxy]. Point a client at
+    it via ``proxy=proxy.url`` and assert on the requests that passed through.
+    The ``history`` holds every request the proxy received.
+    """
+
     url: URL
     history: list[RequestHistory] = field(default_factory=list)
 
@@ -79,6 +86,23 @@ class MockProxyService:
         headers: dict[str, str] | None = None,
         query: dict[str, str] | None = None,
     ) -> None:
+        """Assert that a matching request passed through the proxy.
+
+        Like `MockService.assert_called`, plus two proxy-specific predicates:
+
+        Args:
+            times: If given, the exact number of forwarded requests expected.
+            target: Expected absolute destination URL the client asked for.
+            method: Expected HTTP method.
+            json: Expected parsed JSON body (exact match).
+            body: Expected raw body bytes (exact match).
+            headers: Header key/values that must all be present (e.g.
+                ``Proxy-Authorization``).
+            query: Query key/values that must all be present.
+
+        Raises:
+            AssertionError: If no recorded request satisfies the criteria.
+        """
         calls = self.get_calls()
         if times is not None and len(calls) != times:
             raise AssertionError(f"proxy: expected {times} call(s), got {len(calls)}")
@@ -119,6 +143,21 @@ async def start_proxy(
     *,
     auth: BasicAuth | None = None,
 ) -> AsyncGenerator[MockProxyService, None]:
+    """Start an in-process forwarding HTTP proxy for tests.
+
+    An async context manager. It records every request that passes through and
+    forwards it to the absolute target the client requested (typically another
+    [`start_service`][asyncly.srvmocker.start_service]), relaying the response
+    verbatim. Only plain HTTP targets are supported (no ``CONNECT`` tunnelling).
+
+    Args:
+        auth: If given, require a matching ``Proxy-Authorization`` header.
+            Requests without it (or with wrong credentials) get a
+            ``407 Proxy Authentication Required`` and are not forwarded.
+
+    Yields:
+        MockProxyService: Handle exposing the proxy ``url`` and request history.
+    """
     proxy = MockProxyService(url=URL())
     expected_auth = auth.encode() if auth is not None else None
 

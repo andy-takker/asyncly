@@ -3,10 +3,18 @@ from yarl import URL
 
 
 class BaseHttpClientException(ClientError):
-    pass
+    """Base class for exceptions raised by `BaseHttpClient`."""
 
 
 class UnhandledStatusException(BaseHttpClientException, KeyError):
+    """Raised when a response status has no matching handler.
+
+    Attributes:
+        status: The unmatched response status code.
+        url: The request URL.
+        client_name: The originating client's name, if known.
+    """
+
     status: int
     url: URL
     client_name: str | None

@@ -11,6 +11,13 @@ TimeoutType = int | float
 
 @dataclass
 class LatencyResponse(BaseMockResponse):
+    """Delay another response by a fixed latency — for testing timeouts.
+
+    Attributes:
+        wrapped: The response to return after the delay.
+        latency: Delay in seconds before responding.
+    """
+
     wrapped: BaseMockResponse
     latency: TimeoutType
 

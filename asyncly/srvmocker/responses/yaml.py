@@ -11,6 +11,8 @@ from asyncly.srvmocker.serialization.yaml import YamlSerializer
 
 
 class YamlResponse(BaseMockResponse):
+    """A mock response that serializes ``body`` to YAML."""
+
     _content: ContentResponse
 
     def __init__(

@@ -11,6 +11,8 @@ from asyncly.srvmocker.serialization.msgpack import MsgpackSerializer
 
 
 class MsgpackResponse(BaseMockResponse):
+    """A mock response that serializes ``body`` to msgpack (needs ``msgspec``)."""
+
     __content: ContentResponse
 
     def __init__(
