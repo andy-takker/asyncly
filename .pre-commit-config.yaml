@@ -9,6 +9,7 @@ repos:
       - id: check-ast
       - id: check-merge-conflict
       - id: check-yaml
+        args: [--unsafe]  # mkdocs.yml uses !!python/name: tags (Material icons)
       - id: check-toml
       - id: debug-statements
       - id: detect-private-key
