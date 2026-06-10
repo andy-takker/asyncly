@@ -23,11 +23,20 @@ ruff-ci: ##@Linting Run ruff
 mypy-ci: ##@Linting Run mypy
 	.venv/bin/mypy ./$(PROJECT_NAME) --config-file ./pyproject.toml
 
-rst-ci: ##@Linting Run rst-lint
-	.venv/bin/rst-lint README.rst
-
 build-ci: ##@Build Build distribution
 	uv build
+
+docs-install: ##@Docs Sync docs deps and all extras
+	uv sync --all-extras --group docs
+
+docs-serve: ##@Docs Live-preview the documentation site
+	.venv/bin/mkdocs serve
+
+docs-build: ##@Docs Strict build (links / nav / autodoc check)
+	.venv/bin/mkdocs build --strict
+
+docs-deploy: ##@Docs Deploy current version with mike
+	uv run mike deploy --push --update-aliases dev latest
 
 clean_dev:
 	rm -rf .venv

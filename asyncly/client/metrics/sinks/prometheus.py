@@ -5,6 +5,18 @@ from prometheus_client.registry import REGISTRY, CollectorRegistry
 
 
 class PrometheusSink:
+    """Metrics sink that records to Prometheus (needs the ``prometheus`` extra).
+
+    Exposes a request-duration histogram and a request counter, labeled by
+    client, method, route, and status.
+
+    Args:
+        namespace: Prometheus metric namespace prefix.
+        subsystem: Prometheus metric subsystem prefix.
+        buckets: Histogram bucket boundaries in seconds.
+        registry: Collector registry to register the metrics on.
+    """
+
     def __init__(
         self,
         namespace: str = "asyncly",

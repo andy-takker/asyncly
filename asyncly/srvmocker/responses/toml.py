@@ -11,6 +11,8 @@ from asyncly.srvmocker.serialization.toml import TomlSerializer
 
 
 class TomlResponse(BaseMockResponse):
+    """A mock response that serializes ``body`` to TOML."""
+
     _content: ContentResponse
 
     def __init__(

@@ -16,6 +16,14 @@ from asyncly.client.typing import ResponseHandler, ResponseHandlersType, RouteRe
 
 
 class InstrumentableHttpClient(BaseHttpClient):
+    """`BaseHttpClient` that records request metrics through a pluggable sink.
+
+    Behaves exactly like [`BaseHttpClient`][asyncly.BaseHttpClient] until a sink
+    is enabled. Each completed request reports its client name, method, resolved
+    route, status, duration, and error type to the active
+    [`MetricsSink`][asyncly.client.metrics.sinks.base.MetricsSink].
+    """
+
     __slots__ = ("_metrics_sink", "_resolve_route")
 
     def __init__(
@@ -40,17 +48,29 @@ class InstrumentableHttpClient(BaseHttpClient):
     def enable_metrics(
         self, sink: MetricsSink, *, route_resolver: RouteResolver | None = None
     ) -> None:
+        """Start emitting metrics to ``sink``.
+
+        Args:
+            sink: The metrics sink to report each request to.
+            route_resolver: Optional override for how request URLs are
+                normalized into low-cardinality route labels.
+        """
         self._metrics_sink = sink
         if route_resolver is not None:
             self._resolve_route = route_resolver
 
     def disable_metrics(self) -> None:
+        """Stop emitting metrics (revert to the no-op sink)."""
         self._metrics_sink = NoopSink()
         self._resolve_route = default_route_resolver
 
     def instrument(  # type: ignore[no-untyped-def]
         self, sink: MetricsSink, *, route_resolver: RouteResolver | None = None
     ):
+        """Context manager that enables ``sink`` for the duration of a block.
+
+        Restores the previous sink and route resolver on exit.
+        """
         client = self
 
         class _Ctx:

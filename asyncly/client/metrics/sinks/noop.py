@@ -1,5 +1,5 @@
 class NoopSink:
-    """Синк по умолчанию: ничего не делает."""
+    """The default sink: records nothing and adds no overhead."""
 
     def observe_request(
         self,

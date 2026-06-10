@@ -52,9 +52,3 @@ repos:
           - pytest>=8.3.3
           - types-pyyaml
           - types-toml
-      - id: rst
-        name: rst
-        entry: rst-lint
-        files: README.rst
-        language: python
-        additional_dependencies: [pygments, "restructuredtext_lint>=2.0"]

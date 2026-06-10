@@ -1,0 +1,114 @@
+site_name: asyncly
+site_description: Simple async HTTP client and a real aiohttp mock server for your integrations.
+site_url: https://andy-takker.github.io/asyncly/
+repo_url: https://github.com/andy-takker/asyncly
+repo_name: andy-takker/asyncly
+edit_uri: edit/master/docs/
+copyright: Copyright &copy; Sergey Natalenko
+
+theme:
+  name: material
+  language: en
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: teal
+      accent: teal
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: teal
+      accent: teal
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.top
+    - navigation.tracking
+    - navigation.indexes
+    - content.code.copy
+    - content.code.annotate
+    - content.tabs.link
+    - toc.follow
+    - search.suggest
+    - search.highlight
+  icon:
+    repo: fontawesome/brands/github
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.superfences
+  - pymdownx.details
+  - pymdownx.snippets:
+      base_path:
+        - .
+        - docs
+      check_paths: true
+  - pymdownx.tabbed:
+      alternate_style: true
+
+plugins:
+  - search
+  - mkdocstrings:
+      default_handler: python
+      handlers:
+        python:
+          paths: [.]
+          options:
+            docstring_style: google
+            show_root_heading: true
+            show_symbol_type_heading: true
+            show_symbol_type_toc: true
+            members_order: source
+            separate_signature: true
+            show_signature_annotations: true
+            signature_crossrefs: true
+            merge_init_into_class: true
+            filters: ["!^_"]
+
+extra:
+  version:
+    provider: mike
+    default: latest
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/andy-takker/asyncly
+    - icon: fontawesome/brands/python
+      link: https://pypi.org/project/asyncly/
+
+nav:
+  - Overview: index.md
+  - Installation: installation.md
+  - Quickstart: quickstart.md
+  - Why asyncly:
+      - Testing strategies: why/testing-strategies.md
+  - Usage guide:
+      - HTTP client: guide/http-client.md
+      - Response handlers: guide/response-handlers.md
+      - Instrumentation & metrics: guide/instrumentation.md
+      - Mock server: guide/mock-server.md
+      - Request matching: guide/request-matching.md
+      - Responses & serializers: guide/responses.md
+      - Proxy testing: guide/proxy-testing.md
+      - Pytest plugin: guide/pytest-plugin.md
+  - API reference:
+      - Overview: reference/index.md
+      - Client: reference/client.md
+      - Handlers: reference/handlers.md
+      - Metrics: reference/metrics.md
+      - Mock server: reference/srvmocker.md
+      - Responses: reference/responses.md
+      - Serializers: reference/serializers.md
+  - Changelog: changelog.md

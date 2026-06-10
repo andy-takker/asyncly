@@ -13,6 +13,19 @@ from asyncly.srvmocker.serialization.base import Serializer
 
 @dataclass
 class ContentResponse(BaseMockResponse):
+    """General mock response: a body plus an explicit serializer.
+
+    The format-specific responses (`JsonResponse`, `MsgpackResponse`, ...) are
+    thin wrappers over this. Provide a `Serializer` to control the wire format
+    and ``Content-Type``.
+
+    Attributes:
+        body: The object to serialize (or raw value if no serializer).
+        status: HTTP status code to return.
+        headers: Extra response headers.
+        serializer: Serializer pairing a ``dumps`` callable with a content type.
+    """
+
     body: Any = None
     status: int = HTTPStatus.OK
     headers: Mapping[str, str] | None = None

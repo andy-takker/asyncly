@@ -2,6 +2,14 @@ from opentelemetry.metrics import Meter
 
 
 class OpenTelemetrySink:
+    """Metrics sink backed by OpenTelemetry (needs the ``opentelemetry`` extra).
+
+    Records request counts, durations, and errors through the given `Meter`.
+
+    Args:
+        meter: An OpenTelemetry `Meter` to create instruments from.
+    """
+
     def __init__(self, meter: Meter) -> None:
         # Counter: количество
         self._req_counter = meter.create_counter(

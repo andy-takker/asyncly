@@ -18,6 +18,28 @@ async def start_service(
     *,
     ssl_context: SSLContext | None = None,
 ) -> AsyncGenerator[MockService, None]:
+    """Start a real `aiohttp.TestServer` for the given routes.
+
+    An async context manager. On enter it binds the server to a free port and
+    yields a [`MockService`][asyncly.srvmocker.MockService] whose ``url`` points
+    at it; on exit it shuts the server down.
+
+    Args:
+        routes: The routes to serve. Several routes may share a
+            ``(method, path)`` and be disambiguated by their
+            [`Match`][asyncly.srvmocker.Match].
+        ssl_context: If given, serve over HTTPS; ``service.url`` then reports
+            ``scheme="https"``.
+
+    Yields:
+        MockService: Handle to register responses and assert on requests.
+
+    Example:
+        ```python
+        async with start_service([MockRoute("GET", "/x", "ok")]) as service:
+            service.register("ok", JsonResponse({"ok": True}))
+        ```
+    """
     app = Application()
     routes_list = list(routes)
     handler_names = frozenset(r.handler_name for r in routes_list)
