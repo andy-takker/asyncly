@@ -43,7 +43,7 @@ response on each call, in order — useful for testing retries and pagination. T
 `on_exhausted` argument controls what happens after the last response:
 
 ```python
-from asyncly.srvmocker import JsonResponse, SequenceResponse
+from asyncly.srvmocker import JsonResponse, RawResponse, SequenceResponse
 
 service.register(
     "flaky",
@@ -91,13 +91,15 @@ with pytest.raises(asyncio.TimeoutError):
 ## Other formats
 
 For non-JSON wire formats, register the matching response (each takes the same
-`body`, `status`, `headers` arguments as `JsonResponse`):
+`body`, `status`, `headers` arguments as `JsonResponse`). These pull their
+serializer from a third-party package — only msgpack ships as an asyncly extra;
+install TOML and YAML support yourself:
 
-| Response | Format | Extra / dependency |
+| Response | Format | Install |
 | --- | --- | --- |
-| [`MsgpackResponse`][asyncly.srvmocker.responses.msgpack.MsgpackResponse] | msgpack | `msgspec` |
-| [`TomlResponse`][asyncly.srvmocker.responses.toml.TomlResponse] | TOML | `toml` |
-| [`YamlResponse`][asyncly.srvmocker.responses.yaml.YamlResponse] | YAML | `pyyaml` |
+| [`MsgpackResponse`][asyncly.srvmocker.responses.msgpack.MsgpackResponse] | msgpack | `pip install "asyncly[msgspec]"` |
+| [`TomlResponse`][asyncly.srvmocker.responses.toml.TomlResponse] | TOML | `pip install toml` |
+| [`YamlResponse`][asyncly.srvmocker.responses.yaml.YamlResponse] | YAML | `pip install pyyaml` |
 
 ## ContentResponse and serializers
 
