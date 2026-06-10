@@ -6,6 +6,15 @@ on:
       - master
     tags:
       - '[0-9]+.[0-9]+.[0-9]+'
+  # Manual bootstrap / re-deploy of a released version as `latest`.
+  # Use this once after enabling GitHub Pages to publish the root redirect,
+  # since the `latest` alias and default are only set on a tag push.
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version label to deploy as latest (e.g. 0.7.0)"
+        required: true
+        default: "0.7.0"
 
 permissions:
   contents: write
@@ -48,6 +57,12 @@ jobs:
           uv run mike set-default --push latest
 
       - name: Deploy dev version
-        if: github.ref == 'refs/heads/master'
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         run: |
           uv run mike deploy --push --update-aliases dev
+
+      - name: Bootstrap latest (manual)
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          uv run mike deploy --push --update-aliases "${{ inputs.version }}" latest
+          uv run mike set-default --push latest
