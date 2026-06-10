@@ -51,6 +51,7 @@ asyncly = "asyncly.pytest_plugin"
 
 [project.urls]
 Homepage = "https://github.com/andy-takker/asyncly"
+Documentation = "https://andy-takker.github.io/asyncly/"
 Source = "https://github.com/andy-takker/asyncly"
 "Bug Tracker" = "https://github.com/andy-takker/asyncly/issues"
 
