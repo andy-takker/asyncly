@@ -795,6 +795,28 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#metrics-emitted" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Metrics emitted
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#operation-label" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        operation label
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#sinks" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -841,6 +863,17 @@
         
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-phases-connection-pool-semi-automatic" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Network phases &amp; connection pool (semi-automatic)
+      
+    </span>
+  </a>
   
 </li>
       
@@ -1341,6 +1374,28 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#metrics-emitted" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Metrics emitted
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#operation-label" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        operation label
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#sinks" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1391,6 +1446,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#network-phases-connection-pool-semi-automatic" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Network phases &amp; connection pool (semi-automatic)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#route-labels" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1434,9 +1500,9 @@
 
 <h1 id="instrumentation-metrics">Instrumentation &amp; metrics<a class="headerlink" href="#instrumentation-metrics" title="Permanent link">&para;</a></h1>
 <p><a class="autorefs autorefs-internal" title="            asyncly.client.metrics.instrumentable_client.InstrumentableHttpClient" href="../../reference/client/#asyncly.client.metrics.instrumentable_client.InstrumentableHttpClient"><code>InstrumentableHttpClient</code></a>
-extends <a href="../http-client/"><code>BaseHttpClient</code></a> with request metrics — latency,
-status, and error counts — emitted through a pluggable <strong>sink</strong>. When no sink is
-enabled it behaves exactly like <code>BaseHttpClient</code> with negligible overhead.</p>
+extends <a href="../http-client/"><code>BaseHttpClient</code></a> with request metrics emitted through a
+pluggable <strong>sink</strong>. When no sink is enabled it behaves exactly like
+<code>BaseHttpClient</code> with negligible overhead.</p>
 <p>Subclass it the same way you would <code>BaseHttpClient</code>:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">from</span> <span class="nn">asyncly.client.metrics.instrumentable_client</span> <span class="kn">import</span> <span class="n">InstrumentableHttpClient</span>
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
@@ -1452,47 +1518,150 @@ enabled it behaves exactly like <code>BaseHttpClient</code> with negligible over
 <div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="k">with</span> <span class="n">client</span><span class="o">.</span><span class="n">instrument</span><span class="p">(</span><span class="n">sink</span><span class="p">):</span>
 <a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>    <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">fetch_fact</span><span class="p">()</span>
 </code></pre></div>
-<p>Each completed request calls <code>sink.observe_request(...)</code> with the client name,
-method, resolved route, status, duration, and error type.</p>
+<h2 id="metrics-emitted">Metrics emitted<a class="headerlink" href="#metrics-emitted" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Type</th>
+<th>Labels</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>http_client_requests_total</code></td>
+<td>counter</td>
+<td><code>client, method, route, operation, status, outcome</code></td>
+</tr>
+<tr>
+<td><code>http_client_request_seconds</code></td>
+<td>histogram</td>
+<td><code>client, method, route, operation, outcome</code></td>
+</tr>
+<tr>
+<td><code>http_client_errors_total</code></td>
+<td>counter</td>
+<td><code>client, method, route, operation, error_type</code></td>
+</tr>
+<tr>
+<td><code>http_client_in_flight</code></td>
+<td>gauge</td>
+<td><code>client, method, route, operation</code></td>
+</tr>
+<tr>
+<td><code>http_client_phase_duration_seconds</code></td>
+<td>histogram</td>
+<td><code>client, operation, phase</code></td>
+</tr>
+<tr>
+<td><code>http_client_pool_connections</code></td>
+<td>gauge</td>
+<td><code>upstream, state</code></td>
+</tr>
+</tbody>
+</table>
+<p><code>status</code> is intentionally kept <strong>off</strong> the duration histogram — each extra label
+multiplies the series count by the number of buckets. The histogram carries a
+compact <code>outcome</code> of <code>response</code> or <code>error</code> instead; the full status and 4-way
+<code>outcome</code> (<code>response</code>, <code>timeout</code>, <code>network_error</code>, <code>cancelled</code>) live on the
+counter.</p>
+<p>A failure that happens <em>after</em> a response arrived (deserialization/validation,
+or an unhandled status) is reported as <code>outcome="response"</code> with the real status
+and <code>error_type="invalid_response"</code> — so 5xx and latency math on the physical
+request stay correct.</p>
+<h2 id="operation-label"><code>operation</code> label<a class="headerlink" href="#operation-label" title="Permanent link">&para;</a></h2>
+<p><code>operation</code> is a stable, low-cardinality logical name. Pass it per endpoint:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="k">async</span> <span class="k">def</span> <span class="nf">get_wallet_balance</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>    <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_make_req</span><span class="p">(</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>        <span class="n">method</span><span class="o">=</span><span class="n">hdrs</span><span class="o">.</span><span class="n">METH_GET</span><span class="p">,</span>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>        <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_url</span> <span class="o">/</span> <span class="s2">&quot;v5/account/wallet-balance&quot;</span><span class="p">,</span>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>        <span class="n">handlers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">BALANCE_HANDLERS</span><span class="p">,</span>
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>        <span class="n">operation</span><span class="o">=</span><span class="s2">&quot;get_wallet_balance&quot;</span><span class="p">,</span>
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>    <span class="p">)</span>
+</code></pre></div>
+<p>It defaults to the resolved route when omitted.</p>
 <h2 id="sinks">Sinks<a class="headerlink" href="#sinks" title="Permanent link">&para;</a></h2>
 <h3 id="prometheus">Prometheus<a class="headerlink" href="#prometheus" title="Permanent link">&para;</a></h3>
-<p>Requires the <code>prometheus</code> extra.
-<a class="autorefs autorefs-internal" title="            asyncly.client.metrics.sinks.prometheus.PrometheusSink" href="../../reference/metrics/#asyncly.client.metrics.sinks.prometheus.PrometheusSink"><code>PrometheusSink</code></a>
-records a histogram of request durations labeled by client, method, route, and
-status:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="kn">from</span> <span class="nn">asyncly.client.metrics.sinks.prometheus</span> <span class="kn">import</span> <span class="n">PrometheusSink</span>
-<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>
-<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="n">sink</span> <span class="o">=</span> <span class="n">PrometheusSink</span><span class="p">(</span><span class="n">namespace</span><span class="o">=</span><span class="s2">&quot;asyncly&quot;</span><span class="p">,</span> <span class="n">subsystem</span><span class="o">=</span><span class="s2">&quot;client&quot;</span><span class="p">)</span>
-<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="n">client</span><span class="o">.</span><span class="n">enable_metrics</span><span class="p">(</span><span class="n">sink</span><span class="p">)</span>
+<p>Requires the <code>prometheus</code> extra. The default metric prefix is <code>http_client_*</code>.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="kn">from</span> <span class="nn">asyncly.client.metrics.sinks.prometheus</span> <span class="kn">import</span> <span class="n">PrometheusSink</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="n">sink</span> <span class="o">=</span> <span class="n">PrometheusSink</span><span class="p">()</span>  <span class="c1"># -&gt; http_client_*</span>
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="n">client</span><span class="o">.</span><span class="n">enable_metrics</span><span class="p">(</span><span class="n">sink</span><span class="p">)</span>
 </code></pre></div>
+<div class="admonition warning">
+<p class="admonition-title">Breaking change</p>
+<p>The default metric names changed from <code>asyncly_client_*</code> to <code>http_client_*</code>.
+To keep the old names on upgrade, construct
+<code>PrometheusSink(namespace="asyncly", subsystem="client")</code>.</p>
+</div>
+<p>Under Gunicorn/multiprocess, the in-flight gauge uses
+<code>multiprocess_mode="livesum"</code>; configure <code>PROMETHEUS_MULTIPROC_DIR</code> and a
+<code>MultiProcessCollector</code> as usual.</p>
 <h3 id="opentelemetry">OpenTelemetry<a class="headerlink" href="#opentelemetry" title="Permanent link">&para;</a></h3>
-<p>Requires the <code>opentelemetry</code> extra.
-<a class="autorefs autorefs-internal" title="            asyncly.client.metrics.sinks.opentelemetry.OpenTelemetrySink" href="../../reference/metrics/#asyncly.client.metrics.sinks.opentelemetry.OpenTelemetrySink"><code>OpenTelemetrySink</code></a>
-records through an OpenTelemetry <code>Meter</code>:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="kn">from</span> <span class="nn">opentelemetry</span> <span class="kn">import</span> <span class="n">metrics</span>
-<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="kn">from</span> <span class="nn">asyncly.client.metrics.sinks.opentelemetry</span> <span class="kn">import</span> <span class="n">OpenTelemetrySink</span>
-<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>
-<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="n">sink</span> <span class="o">=</span> <span class="n">OpenTelemetrySink</span><span class="p">(</span><span class="n">meter</span><span class="o">=</span><span class="n">metrics</span><span class="o">.</span><span class="n">get_meter</span><span class="p">(</span><span class="s2">&quot;asyncly&quot;</span><span class="p">))</span>
-<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="n">client</span><span class="o">.</span><span class="n">enable_metrics</span><span class="p">(</span><span class="n">sink</span><span class="p">)</span>
+<p>Requires the <code>opentelemetry</code> extra. Metric names match the Prometheus defaults.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="kn">from</span> <span class="nn">opentelemetry</span> <span class="kn">import</span> <span class="n">metrics</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="kn">from</span> <span class="nn">asyncly.client.metrics.sinks.opentelemetry</span> <span class="kn">import</span> <span class="n">OpenTelemetrySink</span>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="n">sink</span> <span class="o">=</span> <span class="n">OpenTelemetrySink</span><span class="p">(</span><span class="n">meter</span><span class="o">=</span><span class="n">metrics</span><span class="o">.</span><span class="n">get_meter</span><span class="p">(</span><span class="s2">&quot;asyncly&quot;</span><span class="p">))</span>
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="n">client</span><span class="o">.</span><span class="n">enable_metrics</span><span class="p">(</span><span class="n">sink</span><span class="p">)</span>
 </code></pre></div>
 <h3 id="noop">Noop<a class="headerlink" href="#noop" title="Permanent link">&para;</a></h3>
 <p><a class="autorefs autorefs-internal" title="            asyncly.client.metrics.sinks.noop.NoopSink" href="../../reference/metrics/#asyncly.client.metrics.sinks.noop.NoopSink"><code>NoopSink</code></a> is the default — it does
 nothing and adds no overhead.</p>
+<h2 id="network-phases-connection-pool-semi-automatic">Network phases &amp; connection pool (semi-automatic)<a class="headerlink" href="#network-phases-connection-pool-semi-automatic" title="Permanent link">&para;</a></h2>
+<p>Phase timings (<code>dns</code>, <code>pool_wait</code>, <code>connect</code>, <code>ttfb</code>, <code>body_read</code>) and pool
+stats come from aiohttp's <code>TraceConfig</code> and connector. Because the session is
+injected, the library supplies the <code>TraceConfig</code>; you wire it in when
+constructing the session:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="kn">from</span> <span class="nn">aiohttp</span> <span class="kn">import</span> <span class="n">ClientSession</span><span class="p">,</span> <span class="n">TCPConnector</span>
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="kn">from</span> <span class="nn">asyncly.client.metrics.sinks.prometheus</span> <span class="kn">import</span> <span class="p">(</span>
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>    <span class="n">PrometheusSink</span><span class="p">,</span>
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>    <span class="n">PrometheusPoolCollector</span><span class="p">,</span>
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="p">)</span>
+<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a><span class="kn">from</span> <span class="nn">asyncly.client.metrics.trace_config</span> <span class="kn">import</span> <span class="n">build_trace_config</span>
+<a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a>
+<a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a><span class="n">sink</span> <span class="o">=</span> <span class="n">PrometheusSink</span><span class="p">()</span>
+<a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a><span class="n">connector</span> <span class="o">=</span> <span class="n">TCPConnector</span><span class="p">(</span><span class="n">limit</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+<a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a><span class="n">session</span> <span class="o">=</span> <span class="n">ClientSession</span><span class="p">(</span>
+<a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a>    <span class="n">connector</span><span class="o">=</span><span class="n">connector</span><span class="p">,</span>
+<a id="__codelineno-6-12" name="__codelineno-6-12" href="#__codelineno-6-12"></a>    <span class="n">trace_configs</span><span class="o">=</span><span class="p">[</span><span class="n">build_trace_config</span><span class="p">(</span><span class="n">sink</span><span class="p">)],</span>
+<a id="__codelineno-6-13" name="__codelineno-6-13" href="#__codelineno-6-13"></a><span class="p">)</span>
+<a id="__codelineno-6-14" name="__codelineno-6-14" href="#__codelineno-6-14"></a>
+<a id="__codelineno-6-15" name="__codelineno-6-15" href="#__codelineno-6-15"></a><span class="n">pool</span> <span class="o">=</span> <span class="n">PrometheusPoolCollector</span><span class="p">(</span><span class="n">upstream</span><span class="o">=</span><span class="s2">&quot;bybit&quot;</span><span class="p">)</span>
+<a id="__codelineno-6-16" name="__codelineno-6-16" href="#__codelineno-6-16"></a><span class="n">pool</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">connector</span><span class="p">)</span>  <span class="c1"># registers with the default registry lazily via collect()</span>
+<a id="__codelineno-6-17" name="__codelineno-6-17" href="#__codelineno-6-17"></a>
+<a id="__codelineno-6-18" name="__codelineno-6-18" href="#__codelineno-6-18"></a><span class="n">client</span> <span class="o">=</span> <span class="n">CatfactClient</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">session</span><span class="p">,</span> <span class="s2">&quot;bybit&quot;</span><span class="p">)</span>
+<a id="__codelineno-6-19" name="__codelineno-6-19" href="#__codelineno-6-19"></a><span class="n">client</span><span class="o">.</span><span class="n">enable_metrics</span><span class="p">(</span><span class="n">sink</span><span class="p">)</span>
+</code></pre></div>
+<p>Per-request labels (<code>client</code>, <code>operation</code>) flow through aiohttp's
+<code>trace_request_ctx</code>, which the client sets automatically when the sink implements
+<code>observe_phase</code>. Reused connections skip <code>dns</code>/<code>connect</code> (no zero samples). Pool
+stats are <strong>connector-scoped</strong> — a connector shared by several clients cannot
+attribute connections to one of them.</p>
 <h2 id="route-labels">Route labels<a class="headerlink" href="#route-labels" title="Permanent link">&para;</a></h2>
-<p>To avoid high-cardinality metrics, request paths are normalized into a route
-label by <a class="autorefs autorefs-internal" title="            asyncly.client.metrics.route_resolver.default_route_resolver" href="../../reference/metrics/#asyncly.client.metrics.route_resolver.default_route_resolver"><code>default_route_resolver</code></a>,
+<p>Request paths are normalized into a route label by
+<a class="autorefs autorefs-internal" title="            asyncly.client.metrics.route_resolver.default_route_resolver" href="../../reference/metrics/#asyncly.client.metrics.route_resolver.default_route_resolver"><code>default_route_resolver</code></a>,
 which replaces numeric and UUID path segments with <code>:id</code> (so <code>/cats/42</code> becomes
-<code>/cats/:id</code>). Pass your own <code>route_resolver</code> to <code>enable_metrics</code> /
-<code>instrument</code> to customize this.</p>
+<code>/cats/:id</code>). Pass your own <code>route_resolver</code> to <code>enable_metrics</code> / <code>instrument</code>
+to customize this.</p>
 <h2 id="custom-sinks">Custom sinks<a class="headerlink" href="#custom-sinks" title="Permanent link">&para;</a></h2>
 <p>Any object implementing the
-<a class="autorefs autorefs-internal" title="            asyncly.client.metrics.sinks.base.MetricsSink" href="../../reference/metrics/#asyncly.client.metrics.sinks.base.MetricsSink"><code>MetricsSink</code></a> protocol works:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="k">class</span> <span class="nc">LoggingSink</span><span class="p">:</span>
-<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>    <span class="k">def</span> <span class="nf">observe_request</span><span class="p">(</span>
-<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>        <span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">client</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">route</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">duration_seconds</span><span class="p">,</span> <span class="n">error_type</span><span class="o">=</span><span class="kc">None</span>
-<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">client</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">method</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">route</span><span class="si">}</span><span class="s2"> -&gt; </span><span class="si">{</span><span class="n">status</span><span class="si">}</span><span class="s2"> in </span><span class="si">{</span><span class="n">duration_seconds</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">s&quot;</span><span class="p">)</span>
+<a class="autorefs autorefs-internal" title="            asyncly.client.metrics.sinks.base.MetricsSink" href="../../reference/metrics/#asyncly.client.metrics.sinks.base.MetricsSink"><code>MetricsSink</code></a> protocol works.
+Only <code>observe_request</code> is required; <code>on_request_start</code> / <code>on_request_end</code>
+(in-flight) and <code>observe_phase</code> (phases) are optional and feature-detected when
+the sink is enabled.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="k">class</span> <span class="nc">LoggingSink</span><span class="p">:</span>
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>    <span class="k">def</span> <span class="nf">observe_request</span><span class="p">(</span>
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>        <span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">client</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">route</span><span class="p">,</span> <span class="n">operation</span><span class="p">,</span>
+<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>        <span class="n">status</span><span class="p">,</span> <span class="n">outcome</span><span class="p">,</span> <span class="n">duration_seconds</span><span class="p">,</span> <span class="n">error_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a>        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">client</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">operation</span><span class="si">}</span><span class="s2"> -&gt; </span><span class="si">{</span><span class="n">status</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">outcome</span><span class="si">}</span><span class="s2">) in </span><span class="si">{</span><span class="n">duration_seconds</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">s&quot;</span><span class="p">)</span>
 </code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <code>observe_request</code> signature gained keyword-only <code>operation</code> and
+<code>outcome</code>. Sinks written against the older signature must add them.</p>
+</div>
 
 
 
