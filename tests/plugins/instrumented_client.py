@@ -83,6 +83,7 @@ class InstrumetedCatfactClient(InstrumentableHttpClient):
             url=self._url / "fact/json",
             handlers=self.PYDANTIC_SCHEMA_HANDLERS,
             timeout=timeout,
+            operation="get_pydantic_cat_fact",
         )
 
     async def fetch_json_msgspec_cat_fact(

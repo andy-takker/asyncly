@@ -51,7 +51,7 @@ See [Testing strategies](why/testing-strategies.md) for the full comparison.
 - **[Proxy testing](guide/proxy-testing.md)** — a forwarding mock proxy with
   `Proxy-Authorization` validation.
 - **TLS**, **msgpack/TOML/YAML** responses, and **[metrics](guide/instrumentation.md)**
-  (Prometheus, OpenTelemetry).
+  (Prometheus / OpenTelemetry) — requests, in-flight, network phases, and pool stats.
 - A **[pytest plugin](guide/pytest-plugin.md)** with ready-made fixtures.
 
 ## Get started

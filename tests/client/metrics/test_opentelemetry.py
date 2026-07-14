@@ -20,7 +20,9 @@ async def test_otel_success_handled_request_requests_counter(
         if attrs.get("client") == "catfact"
         and attrs.get("method") == "GET"
         and attrs.get("route") == "/fact/json"
+        and attrs.get("operation") == "get_pydantic_cat_fact"
         and attrs.get("status") == "200"
+        and attrs.get("outcome") == "response"
     ]
     assert matches
 
@@ -39,11 +41,25 @@ async def test_otel_success_handled_request_hist(
         if attrs.get("client") == "catfact"
         and attrs.get("method") == "GET"
         and attrs.get("route") == "/fact/json"
-        and attrs.get("status") == "200"
+        and attrs.get("outcome") == "response"
+        and "status" not in attrs
         and h["count"] is not None
         and h["sum"] is not None
     ]
     assert matches
+
+
+async def test_otel_in_flight_counter(
+    instrumented_client_with_opentelemetry: InstrumetedCatfactClient,
+    otel_reader: InMemoryMetricReader,
+) -> None:
+    await instrumented_client_with_opentelemetry.fetch_pydantic_cat_fact()
+
+    points = collect_points(otel_reader)
+    in_flight = points.get("http_client_in_flight", [])
+    # up-down counter nets to zero once the request completes
+    assert in_flight
+    assert all(v == 0 for (_attrs, v) in in_flight)
 
 
 async def test_otel_error_handled(
@@ -76,6 +92,6 @@ async def test_otel_error_handled(
         if attrs.get("client") == "catfact"
         and attrs.get("method") == "GET"
         and attrs.get("route") == "/fact/json"
-        and attrs.get("error_type") == "ValidationError"
+        and attrs.get("error_type") == "invalid_response"
     ]
     assert matches

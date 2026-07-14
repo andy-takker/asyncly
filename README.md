@@ -11,6 +11,8 @@ asyncly gives you two pieces that fit together:
 
 - **`BaseHttpClient`** — a thin, typed base class for HTTP clients with per-status
   response handlers, flexible timeouts, and first-class proxy support.
+  `InstrumentableHttpClient` adds pluggable metrics (Prometheus / OpenTelemetry):
+  requests, in-flight, network phases, and connection-pool stats.
 - **`srvmocker`** — spin up a *real* aiohttp test server (not a transport patch)
   to simulate upstreams in tests, assert what your client sent, and even route
   through a mock proxy.

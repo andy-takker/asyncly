@@ -7,6 +7,50 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **In-flight requests metric**: `http_client_in_flight` gauge (Prometheus, with
+  `multiprocess_mode="livesum"`) / up-down counter (OpenTelemetry), driven by new
+  optional `on_request_start` / `on_request_end` hooks on `MetricsSink`. Existing
+  sinks that don't implement these hooks are unaffected — the client
+  feature-detects them once, when the sink is enabled.
+- **`operation` label**: `_make_req` accepts an optional keyword-only
+  `operation=` so endpoint methods can emit a stable logical-operation label
+  (e.g. `operation="get_wallet_balance"`). Falls back to the resolved route.
+- **Normalized `outcome` / `error_type`** via `asyncly.client.metrics.taxonomy`:
+  transport failures map to a fixed vocabulary (`timeout`, `network_error`,
+  `cancelled`, …) instead of raw exception class names. A failure *after* a
+  response arrived (deserialization/validation) is reported as
+  `outcome="response"`, `error_type="invalid_response"` with the real status.
+- `BaseMetricsSink` convenience base providing no-op lifecycle hooks.
+- **Network-phase metrics** via `build_trace_config(sink)`: an aiohttp
+  `TraceConfig` the caller attaches to their `ClientSession`, emitting
+  `http_client_phase_duration_seconds{operation, phase}` for `dns`, `pool_wait`,
+  `connect`, `ttfb`, and `body_read`. Reused connections skip dns/connect (no
+  zero samples). Driven by a new optional `observe_phase` sink hook; the client
+  wires per-request labels through aiohttp's `trace_request_ctx` automatically.
+- **Connection-pool metrics**: `PrometheusPoolCollector(upstream=...)` exposes
+  `http_client_pool_connections{upstream, state}` (`active`/`idle`) from a bound
+  `TCPConnector`. Reads private aiohttp internals defensively (degrades to no
+  output if they change).
+- **Lazy metrics exports** from `asyncly.client.metrics`
+  (`InstrumentableHttpClient`, `MetricsSink`, `NoopSink`, `build_trace_config`,
+  and — lazily, behind extras — `PrometheusSink`, `PrometheusPoolCollector`,
+  `OpenTelemetrySink`).
+
+### Changed (breaking)
+- **Default Prometheus metric names renamed** `asyncly_client_*` →
+  `http_client_*` (now consistent with the OpenTelemetry sink and the
+  `http_client_*` convention). Dashboards/alerts referencing the old names must
+  update. To keep the old names, construct `PrometheusSink(namespace="asyncly")`.
+- **`status` label removed from the duration histogram** (it multiplied the
+  time-series count by the bucket count). The histogram now carries a compact
+  `outcome="response|error"`; the full `status` and 4-way `outcome` remain on the
+  `*_requests_total` counter.
+- **`MetricsSink.observe_request` signature** gained keyword-only `operation` and
+  `outcome`. Sinks pinned to the old signature must add these parameters.
+- Cancelled requests are now correctly classified (`outcome="cancelled"`); the
+  previous `except Exception` never caught `asyncio.CancelledError`.
+
 ## [0.7.1] - 2026-06-10
 
 No functional changes to the library — documentation and packaging only.
