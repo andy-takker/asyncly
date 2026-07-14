@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.8.0] - 2026-07-14
+
 ### Added
 - **In-flight requests metric**: `http_client_in_flight` gauge (Prometheus, with
   `multiprocess_mode="livesum"`) / up-down counter (OpenTelemetry), driven by new
@@ -123,7 +125,8 @@ No functional changes to the library — documentation and packaging only.
 ### Fixed
 - `SequenceResponse([])` now raises `ValueError` eagerly instead of failing on first use.
 
-[Unreleased]: https://github.com/andy-takker/asyncly/compare/0.7.1...HEAD
+[Unreleased]: https://github.com/andy-takker/asyncly/compare/0.8.0...HEAD
+[0.8.0]: https://github.com/andy-takker/asyncly/compare/0.7.1...0.8.0
 [0.7.1]: https://github.com/andy-takker/asyncly/compare/0.7.0...0.7.1
 [0.7.0]: https://github.com/andy-takker/asyncly/compare/0.6.2...0.7.0
 [0.6.2]: https://github.com/andy-takker/asyncly/compare/0.6.1...0.6.2
