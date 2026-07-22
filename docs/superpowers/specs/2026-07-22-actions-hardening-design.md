@@ -199,7 +199,8 @@ Those same files are then:
    environment;
 4. signed with Sigstore;
 5. attached, with signature bundles, to a GitHub Release whose body is extracted
-   from the matching changelog section.
+   from the matching changelog section;
+6. followed by an explicit versioned-documentation workflow dispatch.
 
 The publish and GitHub Release jobs remain separate. If a retry sees the version
 on PyPI, it compares the published filenames and SHA-256 digests. Matching files
@@ -213,8 +214,8 @@ they need:
 
 - ordinary CI: `contents: read`;
 - changelog-fragment inspection: `contents: read` and `pull-requests: read`;
-- release preparation: `contents: write`, `pull-requests: write`, and
-  `actions: write`;
+- release preparation: `contents: write`, `pull-requests: write`,
+  `issues: write`, and `actions: write`;
 - PyPI publishing: `contents: read` and `id-token: write`;
 - provenance: `contents: read`, `id-token: write`, and `attestations: write`;
 - Sigstore: `contents: read` and `id-token: write`;
@@ -235,8 +236,10 @@ tests.
 Mike, the `gh-pages` branch, `dev`, and version aliases remain unchanged. The docs
 workflow receives the same action pinning, setup-uv, locked install, least-
 privilege permissions, concurrency, and timeout treatment as the other
-workflows. The stale manual default version is removed; a manual deployment
-requires an explicit version input.
+workflows. `master` still deploys `dev`; a successful package release explicitly
+dispatches the version/`latest` deployment so invalid or failed tags cannot
+publish release documentation. The stale manual default version is removed; a
+manual deployment requires an explicit version input.
 
 ## Repository Rulesets
 
@@ -263,8 +266,9 @@ the release workflow.
    ruleset remains disabled.
 2. Run local YAML, security, Python, docs, and package gates.
 3. Open the hardening pull request and observe a successful `CI required` check.
-4. Exercise `Prepare release` in dry-run mode and inspect its patch artifact.
-5. Merge the pull request.
+4. Merge the pull request so the new manually dispatched workflow exists on the
+   default branch.
+5. Exercise `Prepare release` in dry-run mode and inspect its patch artifact.
 6. Update and enable the `master` and tag rulesets through the GitHub API.
 7. Open a small validation pull request and prove that the ruleset blocks merge
    until `CI required` succeeds.
@@ -285,6 +289,6 @@ the release workflow.
   missing changelog section, or tag outside `master` before publication.
 - GitHub and PyPI receive the exact verified artifact pair, with provenance and
   Sigstore evidence.
-- Mike continues to deploy `dev` from `master` and version/`latest` from tags.
+- Mike continues to deploy `dev` from `master`; version/`latest` deployment starts only after the release workflow dispatches the tagged documentation build.
 - The enabled default-branch ruleset requires only the observed `CI required`
   context and prevents unverified merges.
