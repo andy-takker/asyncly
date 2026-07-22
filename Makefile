@@ -23,7 +23,7 @@ test-ci:
 	uv run pytest --cov=asyncly --cov-report=xml
 
 test-minimum-ci:
-	uv pip install --python .venv/bin/python -r requirements/lowest-direct.txt
+	uv pip install --python .venv -r requirements/lowest-direct.txt
 	uv run --no-sync pytest tests
 
 build-ci:
