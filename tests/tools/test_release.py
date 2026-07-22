@@ -60,6 +60,14 @@ def test_update_comparison_links_requires_unique_unreleased_link() -> None:
         update_comparison_links(source, previous="0.9.0", version="0.10.0")
 
 
+def test_update_comparison_links_rejects_duplicate_unreleased_link() -> None:
+    source = """[Unreleased]: https://github.com/andy-takker/asyncly/compare/0.9.0...HEAD
+[Unreleased]: https://github.com/andy-takker/asyncly/compare/0.9.0...HEAD
+"""
+    with pytest.raises(ReleaseError, match="missing unique Unreleased link for 0.9.0"):
+        update_comparison_links(source, previous="0.9.0", version="0.10.0")
+
+
 def test_update_comparison_links_rejects_existing_version_link() -> None:
     source = """[Unreleased]: https://github.com/andy-takker/asyncly/compare/0.9.0...HEAD
 [0.10.0]: https://github.com/andy-takker/asyncly/compare/0.9.0...0.10.0
