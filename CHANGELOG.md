@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.9.0] - 2026-07-22
+
 ### Added
 - **Policy-driven retries** for `BaseHttpClient`: pass an immutable
   `RetryPolicy` to `_make_req(retry=...)` to configure attempt limits,
@@ -150,7 +152,8 @@ No functional changes to the library — documentation and packaging only.
 ### Fixed
 - `SequenceResponse([])` now raises `ValueError` eagerly instead of failing on first use.
 
-[Unreleased]: https://github.com/andy-takker/asyncly/compare/0.8.0...HEAD
+[Unreleased]: https://github.com/andy-takker/asyncly/compare/0.9.0...HEAD
+[0.9.0]: https://github.com/andy-takker/asyncly/compare/0.8.0...0.9.0
 [0.8.0]: https://github.com/andy-takker/asyncly/compare/0.7.1...0.8.0
 [0.7.1]: https://github.com/andy-takker/asyncly/compare/0.7.0...0.7.1
 [0.7.0]: https://github.com/andy-takker/asyncly/compare/0.6.2...0.7.0
