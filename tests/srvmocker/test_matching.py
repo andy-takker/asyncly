@@ -1,4 +1,5 @@
 from collections.abc import AsyncIterator
+from http import HTTPStatus
 
 import pytest
 from aiohttp import ClientSession
@@ -78,7 +79,7 @@ async def test_no_match_no_fallback_returns_404() -> None:
         service.register("specific", JsonResponse({"ok": True}))
         async with ClientSession() as s:
             resp = await s.post(service.url / "items", json={"kind": "z"})
-    assert resp.status == 404
+    assert resp.status == HTTPStatus.NOT_FOUND
 
 
 async def test_match_by_body_bytes() -> None:

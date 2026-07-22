@@ -42,6 +42,12 @@ service.register("fact", JsonResponse({"fact": "Meow.", "length": 5}))
 service.register("fact", JsonResponse({"fact": "Purr.", "length": 5}))
 ```
 
+Registration is strict: `name` must be declared by a `MockRoute`, otherwise
+[`UnknownHandlerError`][asyncly.srvmocker.UnknownHandlerError] is raised. If a
+request selects a declared route before a response is registered, the server
+reports [`MissingResponseError`][asyncly.srvmocker.MissingResponseError] with
+the handler name and the required `service.register(...)` call.
+
 See [Responses & serializers](responses.md) for the full catalog
 (`JsonResponse`, `RawResponse`, `SequenceResponse`, `LatencyResponse`,
 msgpack/TOML/YAML, and more).
@@ -60,11 +66,17 @@ service.assert_called(
 assert service.last_call("create").body == b'{"name": "Whiskers"}'
 ```
 
+Every entry is an immutable
+[`RecordedRequest`][asyncly.srvmocker.RecordedRequest] snapshot. It exposes
+`method`, `url`, `path`, `headers`, `query`, `path_params`, `body`, and
+`handler_name` without retaining a live aiohttp request. `RequestHistory` is a
+deprecated alias kept for the 0.9 migration window.
+
 Available helpers:
 
 | Method | Purpose |
 | --- | --- |
-| `get_calls(name)` | All recorded calls for a handler, as `list[RequestHistory]` |
+| `get_calls(name)` | All recorded calls for a handler, as `list[RecordedRequest]` |
 | `last_call(name)` | The most recent call (raises `AssertionError` if none) |
 | `assert_called(name, *, times=, json=, body=, headers=, query=)` | Assert a matching call happened |
 | `assert_not_called(name)` | Assert the handler received no requests |

@@ -35,7 +35,7 @@ real network stack than the one below it.
 | `respx` | Patches httpx transport | No | httpx | Same, for httpx |
 | `vcrpy` | Record / replay cassettes | Yes (on first record) | aiohttp, httpx, requests | When the real API is available |
 | `pytest-httpserver` | Real WSGI server (werkzeug, thread) | Yes | Any | Sync / mixed stacks with rich expectations |
-| `asyncly.srvmocker` | Real aiohttp test server, same loop | Yes | Any (best with aiohttp) | Async aiohttp apps needing realistic latencies / WS / SSE |
+| `asyncly.srvmocker` | Real aiohttp test server, same loop | Yes | Any (best with aiohttp) | Async aiohttp apps needing realistic latency and transport faults |
 
 ## When to reach for asyncly
 

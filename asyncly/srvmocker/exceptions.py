@@ -10,6 +10,10 @@ class UnknownHandlerError(SrvMockerError):
     """Raised when register() is called with a name not declared in any MockRoute."""
 
 
+class MissingResponseError(SrvMockerError):
+    """Raised when a selected route has no registered response."""
+
+
 class NoMatchError(SrvMockerError):
     """Reserved for internal use; the dispatcher currently raises
     aiohttp.web.HTTPNotFound which clients see as a 404 response."""

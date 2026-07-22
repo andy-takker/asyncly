@@ -1,4 +1,5 @@
 from datetime import datetime
+from http import HTTPStatus
 from uuid import uuid4
 
 from prometheus_client import CollectorRegistry, generate_latest
@@ -74,7 +75,10 @@ async def test_prom_check_error_metrics(
     prometheus_registry: CollectorRegistry,
     catfact_service: MockService,
 ) -> None:
-    catfact_service.register("json_catfact", ContentResponse(status=500))
+    catfact_service.register(
+        "json_catfact",
+        ContentResponse(status=HTTPStatus.INTERNAL_SERVER_ERROR),
+    )
     try:
         await instrumented_client_with_prometheus.fetch_pydantic_cat_fact()
     except Exception:  # noqa: BLE001

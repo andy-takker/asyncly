@@ -2,7 +2,7 @@ from asyncio import sleep
 from dataclasses import dataclass
 
 from aiohttp.web_request import Request
-from aiohttp.web_response import Response
+from aiohttp.web_response import StreamResponse
 
 from asyncly.srvmocker.responses.base import BaseMockResponse
 
@@ -21,6 +21,6 @@ class LatencyResponse(BaseMockResponse):
     wrapped: BaseMockResponse
     latency: TimeoutType
 
-    async def response(self, request: Request) -> Response:
+    async def response(self, request: Request) -> StreamResponse:
         await sleep(self.latency)
         return await self.wrapped.response(request)

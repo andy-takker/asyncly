@@ -61,8 +61,8 @@ async with start_proxy(auth=BasicAuth("user", "secret")) as proxy:
 `MockProxyService` mirrors [`MockService`](mock-server.md#asserting-what-your-client-sent)'s
 helpers, reading from the history of forwarded requests:
 
-- `get_calls() -> list[RequestHistory]`
-- `last_call() -> RequestHistory`
+- `get_calls() -> list[RecordedRequest]`
+- `last_call() -> RecordedRequest`
 - `assert_called(*, times=, target=, method=, json=, body=, headers=, query=)`
 - `assert_not_called()`
 

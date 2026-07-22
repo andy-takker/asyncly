@@ -1,3 +1,5 @@
+from http import HTTPStatus
+
 from opentelemetry.sdk.metrics.export import InMemoryMetricReader
 
 from asyncly.srvmocker.models import MockService
@@ -67,7 +69,10 @@ async def test_otel_error_handled(
     otel_reader: InMemoryMetricReader,
     catfact_service: MockService,
 ) -> None:
-    catfact_service.register("json_catfact", ContentResponse(status=500))
+    catfact_service.register(
+        "json_catfact",
+        ContentResponse(status=HTTPStatus.INTERNAL_SERVER_ERROR),
+    )
     try:
         await instrumented_client_with_opentelemetry.fetch_pydantic_cat_fact()
     except Exception:  # noqa: BLE001

@@ -4,7 +4,7 @@ Auto-generated reference for asyncly's public API, organized by subsystem.
 
 | Section | Covers |
 | --- | --- |
-| [Client](client.md) | `BaseHttpClient`, `InstrumentableHttpClient`, timeouts, typing |
+| [Client](client.md) | `BaseHttpClient`, retries, instrumentation, timeouts, typing |
 | [Handlers](handlers.md) | `parse_json`, `parse_model`, `parse_struct`, exceptions |
 | [Metrics](metrics.md) | Sinks (Noop / Prometheus / OpenTelemetry), pool collector, `build_trace_config`, taxonomy, route resolver |
 | [Mock server](srvmocker.md) | `start_service`, `start_proxy`, services, routes, matching |

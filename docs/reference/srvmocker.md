@@ -17,7 +17,10 @@ See the [Mock server guide](../guide/mock-server.md) and
 
 ::: asyncly.srvmocker.models.MockRoute
 
-::: asyncly.srvmocker.models.RequestHistory
+::: asyncly.srvmocker.models.RecordedRequest
+
+`RequestHistory` is a deprecated alias of `RecordedRequest` kept for the 0.9
+migration window.
 
 ## Matching
 
@@ -30,3 +33,5 @@ See the [Mock server guide](../guide/mock-server.md) and
 ::: asyncly.srvmocker.exceptions.SequenceExhausted
 
 ::: asyncly.srvmocker.exceptions.UnknownHandlerError
+
+::: asyncly.srvmocker.exceptions.MissingResponseError

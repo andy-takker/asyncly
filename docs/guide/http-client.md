@@ -77,6 +77,59 @@ await client.fetch_fact(timeout=timedelta(seconds=2)) # timedelta
 The default is aiohttp's `DEFAULT_TIMEOUT`, re-exported from the top-level
 `asyncly` package.
 
+## Retries
+
+Retries are opt-in per endpoint. Pass an immutable
+[`RetryPolicy`][asyncly.RetryPolicy] to `_make_req`:
+
+```python
+from asyncly import RetryPolicy
+
+RETRY_TRANSIENT = RetryPolicy(max_attempts=3)
+
+
+async def fetch_fact(self) -> CatFact:
+    return await self._make_req(
+        method=hdrs.METH_GET,
+        url=self._url / "fact",
+        handlers=self.FACT_HANDLERS,
+        retry=RETRY_TRANSIENT,
+    )
+```
+
+The defaults retry transient statuses (`408`, `425`, `429`, `500`, `502`,
+`503`, `504`), connection/payload failures, and timeouts. Only idempotent
+methods are eligible. `Retry-After` supports both delta-seconds and HTTP dates;
+otherwise a capped exponential strategy with full jitter is used.
+
+Each attempt gets the full per-request timeout. Cancellation is never retried,
+and a streaming/file-like `data=` body is treated as non-replayable. JSON,
+bytes/strings, and ordinary form mappings can be sent again safely. The last
+HTTP response still goes through the configured status handler, while the last
+transport exception is raised unchanged.
+
+Use a callback when the application needs logical retry telemetry:
+
+```python
+def observe_retry(event):
+    logger.info(
+        "retry %s attempt=%s delay=%s reason=%s",
+        event.kind,
+        event.context.attempt,
+        event.delay,
+        event.reason,
+    )
+
+await self._make_req(
+    ...,
+    retry=RetryPolicy(backoff=lambda context: 0.0),
+    retry_observer=observe_retry,
+)
+```
+
+The observer receives `scheduled`, `suppressed`, and `exhausted` events. A
+custom backoff callable makes tests deterministic and avoids real delays.
+
 ## Proxy support
 
 `BaseHttpClient` accepts `proxy` and `proxy_auth`, set once on the client or

@@ -1,11 +1,11 @@
 import json as _json
 from typing import Any
 
-from asyncly.srvmocker.models import RequestHistory
+from asyncly.srvmocker.models import RecordedRequest
 
 
 def call_matches(
-    call: RequestHistory,
+    call: RecordedRequest,
     *,
     json: Any = None,
     body: bytes | None = None,
@@ -23,11 +23,11 @@ def call_matches(
     return True
 
 
-def _matches_body(call: RequestHistory, body: bytes | None) -> bool:
+def _matches_body(call: RecordedRequest, body: bytes | None) -> bool:
     return body is None or call.body == body
 
 
-def _matches_json(call: RequestHistory, json: Any) -> bool:
+def _matches_json(call: RecordedRequest, json: Any) -> bool:
     if json is None:
         return True
     try:
@@ -37,19 +37,19 @@ def _matches_json(call: RequestHistory, json: Any) -> bool:
     return parsed == json
 
 
-def _matches_headers(call: RequestHistory, headers: dict[str, str] | None) -> bool:
+def _matches_headers(call: RecordedRequest, headers: dict[str, str] | None) -> bool:
     if headers is None:
         return True
     for k, v in headers.items():
-        if call.request.headers.get(k) != v:
+        if call.headers.get(k) != v:
             return False
     return True
 
 
-def _matches_query(call: RequestHistory, query: dict[str, str] | None) -> bool:
+def _matches_query(call: RecordedRequest, query: dict[str, str] | None) -> bool:
     if query is None:
         return True
     for k, v in query.items():
-        if call.request.query.get(k) != v:
+        if call.query.get(k) != v:
             return False
     return True

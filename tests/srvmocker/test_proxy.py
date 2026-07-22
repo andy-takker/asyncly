@@ -227,7 +227,7 @@ async def test_proxy_assert_called_mismatch() -> None:
             async with ClientSession() as s:
                 await s.get(target.url / "x", proxy=proxy.url)
 
-            assert proxy.last_call().request.method == "GET"
+            assert proxy.last_call().method == "GET"
             with pytest.raises(AssertionError):
                 proxy.assert_called(target="http://example.invalid/x")
             with pytest.raises(AssertionError):

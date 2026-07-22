@@ -16,6 +16,29 @@ RouteResolver = Callable[[URL], str]
 if sys.version_info >= (3, 11):
     from http import HTTPMethod
 
-    MethodType = HTTPMethod | Literal["GET", "POST", "PUT", "DELETE", "PATCH", "HEAD"]
+    MethodType = (
+        HTTPMethod
+        | Literal[
+            "GET",
+            "POST",
+            "PUT",
+            "DELETE",
+            "PATCH",
+            "HEAD",
+            "OPTIONS",
+            "TRACE",
+            "CONNECT",
+        ]
+    )
 else:
-    MethodType = Literal["GET", "POST", "PUT", "DELETE", "PATCH", "HEAD"]
+    MethodType = Literal[
+        "GET",
+        "POST",
+        "PUT",
+        "DELETE",
+        "PATCH",
+        "HEAD",
+        "OPTIONS",
+        "TRACE",
+        "CONNECT",
+    ]

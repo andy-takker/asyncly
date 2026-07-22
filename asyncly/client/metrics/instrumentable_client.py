@@ -5,16 +5,29 @@ from types import TracebackType
 from typing import Any
 
 from aiohttp import BasicAuth, ClientResponse, ClientSession
-from aiohttp.client import DEFAULT_TIMEOUT
 from yarl import URL
 
-from asyncly.client.base import BaseHttpClient, MethodType
+from asyncly.client.base import (
+    BaseHttpClient,
+    _unwrap_observable_transport_error,
+)
 from asyncly.client.metrics.route_resolver import default_route_resolver
 from asyncly.client.metrics.sinks.base import MetricsSink
 from asyncly.client.metrics.sinks.noop import NoopSink
 from asyncly.client.metrics.taxonomy import classify_exception
+from asyncly.client.retry import (
+    RetryContext,
+    RetryObserver,
+    RetryPolicy,
+    _RetryableResponse,
+)
 from asyncly.client.timeout import TimeoutType
-from asyncly.client.typing import ResponseHandler, ResponseHandlersType, RouteResolver
+from asyncly.client.typing import (
+    MethodType,
+    ResponseHandler,
+    ResponseHandlersType,
+    RouteResolver,
+)
 
 
 class InstrumentableHttpClient(BaseHttpClient):
@@ -108,27 +121,32 @@ class InstrumentableHttpClient(BaseHttpClient):
 
         return _Ctx()
 
-    async def _make_req(
+    async def _request_once(
         self,
-        /,
+        *,
         method: MethodType,
         url: URL,
         handlers: ResponseHandlersType,
-        timeout: TimeoutType = DEFAULT_TIMEOUT,
-        *,
+        timeout: TimeoutType,
         operation: str | None = None,
+        retry: RetryPolicy | None = None,
+        retry_context: RetryContext | None = None,
+        retry_observer: RetryObserver | None = None,
         **kwargs: Any,
     ) -> Any:
-        # Быстрый путь: метрики Noop → почти нулевая накладная.
-        # ``operation`` НЕ форвардим в super(): базовый _make_req сплатит kwargs
-        # в session.request, а aiohttp отвергнет неизвестный аргумент.
+        """Instrument one physical attempt made by the base retry loop."""
+
         sink = self._metrics_sink
         if isinstance(sink, NoopSink):
-            return await super()._make_req(
+            return await super()._request_once(
                 method=method,
                 url=url,
                 handlers=handlers,
                 timeout=timeout,
+                operation=operation,
+                retry=retry,
+                retry_context=retry_context,
+                retry_observer=retry_observer,
                 **kwargs,
             )
 
@@ -159,18 +177,25 @@ class InstrumentableHttpClient(BaseHttpClient):
                 client=self._client_name, method=method, route=route_label, operation=op
             )
         try:
-            result = await super()._make_req(
+            result = await super()._request_once(
                 method=method,
                 url=url,
                 handlers=wrapped_handlers,
                 timeout=timeout,
+                operation=operation,
+                retry=retry,
+                retry_context=retry_context,
+                retry_observer=retry_observer,
                 **kwargs,
             )
-            status_for_metrics = _success_status(chosen_status["value"])
+            if isinstance(result, _RetryableResponse):
+                status_for_metrics = _success_status(result.context.response_status)
+            else:
+                status_for_metrics = _success_status(chosen_status["value"])
             return result
         except BaseException as e:
             status_for_metrics, outcome, error_type = _classify_failure(
-                e, chosen_status["value"]
+                _unwrap_observable_transport_error(e), chosen_status["value"]
             )
             raise
         finally:

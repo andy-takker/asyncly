@@ -28,7 +28,7 @@ from multidict import CIMultiDict, CIMultiDictProxy
 from yarl import URL
 
 from asyncly.srvmocker.assertions import call_matches
-from asyncly.srvmocker.models import RequestHistory
+from asyncly.srvmocker.models import RecordedRequest
 
 # Hop-by-hop headers must not be forwarded end-to-end (RFC 9110 section 7.6.1),
 # plus the proxy-specific ones.
@@ -62,15 +62,15 @@ class MockProxyService:
     """
 
     url: URL
-    history: list[RequestHistory] = field(default_factory=list)
+    history: list[RecordedRequest] = field(default_factory=list)
 
     def set_url(self, url: URL) -> None:
         object.__setattr__(self, "url", url)
 
-    def get_calls(self) -> list[RequestHistory]:
+    def get_calls(self) -> list[RecordedRequest]:
         return list(self.history)
 
-    def last_call(self) -> RequestHistory:
+    def last_call(self) -> RecordedRequest:
         if not self.history:
             raise AssertionError("no requests recorded by proxy")
         return self.history[-1]
@@ -112,9 +112,9 @@ class MockProxyService:
         if not calls:
             raise AssertionError("proxy: expected at least one call, got 0")
         for call in calls:
-            if target is not None and str(call.request.url) != str(URL(target)):
+            if target is not None and str(call.url) != str(URL(target)):
                 continue
-            if method is not None and call.request.method != method:
+            if method is not None and call.method != method:
                 continue
             if call_matches(call, json=json, body=body, headers=headers, query=query):
                 return
@@ -167,7 +167,18 @@ async def start_proxy(
 
     async def _handler(request: BaseRequest) -> Response:
         body = await request.read()
-        proxy.history.append(RequestHistory(request=request, body=body))
+        proxy.history.append(
+            RecordedRequest(
+                method=request.method,
+                url=request.url,
+                path=request.path,
+                headers=request.headers,
+                query=request.query,
+                path_params={},
+                body=body,
+                handler_name="proxy",
+            )
+        )
 
         if expected_auth is not None:
             provided = request.headers.get("Proxy-Authorization")

@@ -1,7 +1,11 @@
+from http import HTTPStatus
 from typing import Any
 
 import pytest
+from aiohttp import ClientResponse
 
+from asyncly import RetryPolicy
+from asyncly.srvmocker import DisconnectResponse, RawResponse, SequenceResponse
 from asyncly.srvmocker.models import MockService
 from asyncly.srvmocker.responses.content import ContentResponse
 from tests.plugins.instrumented_client import InstrumetedCatfactClient
@@ -71,7 +75,7 @@ async def test_sink_without_lifecycle_hooks_still_receives_observe_request(
         await client.fetch_pydantic_cat_fact()
 
     assert len(sink.calls) == 1
-    assert sink.calls[0]["status"] == 200
+    assert sink.calls[0]["status"] == HTTPStatus.OK
     assert sink.calls[0]["outcome"] == "response"
     assert sink.calls[0]["operation"] == "get_pydantic_cat_fact"
 
@@ -105,7 +109,10 @@ async def test_in_flight_decremented_on_error(
     instrumented_client: InstrumetedCatfactClient,
     catfact_service: MockService,
 ) -> None:
-    catfact_service.register("json_catfact", ContentResponse(status=500))
+    catfact_service.register(
+        "json_catfact",
+        ContentResponse(status=HTTPStatus.INTERNAL_SERVER_ERROR),
+    )
     sink = SpySink()
     with instrumented_client.instrument(sink) as client:
         try:
@@ -119,4 +126,83 @@ async def test_in_flight_decremented_on_error(
     assert sink.in_flight == 0
     assert sink.calls[0]["outcome"] == "response"
     assert sink.calls[0]["error_type"] == "invalid_response"
-    assert sink.calls[0]["status"] == 500
+    assert sink.calls[0]["status"] == HTTPStatus.INTERNAL_SERVER_ERROR
+
+
+async def test_each_retry_attempt_is_observed_as_a_physical_request(
+    instrumented_client: InstrumetedCatfactClient,
+    catfact_service: MockService,
+) -> None:
+    async def read_body(response: ClientResponse) -> bytes:
+        return await response.read()
+
+    catfact_service.register(
+        "json_catfact",
+        SequenceResponse(
+            [
+                RawResponse(status=HTTPStatus.SERVICE_UNAVAILABLE),
+                RawResponse(body=b"ok", status=HTTPStatus.OK),
+            ]
+        ),
+    )
+    sink = SpySink()
+
+    with instrumented_client.instrument(sink) as client:
+        result = await client._make_req(
+            method="GET",
+            url=client.url / "fact/json",
+            handlers={"*": read_body},
+            retry=RetryPolicy(backoff=lambda context: 0.0),
+            operation="retrying_fact",
+        )
+
+    assert result == b"ok"
+    assert [call["status"] for call in sink.calls] == [
+        HTTPStatus.SERVICE_UNAVAILABLE,
+        HTTPStatus.OK,
+    ]
+    assert [call["operation"] for call in sink.calls] == [
+        "retrying_fact",
+        "retrying_fact",
+    ]
+    assert sink.starts == 2
+    assert sink.ends == 2
+
+
+async def test_retry_transport_failure_keeps_specific_error_type(
+    instrumented_client: InstrumetedCatfactClient,
+    catfact_service: MockService,
+) -> None:
+    async def read_body(response: ClientResponse) -> bytes:
+        return await response.read()
+
+    catfact_service.register(
+        "json_catfact",
+        SequenceResponse(
+            [
+                DisconnectResponse(),
+                RawResponse(body=b"ok", status=HTTPStatus.OK),
+            ]
+        ),
+    )
+    sink = SpySink()
+
+    with instrumented_client.instrument(sink) as client:
+        result = await client._make_req(
+            method="GET",
+            url=client.url / "fact/json",
+            handlers={"*": read_body},
+            retry=RetryPolicy(backoff=lambda context: 0.0),
+            operation="retrying_fact",
+        )
+
+    assert result == b"ok"
+    assert [call["status"] for call in sink.calls] == ["none", HTTPStatus.OK]
+    assert [call["outcome"] for call in sink.calls] == [
+        "network_error",
+        "response",
+    ]
+    assert [call["error_type"] for call in sink.calls] == [
+        "server_disconnected",
+        None,
+    ]

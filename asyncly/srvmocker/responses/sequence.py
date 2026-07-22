@@ -2,7 +2,7 @@ from collections.abc import Iterable
 from typing import Literal
 
 from aiohttp.web_request import Request
-from aiohttp.web_response import Response
+from aiohttp.web_response import StreamResponse
 
 from asyncly.srvmocker.exceptions import SequenceExhausted
 from asyncly.srvmocker.responses.base import BaseMockResponse
@@ -34,7 +34,7 @@ class SequenceResponse(BaseMockResponse):
         self._on_exhausted: OnExhausted = on_exhausted
         self._index = 0
 
-    async def response(self, request: Request) -> Response:
+    async def response(self, request: Request) -> StreamResponse:
         resp = self._pick()
         return await resp.response(request)
 

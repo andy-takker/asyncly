@@ -19,7 +19,9 @@ for _module_name in (
     "asyncly.client.timeout",
     "asyncly.client.handlers.exceptions",
     "asyncly.client.handlers.base",
+    "asyncly.client.retry",
     "asyncly.client.base",
+    "asyncly.client.metrics.instrumentable_client",
     "asyncly",
     "asyncly.pytest_plugin",
 ):

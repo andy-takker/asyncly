@@ -51,6 +51,11 @@ or an unhandled status) is reported as `outcome="response"` with the real status
 and `error_type="invalid_response"` — so 5xx and latency math on the physical
 request stay correct.
 
+Retries do not collapse physical traffic into one sample. Every attempt has its
+own lifecycle and `observe_request` call: for example, `503 -> 200` records two
+requests with statuses `503` and `200`. Logical retry decisions are available
+separately through `_make_req(retry_observer=...)`.
+
 ## `operation` label
 
 `operation` is a stable, low-cardinality logical name. Pass it per endpoint:

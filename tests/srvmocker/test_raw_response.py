@@ -1,4 +1,5 @@
 import json
+from http import HTTPStatus
 
 import pytest
 from aiohttp import ClientSession
@@ -13,7 +14,7 @@ async def test_raw_response_returns_arbitrary_bytes() -> None:
             "raw",
             RawResponse(
                 body=b"{not valid json",
-                status=200,
+                status=HTTPStatus.OK,
                 headers={"Content-Type": "application/json"},
             ),
         )
@@ -31,5 +32,5 @@ async def test_raw_response_default_status_and_empty_body() -> None:
         service.register("raw", RawResponse())
         async with ClientSession() as s:
             resp = await s.get(service.url / "x")
-    assert resp.status == 200
+    assert resp.status == HTTPStatus.OK
     assert await resp.read() == b""

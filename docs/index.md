@@ -13,7 +13,7 @@ asyncly is two small, composable pieces:
 
     `BaseHttpClient` — a thin, typed base class for writing API clients. Map
     status codes to response handlers, parse into Pydantic / msgspec / JSON,
-    set flexible timeouts, and route through a proxy.
+    add policy-driven retries, set flexible timeouts, and route through a proxy.
 
     [:octicons-arrow-right-24: HTTP client guide](guide/http-client.md)
 
@@ -42,6 +42,8 @@ See [Testing strategies](why/testing-strategies.md) for the full comparison.
 
 - **Typed client base** with per-status [response handlers](guide/response-handlers.md)
   (JSON, Pydantic, msgspec).
+- **[Policy-driven retries](guide/http-client.md#retries)** with safe idempotent
+  defaults, `Retry-After`, observable decisions, and per-attempt metrics.
 - **Real mock server** via [`start_service`](guide/mock-server.md) with dynamic,
   per-test responses.
 - **[Request matching](guide/request-matching.md)** — route by JSON body, headers,
@@ -52,6 +54,8 @@ See [Testing strategies](why/testing-strategies.md) for the full comparison.
   `Proxy-Authorization` validation.
 - **TLS**, **msgpack/TOML/YAML** responses, and **[metrics](guide/instrumentation.md)**
   (Prometheus / OpenTelemetry) — requests, in-flight, network phases, and pool stats.
+- **Socket-level fault injection** for disconnects, truncated bodies, latency,
+  and response sequences.
 - A **[pytest plugin](guide/pytest-plugin.md)** with ready-made fixtures.
 
 ## Get started

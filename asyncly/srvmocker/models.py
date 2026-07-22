@@ -1,9 +1,11 @@
-from collections.abc import MutableMapping, MutableSequence
+from collections.abc import Mapping, MutableMapping, MutableSequence
 from dataclasses import dataclass
+from types import MappingProxyType
 
-from aiohttp.web_request import BaseRequest
+from multidict import CIMultiDict, CIMultiDictProxy, MultiDict, MultiDictProxy
 from yarl import URL
 
+from asyncly.srvmocker.exceptions import UnknownHandlerError
 from asyncly.srvmocker.matching import Match
 from asyncly.srvmocker.responses.base import BaseMockResponse
 
@@ -28,17 +30,51 @@ class MockRoute:
     match: Match | None = None
 
 
-@dataclass
-class RequestHistory:
-    """A single recorded request.
+@dataclass(frozen=True)
+class RecordedRequest:
+    """Immutable snapshot of a request received by the mock server.
 
     Attributes:
-        request: The aiohttp request object (headers, query, url, method).
+        method: HTTP method.
+        url: Full request URL, including its query string.
+        path: Request path without the query string.
+        headers: Immutable case-insensitive headers snapshot.
+        query: Immutable query parameters snapshot.
+        path_params: Immutable route path parameters snapshot.
         body: The raw request body bytes.
+        handler_name: Name of the selected route handler.
     """
 
-    request: BaseRequest
+    method: str
+    url: URL
+    path: str
+    headers: Mapping[str, str]
+    query: Mapping[str, str]
+    path_params: Mapping[str, str]
     body: bytes
+    handler_name: str
+
+    def __post_init__(self) -> None:
+        object.__setattr__(
+            self,
+            "headers",
+            CIMultiDictProxy(CIMultiDict(self.headers)),
+        )
+        object.__setattr__(
+            self,
+            "query",
+            MultiDictProxy(MultiDict(self.query)),
+        )
+        object.__setattr__(
+            self,
+            "path_params",
+            MappingProxyType(dict(self.path_params)),
+        )
+        object.__setattr__(self, "body", bytes(self.body))
+
+
+# Deprecated compatibility name for 0.9; use RecordedRequest in new code.
+RequestHistory = RecordedRequest
 
 
 @dataclass(frozen=True)
@@ -50,8 +86,8 @@ class MockService:
     client sent. The ``url`` attribute is the base URL to point a client at.
     """
 
-    history: MutableSequence[RequestHistory]
-    history_map: MutableMapping[str, MutableSequence[RequestHistory]]
+    history: MutableSequence[RecordedRequest]
+    history_map: MutableMapping[str, MutableSequence[RecordedRequest]]
     url: URL
     handlers: MutableMapping[str, BaseMockResponse]
     _handler_names: frozenset[str] = frozenset()
@@ -64,26 +100,21 @@ class MockService:
             resp: The response to return. May be re-registered mid-test to
                 change behavior.
         """
-        if self._handler_names and name not in self._handler_names:
-            import warnings
-
-            warnings.warn(
+        if name not in self._handler_names:
+            raise UnknownHandlerError(
                 f"register() called with unknown handler_name {name!r}; "
-                f"declared handlers: {sorted(self._handler_names)}. "
-                "This will raise UnknownHandlerError in asyncly 0.7.",
-                DeprecationWarning,
-                stacklevel=2,
+                f"declared handlers: {sorted(self._handler_names)}"
             )
         self.handlers[name] = resp
 
     def set_url(self, url: URL) -> None:
         object.__setattr__(self, "url", url)
 
-    def get_calls(self, name: str) -> list[RequestHistory]:
+    def get_calls(self, name: str) -> list[RecordedRequest]:
         """Return all recorded calls for a handler, oldest first."""
         return list(self.history_map.get(name, []))
 
-    def last_call(self, name: str) -> RequestHistory:
+    def last_call(self, name: str) -> RecordedRequest:
         """Return the most recent call for a handler.
 
         Raises:

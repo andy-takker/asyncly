@@ -11,10 +11,15 @@ your own too.
 body:
 
 ```python
+from http import HTTPStatus
+
 from asyncly.srvmocker import JsonResponse
 
 service.register("fact", JsonResponse({"fact": "Meow.", "length": 5}))
-service.register("missing", JsonResponse({"error": "not found"}, status=404))
+service.register(
+    "missing",
+    JsonResponse({"error": "not found"}, status=HTTPStatus.NOT_FOUND),
+)
 ```
 
 ## RawResponse
@@ -24,13 +29,15 @@ arbitrary headers — ideal for testing client behavior on malformed payloads,
 unexpected content types, or empty bodies:
 
 ```python
+from http import HTTPStatus
+
 from asyncly.srvmocker import RawResponse
 
 service.register(
     "broken_json",
     RawResponse(
         body=b'{"truncated":',
-        status=200,
+        status=HTTPStatus.OK,
         headers={"Content-Type": "application/json"},
     ),
 )
@@ -43,14 +50,16 @@ response on each call, in order — useful for testing retries and pagination. T
 `on_exhausted` argument controls what happens after the last response:
 
 ```python
+from http import HTTPStatus
+
 from asyncly.srvmocker import JsonResponse, RawResponse, SequenceResponse
 
 service.register(
     "flaky",
     SequenceResponse(
         [
-            RawResponse(status=503),
-            RawResponse(status=503),
+            RawResponse(status=HTTPStatus.SERVICE_UNAVAILABLE),
+            RawResponse(status=HTTPStatus.SERVICE_UNAVAILABLE),
             JsonResponse({"ok": True}),
         ],
         on_exhausted="last",  # "raise" (default), "cycle", or "last"
@@ -71,8 +80,7 @@ Constructing with an empty list raises `ValueError` eagerly.
 another response and delays it — the tool for testing timeouts:
 
 ```python
-from asyncly.srvmocker import JsonResponse
-from asyncly.srvmocker.responses.timeout import LatencyResponse
+from asyncly.srvmocker import JsonResponse, LatencyResponse
 
 service.register(
     "slow",
@@ -87,6 +95,34 @@ import pytest
 with pytest.raises(asyncio.TimeoutError):
     await client.fetch_fact(timeout=0.1)
 ```
+
+## Transport faults
+
+Use real socket faults to verify retry and cleanup behavior without patching
+aiohttp internals:
+
+```python
+from asyncly.srvmocker import (
+    DisconnectResponse,
+    RawResponse,
+    SequenceResponse,
+    TruncatedResponse,
+)
+
+service.register(
+    "flaky",
+    SequenceResponse([DisconnectResponse(), RawResponse(body=b"ok")]),
+)
+
+service.register(
+    "broken_download",
+    TruncatedResponse(body=b"partial", declared_length=1024),
+)
+```
+
+`DisconnectResponse` closes the connection before headers arrive.
+`TruncatedResponse` sends headers and a partial body, then closes early so the
+client raises `aiohttp.ClientPayloadError` while reading.
 
 ## Other formats
 

@@ -14,6 +14,10 @@ See the [Responses & serializers guide](../guide/responses.md) for usage.
 
 ::: asyncly.srvmocker.responses.timeout.LatencyResponse
 
+::: asyncly.srvmocker.responses.faults.DisconnectResponse
+
+::: asyncly.srvmocker.responses.faults.TruncatedResponse
+
 ::: asyncly.srvmocker.responses.msgpack.MsgpackResponse
 
 ::: asyncly.srvmocker.responses.toml.TomlResponse

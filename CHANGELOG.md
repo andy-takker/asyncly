@@ -7,6 +7,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **Policy-driven retries** for `BaseHttpClient`: pass an immutable
+  `RetryPolicy` to `_make_req(retry=...)` to configure attempt limits,
+  retryable statuses/exceptions, allowed methods, backoff, and `Retry-After`.
+  Safe defaults cover idempotent methods only. Streaming and other
+  non-replayable bodies are never sent twice.
+- Immutable `RetryContext` / `RetryEvent` values and an optional
+  `retry_observer=` callback reporting `scheduled`, `suppressed`, and
+  `exhausted` decisions.
+- `DisconnectResponse` and `TruncatedResponse` socket-level fault primitives;
+  `LatencyResponse` is now exported directly from `asyncly.srvmocker` too.
+- Immutable `RecordedRequest` snapshots in mock-service and proxy history,
+  including method, URL/path, headers, query/path parameters, body, and selected
+  handler. `RequestHistory` remains as a deprecated compatibility alias.
+- `MissingResponseError` replaces the opaque `KeyError` produced when a route
+  is selected without a registered response.
+
+### Changed (breaking)
+- `MockService.register()` now raises `UnknownHandlerError` immediately for a
+  name not declared by any `MockRoute`.
+- Request history no longer retains a live `aiohttp.BaseRequest`; use the
+  immutable fields on `RecordedRequest` (`call.method`, `call.headers`, etc.).
+- Instrumented retrying clients record every physical attempt independently.
+  A logical `503 -> 200` request therefore produces two request observations.
+
 ## [0.8.0] - 2026-07-14
 
 ### Added
