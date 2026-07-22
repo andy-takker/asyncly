@@ -24,13 +24,13 @@ jobs:
           -w /repo
           rhysd/actionlint@sha256:b1934ee5f1c509618f2508e6eb47ee0d3520686341fec936f3b79331f9315667
 
-      - name: Run zizmor
-        uses: zizmorcore/zizmor-action@6599ee8b7a49aef6a770f63d261d214911a7ce02 # v0.6.0
+      - name: Set up Python 3.10
+        uses: ./.github/actions/setup-project
         with:
-          version: "1.27.0"
-          advanced-security: false
-          annotations: true
-          persona: pedantic
+          python-version: "3.10"
+
+      - name: Run zizmor
+        run: uv run zizmor --persona pedantic --format github .
 
   python-quality:
     name: Python quality
