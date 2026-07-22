@@ -64,6 +64,7 @@ dev = [
     "pytest>=8.3.3,<9",
     "pytest-asyncio>=0.24.0,<0.25",
     "pytest-cov>=6.0.0,<7",
+    "towncrier>=25.8.0,<26",
     "types-pyyaml>=6.0.12.20250822",
     "types-toml>=0.10.8.20240310",
     "toml>=0.10.2",
@@ -176,3 +177,49 @@ module = [
     "orjson.*",
 ]
 ignore_missing_imports = true
+
+[tool.towncrier]
+directory = "changes"
+filename = "CHANGELOG.md"
+template = "changes/template.md"
+start_string = "<!-- towncrier release notes start -->\n"
+title_format = "## [{version}] - {project_date}"
+issue_format = "[#{issue}](https://github.com/andy-takker/asyncly/issues/{issue})"
+issue_pattern = "\\d+"
+orphan_prefix = "+"
+ignore = []
+
+[[tool.towncrier.type]]
+directory = "added"
+name = "Added"
+showcontent = true
+
+[[tool.towncrier.type]]
+directory = "changed"
+name = "Changed"
+showcontent = true
+
+[[tool.towncrier.type]]
+directory = "breaking"
+name = "Changed (breaking)"
+showcontent = true
+
+[[tool.towncrier.type]]
+directory = "fixed"
+name = "Fixed"
+showcontent = true
+
+[[tool.towncrier.type]]
+directory = "deprecated"
+name = "Deprecated"
+showcontent = true
+
+[[tool.towncrier.type]]
+directory = "security"
+name = "Security"
+showcontent = true
+
+[[tool.towncrier.type]]
+directory = "docs"
+name = "Documentation"
+showcontent = true
