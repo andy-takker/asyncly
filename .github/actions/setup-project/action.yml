@@ -13,6 +13,7 @@ runs:
       uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
       with:
         version: "0.11.31"
+        checksum: "8cc1cd82d434ec565376f98bd938d4b715b5791a80ff2d3aa78821cf85091b4b"
         python-version: ${{ inputs.python-version }}
         enable-cache: true
         cache-python: true
