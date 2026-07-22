@@ -38,6 +38,20 @@ def _metadata(version: str = "0.10.0", *, name: str = "asyncly") -> bytes:
     ).encode()
 
 
+def _pyproject(
+    version: str = "0.10.0",
+    *,
+    name: str = "asyncly",
+    requires_python: str = "<4,>=3.10",
+) -> bytes:
+    return (
+        "[project]\n"
+        f'name = "{name}"\n'
+        f'version = "{version}"\n'
+        f'requires-python = "{requires_python}"\n'
+    ).encode()
+
+
 def _write_wheel(
     path: Path,
     *,
@@ -48,6 +62,7 @@ def _write_wheel(
     extra: str | None = None,
     duplicate: str | None = None,
     special: str | None = None,
+    extra_special: str | None = None,
 ) -> None:
     members = (
         metadata_path or f"asyncly-{version}.dist-info/METADATA",
@@ -71,6 +86,11 @@ def _write_wheel(
             archive.writestr(extra, b"extra")
         if duplicate is not None:
             archive.writestr(duplicate, b"duplicate")
+        if extra_special is not None:
+            info = ZipInfo(extra_special)
+            info.create_system = 3
+            info.external_attr = (stat.S_IFLNK | 0o777) << 16
+            archive.writestr(info, b"target")
 
 
 def _add_tar_member(
@@ -95,15 +115,17 @@ def _write_sdist(
     *,
     version: str = "0.10.0",
     metadata: bytes | None = None,
+    pyproject: bytes | None = None,
     missing: str | None = None,
     extra: str | None = None,
     duplicate: str | None = None,
     special: str | None = None,
+    extra_special: str | None = None,
 ) -> None:
     prefix = f"asyncly-{version}/"
     members = {
         prefix + "PKG-INFO": metadata or _metadata(version),
-        prefix + "pyproject.toml": b"[project]\n",
+        prefix + "pyproject.toml": pyproject or _pyproject(version),
         prefix + _PUBLIC_FILES[0]: b"contents",
         prefix + _PUBLIC_FILES[1]: b"contents",
     }
@@ -120,6 +142,8 @@ def _write_sdist(
             _add_tar_member(archive, extra, b"extra")
         if duplicate is not None:
             _add_tar_member(archive, duplicate, b"duplicate")
+        if extra_special is not None:
+            _add_tar_member(archive, extra_special, b"target", special=True)
 
 
 def test_stable_version_accepts_semver() -> None:
@@ -361,7 +385,27 @@ def test_artifact_manifest_rejects_unexpected_file(tmp_path: Path) -> None:
     (tmp_path / "asyncly-0.10.0-py3-none-any.whl").write_bytes(b"wheel")
     (tmp_path / "asyncly-0.10.0.tar.gz").write_bytes(b"sdist")
     (tmp_path / "unexpected.txt").write_text("unexpected")
-    with pytest.raises(ReleaseError, match="unexpected distribution files"):
+    with pytest.raises(ReleaseError, match="unexpected distribution entries"):
+        artifact_manifest(tmp_path, "0.10.0")
+
+
+def test_artifact_manifest_rejects_unexpected_directory(tmp_path: Path) -> None:
+    (tmp_path / "asyncly-0.10.0-py3-none-any.whl").write_bytes(b"wheel")
+    (tmp_path / "asyncly-0.10.0.tar.gz").write_bytes(b"sdist")
+    (tmp_path / "unexpected").mkdir()
+
+    with pytest.raises(ReleaseError, match="unexpected distribution entries"):
+        artifact_manifest(tmp_path, "0.10.0")
+
+
+def test_artifact_manifest_rejects_artifact_symlink(tmp_path: Path) -> None:
+    target = tmp_path.parent / f"{tmp_path.name}-wheel-target"
+    target.write_bytes(b"wheel")
+    wheel = tmp_path / "asyncly-0.10.0-py3-none-any.whl"
+    wheel.symlink_to(target)
+    (tmp_path / "asyncly-0.10.0.tar.gz").write_bytes(b"sdist")
+
+    with pytest.raises(ReleaseError, match="non-symlink regular file"):
         artifact_manifest(tmp_path, "0.10.0")
 
 
@@ -467,6 +511,28 @@ def test_verify_wheel_rejects_special_public_member(tmp_path: Path) -> None:
         verify_wheel(tmp_path, "0.10.0")
 
 
+def test_verify_wheel_rejects_extra_special_member(tmp_path: Path) -> None:
+    _write_wheel(
+        tmp_path / "asyncly-0.10.0-py3-none-any.whl",
+        extra_special="asyncly/extra.py",
+    )
+
+    with pytest.raises(ReleaseError, match="regular files or directories"):
+        verify_wheel(tmp_path, "0.10.0")
+
+
+def test_verify_wheel_rejects_corrupt_non_metadata_payload(tmp_path: Path) -> None:
+    wheel = tmp_path / "asyncly-0.10.0-py3-none-any.whl"
+    _write_wheel(wheel)
+    contents = bytearray(wheel.read_bytes())
+    payload_offset = contents.index(b"contents")
+    contents[payload_offset] ^= 1
+    wheel.write_bytes(contents)
+
+    with pytest.raises(ReleaseError, match="corrupt wheel payload"):
+        verify_wheel(tmp_path, "0.10.0")
+
+
 def test_verify_wheel_rejects_non_utf8_metadata(tmp_path: Path) -> None:
     _write_wheel(
         tmp_path / "asyncly-0.10.0-py3-none-any.whl",
@@ -519,6 +585,48 @@ def test_verify_sdist_rejects_requires_python_mismatch(tmp_path: Path) -> None:
         verify_sdist(tmp_path, "0.10.0")
 
 
+@pytest.mark.parametrize(
+    "pyproject",
+    [
+        _pyproject("0.9.0"),
+        _pyproject(name="other"),
+        _pyproject(requires_python=">=3.11,<4"),
+    ],
+)
+def test_verify_sdist_rejects_embedded_pyproject_mismatch(
+    tmp_path: Path,
+    pyproject: bytes,
+) -> None:
+    _write_sdist(
+        tmp_path / "asyncly-0.10.0.tar.gz",
+        pyproject=pyproject,
+    )
+
+    with pytest.raises(ReleaseError, match="embedded pyproject metadata mismatch"):
+        verify_sdist(tmp_path, "0.10.0")
+
+
+def test_verify_sdist_accepts_source_pyproject_constraint_spelling(
+    tmp_path: Path,
+) -> None:
+    _write_sdist(
+        tmp_path / "asyncly-0.10.0.tar.gz",
+        pyproject=_pyproject(requires_python=">=3.10, <4"),
+    )
+
+    verify_sdist(tmp_path, "0.10.0")
+
+
+def test_verify_sdist_rejects_malformed_embedded_pyproject(tmp_path: Path) -> None:
+    _write_sdist(
+        tmp_path / "asyncly-0.10.0.tar.gz",
+        pyproject=b"[project\n",
+    )
+
+    with pytest.raises(ReleaseError, match="embedded pyproject is invalid"):
+        verify_sdist(tmp_path, "0.10.0")
+
+
 def test_verify_sdist_rejects_missing_public_file(tmp_path: Path) -> None:
     _write_sdist(
         tmp_path / "asyncly-0.10.0.tar.gz",
@@ -556,6 +664,44 @@ def test_verify_sdist_rejects_special_required_member(tmp_path: Path) -> None:
     )
 
     with pytest.raises(ReleaseError, match="regular file"):
+        verify_sdist(tmp_path, "0.10.0")
+
+
+def test_verify_sdist_rejects_extra_special_member(tmp_path: Path) -> None:
+    _write_sdist(
+        tmp_path / "asyncly-0.10.0.tar.gz",
+        extra_special="asyncly-0.10.0/extra.py",
+    )
+
+    with pytest.raises(ReleaseError, match="regular files or directories"):
+        verify_sdist(tmp_path, "0.10.0")
+
+
+def test_verify_sdist_rejects_out_of_prefix_member(tmp_path: Path) -> None:
+    _write_sdist(
+        tmp_path / "asyncly-0.10.0.tar.gz",
+        extra="other-project/escape.py",
+    )
+
+    with pytest.raises(ReleaseError, match="outside asyncly-0.10.0/"):
+        verify_sdist(tmp_path, "0.10.0")
+
+
+def test_verify_sdist_rejects_truncated_gzip_footer(tmp_path: Path) -> None:
+    sdist = tmp_path / "asyncly-0.10.0.tar.gz"
+    _write_sdist(sdist)
+    sdist.write_bytes(sdist.read_bytes()[:-4])
+
+    with pytest.raises(ReleaseError):
+        verify_sdist(tmp_path, "0.10.0")
+
+
+def test_verify_sdist_rejects_deeply_truncated_gzip(tmp_path: Path) -> None:
+    sdist = tmp_path / "asyncly-0.10.0.tar.gz"
+    _write_sdist(sdist)
+    sdist.write_bytes(sdist.read_bytes()[:-32])
+
+    with pytest.raises(ReleaseError):
         verify_sdist(tmp_path, "0.10.0")
 
 
@@ -764,6 +910,38 @@ def test_main_notes_cleans_up_after_atomic_replace_failure(
     assert capsys.readouterr().err.startswith("release validation failed:")
 
 
+def test_main_notes_rejects_output_symlink_without_mutating_target(
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    changelog = tmp_path / "CHANGELOG.md"
+    changelog.write_text(
+        "## [0.10.0] - 2026-08-01\n\n### Added\n- Item.\n",
+        encoding="utf-8",
+    )
+    target = tmp_path / "target.md"
+    target.write_text("keep\n", encoding="utf-8")
+    output = tmp_path / "release-notes.md"
+    output.symlink_to(target)
+
+    result = main(
+        [
+            "notes",
+            "--version",
+            "0.10.0",
+            "--changelog",
+            str(changelog),
+            "--output",
+            str(output),
+        ]
+    )
+
+    assert result == 1
+    assert output.is_symlink()
+    assert target.read_text(encoding="utf-8") == "keep\n"
+    assert capsys.readouterr().err.startswith("release validation failed:")
+
+
 def test_main_reports_release_mismatch(
     tmp_path: Path,
     capsys: pytest.CaptureFixture[str],
@@ -816,6 +994,35 @@ def test_main_artifacts_does_not_overwrite_distribution_alias(
 
     assert result == 1
     assert wheel.read_bytes() == original
+    assert capsys.readouterr().err.startswith("release validation failed:")
+
+
+def test_main_artifacts_rejects_manifest_symlink_without_mutating_target(
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    _write_wheel(tmp_path / "asyncly-0.10.0-py3-none-any.whl")
+    _write_sdist(tmp_path / "asyncly-0.10.0.tar.gz")
+    target = tmp_path.parent / f"{tmp_path.name}-manifest-target"
+    target.write_text("keep\n", encoding="utf-8")
+    output = tmp_path / "SHA256SUMS.json"
+    output.symlink_to(target)
+
+    result = main(
+        [
+            "artifacts",
+            "--version",
+            "0.10.0",
+            "--directory",
+            str(tmp_path),
+            "--output",
+            str(output),
+        ]
+    )
+
+    assert result == 1
+    assert output.is_symlink()
+    assert target.read_text(encoding="utf-8") == "keep\n"
     assert capsys.readouterr().err.startswith("release validation failed:")
 
 

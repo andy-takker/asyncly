@@ -6,11 +6,13 @@ import re
 import stat
 import sys
 from email.parser import Parser
+from gzip import open as open_gzip
 from pathlib import Path, PurePosixPath
 from tarfile import ReadError
 from tarfile import open as open_tar
 from tempfile import NamedTemporaryFile
 from zipfile import BadZipFile, ZipFile, ZipInfo
+from zlib import error as ZlibError
 
 import toml
 
@@ -45,6 +47,8 @@ def _read_text(path: Path, description: str) -> str:
 def _write_text_atomic(path: Path, text: str, description: str) -> None:
     temporary: Path | None = None
     try:
+        if path.is_symlink():
+            raise ReleaseError(f"refusing to replace symlink output {path}")
         try:
             destination_mode = stat.S_IMODE(path.stat().st_mode)
         except FileNotFoundError:
@@ -141,24 +145,34 @@ def extract_release_notes(text: str, version: str) -> str:
 def artifact_manifest(directory: Path, version: str) -> list[dict[str, str]]:
     stable_version(version)
     names = [f"asyncly-{version}-py3-none-any.whl", f"asyncly-{version}.tar.gz"]
+    allowed = {*names, ".gitignore", "SHA256SUMS.json"}
     try:
         unexpected = sorted(
-            path.name
-            for path in directory.iterdir()
-            if path.is_file()
-            and path.name not in {*names, ".gitignore", "SHA256SUMS.json"}
+            path.name for path in directory.iterdir() if path.name not in allowed
         )
     except OSError as exc:
         raise ReleaseError(
             f"unable to inspect distribution directory {directory}: {exc}"
         ) from exc
     if unexpected:
-        raise ReleaseError(f"unexpected distribution files: {unexpected}")
+        raise ReleaseError(f"unexpected distribution entries: {unexpected}")
     result = []
     for name in names:
         path = directory / name
-        if not path.is_file():
+        try:
+            is_symlink = path.is_symlink()
+            exists = path.exists()
+            is_file = path.is_file()
+        except OSError as exc:
+            raise ReleaseError(f"unable to inspect distribution {path}: {exc}") from exc
+        if is_symlink:
+            raise ReleaseError(
+                f"distribution must be a non-symlink regular file: {name}"
+            )
+        if not exists:
             raise ReleaseError(f"missing distribution: {name}")
+        if not is_file:
+            raise ReleaseError(f"distribution must be a regular file: {name}")
         try:
             digest = hashlib.sha256(path.read_bytes()).hexdigest()
         except OSError as exc:
@@ -189,6 +203,13 @@ def _zip_regular_file(info: ZipInfo) -> bool:
     return file_type in {0, stat.S_IFREG}
 
 
+def _zip_supported_member(info: ZipInfo) -> bool:
+    file_type = stat.S_IFMT(info.external_attr >> 16)
+    if info.is_dir():
+        return file_type in {0, stat.S_IFDIR}
+    return file_type in {0, stat.S_IFREG}
+
+
 def _validate_metadata(contents: bytes, version: str, archive_name: str) -> None:
     try:
         decoded = contents.decode("utf-8")
@@ -206,6 +227,30 @@ def _validate_metadata(contents: bytes, version: str, archive_name: str) -> None
         raise ReleaseError(f"{archive_name} Requires-Python metadata mismatch")
 
 
+def _validate_embedded_pyproject(contents: bytes, version: str) -> None:
+    try:
+        data = toml.loads(contents.decode("utf-8"))
+    except (UnicodeDecodeError, toml.TomlDecodeError) as exc:
+        raise ReleaseError("sdist embedded pyproject is invalid") from exc
+    project = data.get("project")
+    required_fields = ("name", "version", "requires-python")
+    if not isinstance(project, dict) or any(
+        field not in project for field in required_fields
+    ):
+        raise ReleaseError("sdist embedded pyproject is invalid")
+    requires_python = project["requires-python"]
+    if not isinstance(requires_python, str):
+        raise ReleaseError("sdist embedded pyproject is invalid")
+    clauses = [clause.strip() for clause in requires_python.split(",")]
+    if (
+        project["name"] != "asyncly"
+        or project["version"] != version
+        or len(clauses) != 2
+        or set(clauses) != {"<4", ">=3.10"}
+    ):
+        raise ReleaseError("sdist embedded pyproject metadata mismatch")
+
+
 def verify_wheel(directory: Path, version: str) -> None:
     stable_version(version)
     wheel = directory / f"asyncly-{version}-py3-none-any.whl"
@@ -214,6 +259,19 @@ def verify_wheel(directory: Path, version: str) -> None:
             members = archive.infolist()
             names = [member.filename for member in members]
             _validate_member_names(names, "wheel")
+            unsupported = sorted(
+                member.filename
+                for member in members
+                if not _zip_supported_member(member)
+            )
+            if unsupported:
+                raise ReleaseError(
+                    "wheel members must be regular files or directories: "
+                    f"{unsupported}"
+                )
+            corrupt_member = archive.testzip()
+            if corrupt_member is not None:
+                raise ReleaseError(f"corrupt wheel payload: {corrupt_member}")
             metadata_name = f"asyncly-{version}.dist-info/METADATA"
             metadata_names = [
                 name for name in names if name.endswith(".dist-info/METADATA")
@@ -255,10 +313,32 @@ def verify_sdist(directory: Path, version: str) -> None:
         prefix + "asyncly/srvmocker/responses/faults.py",
     }
     try:
+        with open_gzip(sdist, "rb") as compressed:
+            while compressed.read(1024 * 1024):
+                pass
         with open_tar(sdist, "r:gz") as archive:
             members = archive.getmembers()
             names = [member.name for member in members]
             _validate_member_names(names, "sdist")
+            root = prefix.removesuffix("/")
+            outside = sorted(
+                member.name
+                for member in members
+                if not member.name.startswith(prefix)
+                and not (member.isdir() and member.name == root)
+            )
+            if outside:
+                raise ReleaseError(f"sdist members outside {prefix}: {outside}")
+            unsupported = sorted(
+                member.name
+                for member in members
+                if not (member.isreg() or member.isdir())
+            )
+            if unsupported:
+                raise ReleaseError(
+                    "sdist members must be regular files or directories: "
+                    f"{unsupported}"
+                )
             missing = sorted(required - set(names))
             if missing:
                 raise ReleaseError(f"sdist missing public files: {missing}")
@@ -268,22 +348,30 @@ def verify_sdist(directory: Path, version: str) -> None:
                 raise ReleaseError(
                     f"sdist required members must be regular files: {special}"
                 )
+            pyproject_file = archive.extractfile(by_name[prefix + "pyproject.toml"])
+            if pyproject_file is None:
+                raise ReleaseError("sdist embedded pyproject could not be read")
+            _validate_embedded_pyproject(pyproject_file.read(), version)
             metadata_file = archive.extractfile(by_name[prefix + "PKG-INFO"])
             if metadata_file is None:
                 raise ReleaseError("sdist PKG-INFO could not be read")
             _validate_metadata(metadata_file.read(), version, "sdist")
-    except (OSError, ReadError) as exc:
+    except (OSError, EOFError, ReadError, ZlibError) as exc:
         raise ReleaseError(f"unable to read sdist {sdist}: {exc}") from exc
 
 
 def _validate_artifact_output(directory: Path, output: Path) -> None:
     try:
-        expected = (directory / "SHA256SUMS.json").resolve()
-        actual = output.resolve()
+        expected_parent = directory.resolve()
+        actual_parent = output.parent.resolve()
+        is_symlink = output.is_symlink()
     except OSError as exc:
         raise ReleaseError(f"unable to resolve artifact output: {exc}") from exc
-    if actual != expected:
+    if output.name != "SHA256SUMS.json" or actual_parent != expected_parent:
+        expected = expected_parent / "SHA256SUMS.json"
         raise ReleaseError(f"artifact output must be {expected}")
+    if is_symlink:
+        raise ReleaseError(f"refusing to replace symlink output {output}")
 
 
 def validate_release(
