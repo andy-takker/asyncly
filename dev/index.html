@@ -1336,7 +1336,7 @@ integrations — built on <a href="https://docs.aiohttp.org/">aiohttp</a>.</stro
 <hr />
 <p><code>BaseHttpClient</code> — a thin, typed base class for writing API clients. Map
 status codes to response handlers, parse into Pydantic / msgspec / JSON,
-set flexible timeouts, and route through a proxy.</p>
+add policy-driven retries, set flexible timeouts, and route through a proxy.</p>
 <p><a href="guide/http-client/"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13.22 19.03a.75.75 0 0 1 0-1.06L18.19 13H3.75a.75.75 0 0 1 0-1.5h14.44l-4.97-4.97a.749.749 0 0 1 .326-1.275.75.75 0 0 1 .734.215l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0"/></svg></span> HTTP client guide</a></p>
 </li>
 <li>
@@ -1359,6 +1359,8 @@ event loop, so your client exercises the real network stack.</p>
 <ul>
 <li><strong>Typed client base</strong> with per-status <a href="guide/response-handlers/">response handlers</a>
   (JSON, Pydantic, msgspec).</li>
+<li><strong><a href="guide/http-client/#retries">Policy-driven retries</a></strong> with safe idempotent
+  defaults, <code>Retry-After</code>, observable decisions, and per-attempt metrics.</li>
 <li><strong>Real mock server</strong> via <a href="guide/mock-server/"><code>start_service</code></a> with dynamic,
   per-test responses.</li>
 <li><strong><a href="guide/request-matching/">Request matching</a></strong> — route by JSON body, headers,
@@ -1369,6 +1371,8 @@ event loop, so your client exercises the real network stack.</p>
   <code>Proxy-Authorization</code> validation.</li>
 <li><strong>TLS</strong>, <strong>msgpack/TOML/YAML</strong> responses, and <strong><a href="guide/instrumentation/">metrics</a></strong>
   (Prometheus / OpenTelemetry) — requests, in-flight, network phases, and pool stats.</li>
+<li><strong>Socket-level fault injection</strong> for disconnects, truncated bodies, latency,
+  and response sequences.</li>
 <li>A <strong><a href="guide/pytest-plugin/">pytest plugin</a></strong> with ready-made fixtures.</li>
 </ul>
 <h2 id="get-started">Get started<a class="headerlink" href="#get-started" title="Permanent link">&para;</a></h2>

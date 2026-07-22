@@ -1569,6 +1569,10 @@ counter.</p>
 or an unhandled status) is reported as <code>outcome="response"</code> with the real status
 and <code>error_type="invalid_response"</code> — so 5xx and latency math on the physical
 request stay correct.</p>
+<p>Retries do not collapse physical traffic into one sample. Every attempt has its
+own lifecycle and <code>observe_request</code> call: for example, <code>503 -&gt; 200</code> records two
+requests with statuses <code>503</code> and <code>200</code>. Logical retry decisions are available
+separately through <code>_make_req(retry_observer=...)</code>.</p>
 <h2 id="operation-label"><code>operation</code> label<a class="headerlink" href="#operation-label" title="Permanent link">&para;</a></h2>
 <p><code>operation</code> is a stable, low-cardinality logical name. Pass it per endpoint:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="k">async</span> <span class="k">def</span> <span class="nf">get_wallet_balance</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>

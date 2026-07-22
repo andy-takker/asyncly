@@ -10,31 +10,27 @@
       
       
       
-        <link rel="canonical" href="https://andy-takker.github.io/asyncly/dev/guide/mock-server/">
+        <link rel="canonical" href="https://andy-takker.github.io/asyncly/dev/superpowers/specs/2026-07-19-asyncly-development-roadmap-design/">
       
       
-        <link rel="prev" href="../instrumentation/">
-      
-      
-        <link rel="next" href="../request-matching/">
       
       
         
       
       
-      <link rel="icon" href="../../assets/images/favicon.png">
+      <link rel="icon" href="../../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
     
     
       
-        <title>Mock server - asyncly</title>
+        <title>Дорожная карта развития Asyncly - asyncly</title>
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.484c7ddc.min.css">
       
         
-        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
       
       
 
@@ -53,9 +49,9 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+      <link rel="stylesheet" href="../../../assets/_mkdocstrings.css">
     
-    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -80,7 +76,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#mock-server" class="md-skip">
+        <a href="#asyncly" class="md-skip">
           Skip to content
         </a>
       
@@ -98,7 +94,7 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../.." title="asyncly" class="md-header__button md-logo" aria-label="asyncly" data-md-component="logo">
+    <a href="../../.." title="asyncly" class="md-header__button md-logo" aria-label="asyncly" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -118,7 +114,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Mock server
+              Дорожная карта развития Asyncly
             
           </span>
         </div>
@@ -231,7 +227,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../.." class="md-tabs__link">
+      <a href="../../.." class="md-tabs__link">
         
   
   
@@ -250,7 +246,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../installation/" class="md-tabs__link">
+      <a href="../../../installation/" class="md-tabs__link">
         
   
   
@@ -269,7 +265,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../quickstart/" class="md-tabs__link">
+      <a href="../../../quickstart/" class="md-tabs__link">
         
   
   
@@ -290,7 +286,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../why/testing-strategies/" class="md-tabs__link">
+        <a href="../../../why/testing-strategies/" class="md-tabs__link">
           
   
   
@@ -308,13 +304,11 @@
   
   
   
-    
-  
   
     
     
-      <li class="md-tabs__item md-tabs__item--active">
-        <a href="../http-client/" class="md-tabs__link">
+      <li class="md-tabs__item">
+        <a href="../../../guide/http-client/" class="md-tabs__link">
           
   
   
@@ -336,7 +330,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../reference/" class="md-tabs__link">
+        <a href="../../../reference/" class="md-tabs__link">
           
   
   
@@ -356,7 +350,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../changelog/" class="md-tabs__link">
+      <a href="../../../changelog/" class="md-tabs__link">
         
   
   
@@ -391,7 +385,7 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../.." title="asyncly" class="md-nav__button md-logo" aria-label="asyncly" data-md-component="logo">
+    <a href="../../.." title="asyncly" class="md-nav__button md-logo" aria-label="asyncly" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -421,7 +415,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../.." class="md-nav__link">
+      <a href="../../.." class="md-nav__link">
         
   
   
@@ -448,7 +442,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../installation/" class="md-nav__link">
+      <a href="../../../installation/" class="md-nav__link">
         
   
   
@@ -475,7 +469,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../quickstart/" class="md-nav__link">
+      <a href="../../../quickstart/" class="md-nav__link">
         
   
   
@@ -558,7 +552,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../why/testing-strategies/" class="md-nav__link">
+      <a href="../../../why/testing-strategies/" class="md-nav__link">
         
   
   
@@ -590,10 +584,8 @@
       
   
   
-    
   
   
-  
     
     
       
@@ -617,22 +609,19 @@
     
     
       
-        
-        
-      
       
         
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
         
           
-          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
             
   
   
@@ -650,7 +639,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_5">
             <span class="md-nav__icon md-icon"></span>
             
@@ -668,7 +657,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../http-client/" class="md-nav__link">
+      <a href="../../../guide/http-client/" class="md-nav__link">
         
   
   
@@ -696,7 +685,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../response-handlers/" class="md-nav__link">
+      <a href="../../../guide/response-handlers/" class="md-nav__link">
         
   
   
@@ -724,7 +713,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../instrumentation/" class="md-nav__link">
+      <a href="../../../guide/instrumentation/" class="md-nav__link">
         
   
   
@@ -749,37 +738,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Mock server
-  
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../../../guide/mock-server/" class="md-nav__link">
         
   
   
@@ -795,81 +757,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#declaring-routes" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Declaring routes
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#registering-responses" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Registering responses
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#asserting-what-your-client-sent" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Asserting what your client sent
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#https-tls" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        HTTPS / TLS
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#less-boilerplate" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Less boilerplate
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -882,7 +769,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../request-matching/" class="md-nav__link">
+      <a href="../../../guide/request-matching/" class="md-nav__link">
         
   
   
@@ -910,7 +797,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../responses/" class="md-nav__link">
+      <a href="../../../guide/responses/" class="md-nav__link">
         
   
   
@@ -938,7 +825,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../proxy-testing/" class="md-nav__link">
+      <a href="../../../guide/proxy-testing/" class="md-nav__link">
         
   
   
@@ -966,7 +853,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../pytest-plugin/" class="md-nav__link">
+      <a href="../../../guide/pytest-plugin/" class="md-nav__link">
         
   
   
@@ -1036,7 +923,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../reference/" class="md-nav__link ">
+            <a href="../../../reference/" class="md-nav__link ">
               
   
   
@@ -1080,7 +967,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/client/" class="md-nav__link">
+      <a href="../../../reference/client/" class="md-nav__link">
         
   
   
@@ -1108,7 +995,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/handlers/" class="md-nav__link">
+      <a href="../../../reference/handlers/" class="md-nav__link">
         
   
   
@@ -1136,7 +1023,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/metrics/" class="md-nav__link">
+      <a href="../../../reference/metrics/" class="md-nav__link">
         
   
   
@@ -1164,7 +1051,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/srvmocker/" class="md-nav__link">
+      <a href="../../../reference/srvmocker/" class="md-nav__link">
         
   
   
@@ -1192,7 +1079,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/responses/" class="md-nav__link">
+      <a href="../../../reference/responses/" class="md-nav__link">
         
   
   
@@ -1220,7 +1107,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/serializers/" class="md-nav__link">
+      <a href="../../../reference/serializers/" class="md-nav__link">
         
   
   
@@ -1255,7 +1142,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../changelog/" class="md-nav__link">
+      <a href="../../../changelog/" class="md-nav__link">
         
   
   
@@ -1302,10 +1189,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#declaring-routes" class="md-nav__link">
+  <a href="#summary" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Declaring routes
+        Summary
       
     </span>
   </a>
@@ -1313,10 +1200,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#registering-responses" class="md-nav__link">
+  <a href="#retries-transport-faults" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Registering responses
+        Первый вертикальный срез: retries и transport faults
       
     </span>
   </a>
@@ -1324,10 +1211,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#asserting-what-your-client-sent" class="md-nav__link">
+  <a href="#interfaces-10-cleanup" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Asserting what your client sent
+        Публичные interfaces и 1.0 cleanup
       
     </span>
   </a>
@@ -1335,10 +1222,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#https-tls" class="md-nav__link">
+  <a href="#_1" class="md-nav__link">
     <span class="md-ellipsis">
       
-        HTTPS / TLS
+        Последующие вертикальные срезы
       
     </span>
   </a>
@@ -1346,10 +1233,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#less-boilerplate" class="md-nav__link">
+  <a href="#test-plan" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Less boilerplate
+        Test Plan
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#assumptions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Assumptions
       
     </span>
   </a>
@@ -1376,125 +1274,56 @@
   
 
 
-<h1 id="mock-server">Mock server<a class="headerlink" href="#mock-server" title="Permanent link">&para;</a></h1>
-<p><a class="autorefs autorefs-internal" title="            asyncly.srvmocker.service.start_service
-
-
-  
-      async
-  " href="../../reference/srvmocker/#asyncly.srvmocker.service.start_service"><code>start_service</code></a> starts a <strong>real</strong>
-<code>aiohttp.TestServer</code> and yields a <a class="autorefs autorefs-internal" title="            asyncly.srvmocker.models.MockService
-
-
-  
-      dataclass
-  " href="../../reference/srvmocker/#asyncly.srvmocker.models.MockService"><code>MockService</code></a>
-you control. Point your client at <code>service.url</code> and the requests hit a genuine
-server in your test loop.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">from</span> <span class="nn">asyncly.srvmocker</span> <span class="kn">import</span> <span class="n">JsonResponse</span><span class="p">,</span> <span class="n">MockRoute</span><span class="p">,</span> <span class="n">start_service</span>
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>
-<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="k">async</span> <span class="k">def</span> <span class="nf">test_fetch_fact</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>    <span class="n">routes</span> <span class="o">=</span> <span class="p">[</span><span class="n">MockRoute</span><span class="p">(</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="s2">&quot;/fact&quot;</span><span class="p">,</span> <span class="s2">&quot;fact&quot;</span><span class="p">)]</span>
-<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>    <span class="k">async</span> <span class="k">with</span> <span class="n">start_service</span><span class="p">(</span><span class="n">routes</span><span class="p">)</span> <span class="k">as</span> <span class="n">service</span><span class="p">:</span>
-<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>        <span class="n">service</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s2">&quot;fact&quot;</span><span class="p">,</span> <span class="n">JsonResponse</span><span class="p">({</span><span class="s2">&quot;fact&quot;</span><span class="p">:</span> <span class="s2">&quot;Meow.&quot;</span><span class="p">,</span> <span class="s2">&quot;length&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">}))</span>
-<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>        <span class="c1"># ... point your client at service.url and call it</span>
-<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>        <span class="n">service</span><span class="o">.</span><span class="n">assert_called</span><span class="p">(</span><span class="s2">&quot;fact&quot;</span><span class="p">,</span> <span class="n">times</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-</code></pre></div>
-<h2 id="declaring-routes">Declaring routes<a class="headerlink" href="#declaring-routes" title="Permanent link">&para;</a></h2>
-<p>A <a class="autorefs autorefs-internal" title="            asyncly.srvmocker.models.MockRoute
-
-
-  
-      dataclass
-  " href="../../reference/srvmocker/#asyncly.srvmocker.models.MockRoute"><code>MockRoute</code></a> binds an HTTP method and path to a
-<strong>handler name</strong> — a label you register a response under:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">MockRoute</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="s2">&quot;/fact&quot;</span><span class="p">,</span> <span class="n">handler_name</span><span class="o">=</span><span class="s2">&quot;fact&quot;</span><span class="p">)</span>
-</code></pre></div>
-<p>Multiple routes can share the same <code>(method, path)</code> and be distinguished by a
-<a href="../request-matching/"><code>Match</code></a>. Declare the full set of routes up front when
-calling <code>start_service</code>.</p>
-<h2 id="registering-responses">Registering responses<a class="headerlink" href="#registering-responses" title="Permanent link">&para;</a></h2>
-<p>Register a response under a handler name with <code>register</code>. You can register
-before any request and <strong>re-register</strong> mid-test to change behavior:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="n">service</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s2">&quot;fact&quot;</span><span class="p">,</span> <span class="n">JsonResponse</span><span class="p">({</span><span class="s2">&quot;fact&quot;</span><span class="p">:</span> <span class="s2">&quot;Meow.&quot;</span><span class="p">,</span> <span class="s2">&quot;length&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">}))</span>
-<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>
-<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="c1"># later in the test, swap the response</span>
-<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="n">service</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s2">&quot;fact&quot;</span><span class="p">,</span> <span class="n">JsonResponse</span><span class="p">({</span><span class="s2">&quot;fact&quot;</span><span class="p">:</span> <span class="s2">&quot;Purr.&quot;</span><span class="p">,</span> <span class="s2">&quot;length&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">}))</span>
-</code></pre></div>
-<p>Registration is strict: <code>name</code> must be declared by a <code>MockRoute</code>, otherwise
-<a class="autorefs autorefs-internal" title="            asyncly.srvmocker.exceptions.UnknownHandlerError" href="../../reference/srvmocker/#asyncly.srvmocker.exceptions.UnknownHandlerError"><code>UnknownHandlerError</code></a> is raised. If a
-request selects a declared route before a response is registered, the server
-reports <a class="autorefs autorefs-internal" title="            asyncly.srvmocker.exceptions.MissingResponseError" href="../../reference/srvmocker/#asyncly.srvmocker.exceptions.MissingResponseError"><code>MissingResponseError</code></a> with
-the handler name and the required <code>service.register(...)</code> call.</p>
-<p>See <a href="../responses/">Responses &amp; serializers</a> for the full catalog
-(<code>JsonResponse</code>, <code>RawResponse</code>, <code>SequenceResponse</code>, <code>LatencyResponse</code>,
-msgpack/TOML/YAML, and more).</p>
-<h2 id="asserting-what-your-client-sent">Asserting what your client sent<a class="headerlink" href="#asserting-what-your-client-sent" title="Permanent link">&para;</a></h2>
-<p><code>MockService</code> records every request. Read the history to assert your client
-behaved correctly:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="n">service</span><span class="o">.</span><span class="n">assert_called</span><span class="p">(</span>
-<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>    <span class="s2">&quot;create&quot;</span><span class="p">,</span>
-<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>    <span class="n">json</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Whiskers&quot;</span><span class="p">},</span>
-<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>    <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;Content-Type&quot;</span><span class="p">:</span> <span class="s2">&quot;application/json&quot;</span><span class="p">},</span>
-<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="p">)</span>
-<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="k">assert</span> <span class="n">service</span><span class="o">.</span><span class="n">last_call</span><span class="p">(</span><span class="s2">&quot;create&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">body</span> <span class="o">==</span> <span class="sa">b</span><span class="s1">&#39;{&quot;name&quot;: &quot;Whiskers&quot;}&#39;</span>
-</code></pre></div>
-<p>Every entry is an immutable
-<a class="autorefs autorefs-internal" title="            asyncly.srvmocker.models.RecordedRequest
-
-
-  
-      dataclass
-  " href="../../reference/srvmocker/#asyncly.srvmocker.models.RecordedRequest"><code>RecordedRequest</code></a> snapshot. It exposes
-<code>method</code>, <code>url</code>, <code>path</code>, <code>headers</code>, <code>query</code>, <code>path_params</code>, <code>body</code>, and
-<code>handler_name</code> without retaining a live aiohttp request. <code>RequestHistory</code> is a
-deprecated alias kept for the 0.9 migration window.</p>
-<p>Available helpers:</p>
-<table>
-<thead>
-<tr>
-<th>Method</th>
-<th>Purpose</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>get_calls(name)</code></td>
-<td>All recorded calls for a handler, as <code>list[RecordedRequest]</code></td>
-</tr>
-<tr>
-<td><code>last_call(name)</code></td>
-<td>The most recent call (raises <code>AssertionError</code> if none)</td>
-</tr>
-<tr>
-<td><code>assert_called(name, *, times=, json=, body=, headers=, query=)</code></td>
-<td>Assert a matching call happened</td>
-</tr>
-<tr>
-<td><code>assert_not_called(name)</code></td>
-<td>Assert the handler received no requests</td>
-</tr>
-</tbody>
-</table>
-<p><code>assert_called</code> matches a <strong>subset</strong>: <code>headers</code> and <code>query</code> need only contain the
-keys you list; <code>json</code> and <code>body</code> must match exactly.</p>
-<h2 id="https-tls">HTTPS / TLS<a class="headerlink" href="#https-tls" title="Permanent link">&para;</a></h2>
-<p>Pass an <code>ssl.SSLContext</code> to serve over HTTPS — <code>service.url</code> then reports
-<code>scheme="https"</code>:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="kn">import</span> <span class="nn">ssl</span>
-<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="kn">from</span> <span class="nn">asyncly.srvmocker</span> <span class="kn">import</span> <span class="n">start_service</span>
-<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>
-<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="n">ctx</span> <span class="o">=</span> <span class="n">ssl</span><span class="o">.</span><span class="n">SSLContext</span><span class="p">(</span><span class="n">ssl</span><span class="o">.</span><span class="n">PROTOCOL_TLS_SERVER</span><span class="p">)</span>
-<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="n">ctx</span><span class="o">.</span><span class="n">load_cert_chain</span><span class="p">(</span><span class="s2">&quot;cert.pem&quot;</span><span class="p">,</span> <span class="s2">&quot;key.pem&quot;</span><span class="p">)</span>
-<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>
-<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="k">async</span> <span class="k">with</span> <span class="n">start_service</span><span class="p">(</span><span class="n">routes</span><span class="p">,</span> <span class="n">ssl_context</span><span class="o">=</span><span class="n">ctx</span><span class="p">)</span> <span class="k">as</span> <span class="n">service</span><span class="p">:</span>
-<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a>    <span class="k">assert</span> <span class="n">service</span><span class="o">.</span><span class="n">url</span><span class="o">.</span><span class="n">scheme</span> <span class="o">==</span> <span class="s2">&quot;https&quot;</span>
-</code></pre></div>
-<p>On the client side, build a <code>TCPConnector</code> with a matching client SSL context.</p>
-<h2 id="less-boilerplate">Less boilerplate<a class="headerlink" href="#less-boilerplate" title="Permanent link">&para;</a></h2>
-<p>The <a href="../pytest-plugin/">pytest plugin</a> wires <code>start_service</code> into a <code>mock_service</code>
-fixture so you don't repeat this setup in every test module.</p>
+<h1 id="asyncly">Дорожная карта развития Asyncly<a class="headerlink" href="#asyncly" title="Permanent link">&para;</a></h1>
+<h2 id="summary">Summary<a class="headerlink" href="#summary" title="Permanent link">&para;</a></h2>
+<p>Развивать Asyncly как aiohttp-first toolkit из двух связанных глубоких модулей:</p>
+<ul>
+<li><code>srvmocker</code> воспроизводит реальные сетевые условия через локальный <code>aiohttp.TestServer</code>.</li>
+<li><code>BaseHttpClient</code> предоставляет небольшие composable policies для устойчивого поведения клиента.</li>
+<li>Каждая клиентская возможность принимается только вместе с socket-level сценарием, который её проверяет. Такой подход соответствует рекомендации aiohttp тестировать внешние интеграции через локальный fake server, а не патчить transport internals (<a href="https://docs.aiohttp.org/en/stable/testing.html">aiohttp testing documentation</a>).</li>
+<li>Текущая baseline: версия 0.8.0, 98 тестов проходят.</li>
+</ul>
+<h2 id="retries-transport-faults">Первый вертикальный срез: retries и transport faults<a class="headerlink" href="#retries-transport-faults" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Добавить <code>RetryPolicy</code>, передаваемый явно в <code>_make_req(..., retry=...)</code>; без policy поведение полностью совпадает с текущим.</li>
+<li>Policy определяет максимальное число попыток, retryable statuses/exceptions, допустимые методы, backoff и обработку <code>Retry-After</code>.</li>
+<li>Безопасные defaults: только идемпотентные HTTP-методы; cancellation не повторяется; streaming/non-replayable body подавляет retry с наблюдаемой причиной.</li>
+<li>Последний HTTP response обрабатывается существующим status handler; последняя transport exception пробрасывается без новой обёртки.</li>
+<li>Добавить <code>DisconnectResponse()</code> для разрыва до headers и <code>TruncatedResponse</code> для неполного body. Status-based сценарии строить существующими <code>SequenceResponse</code> и <code>RawResponse</code>.</li>
+<li>Каждую попытку учитывать как отдельный физический request. Необязательный retry observer сообщает <code>scheduled</code>, <code>suppressed</code> и <code>exhausted</code>.</li>
+</ul>
+<h2 id="interfaces-10-cleanup">Публичные interfaces и 1.0 cleanup<a class="headerlink" href="#interfaces-10-cleanup" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Ввести неизменяемые <code>RetryPolicy</code>, <code>RetryContext</code> и <code>RetryEvent</code>; backoff задавать callable-стратегией, чтобы тесты могли отключить jitter и реальное ожидание.</li>
+<li>Не вводить общий middleware pipeline: retry orchestration остаётся внутри клиента, instrumentation оборачивает отдельную попытку.</li>
+<li>Заменить живой <code>aiohttp.BaseRequest</code> в истории на immutable <code>RecordedRequest</code> с method, URL/path, headers, query, path params, body и выбранным handler. В 0.9 оставить deprecated alias <code>RequestHistory</code>.</li>
+<li>Включить строгую регистрацию handlers: неизвестное имя вызывает <code>UnknownHandlerError</code>, а отсутствие response у выбранного route даёт диагностируемую ошибку вместо <code>KeyError</code>.</li>
+<li>Экспортировать рекомендуемые response primitives, включая <code>LatencyResponse</code>, непосредственно из <code>asyncly.srvmocker</code>.</li>
+<li>До фактической реализации убрать из документации обещание специальной поддержки SSE/WebSocket.</li>
+</ul>
+<h2 id="_1">Последующие вертикальные срезы<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
+<ol>
+<li><strong>Streaming и cancellation:</strong> <code>ChunkedResponse</code>, управляемые паузы/обрывы, <code>SseResponse</code>, handlers для byte stream, NDJSON и SSE, корректный cleanup при cancellation и early break.</li>
+<li><strong>Auth lifecycle:</strong> <code>CallbackResponse</code>, stateful mock-сценарии expiry/refresh, клиентский <code>AuthProvider</code> и single-flight refresh конкурентных запросов.</li>
+<li><strong>Async test ergonomics:</strong> <code>await wait_for_call(...)</code>, assertions порядка запросов, подробные mismatch diffs, matchers для cookies/path params/custom predicates.</li>
+<li><strong>Отложить до подтверждённого спроса:</strong> универсальную pagination abstraction, OpenAPI codegen, record/replay, WebSocket subsystem, httpx adapter и transport-neutral core.</li>
+</ol>
+<h2 id="test-plan">Test Plan<a class="headerlink" href="#test-plan" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Unit-тесты policy: method safety, лимит попыток, status/exception filters, оба формата <code>Retry-After</code>, backoff, cancellation и replayability body.</li>
+<li>Socket-level тесты: <code>503→200</code>, <code>429→200</code>, disconnect→success, truncated body→success/exhaustion, освобождение response между попытками.</li>
+<li>Проверить конкурентное использование одной immutable policy без общего attempt state.</li>
+<li>Проверить отдельные метрики физических requests и logical retry events, включая практически бесплатный Noop path.</li>
+<li>Для каждого следующего среза требовать end-to-end тест через реальный сокет.</li>
+<li>Acceptance gate: текущие тесты после миграционных корректировок, новые тесты, ruff, mypy и strict docs build проходят.</li>
+</ul>
+<h2 id="assumptions">Assumptions<a class="headerlink" href="#assumptions" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Проект остаётся aiohttp-first и Python 3.10+.</li>
+<li>До 1.0 допустим контролируемый cleanup публичного interface через deprecation-период 0.9.</li>
+<li>Приоритет — composable primitives, а не высокоуровневые batteries-included workflows.</li>
+<li>Первый релиз новой линии ограничен retries, fault injection, диагностикой и необходимым 1.0 cleanup.</li>
+</ul>
 
 
 
@@ -1583,10 +1412,10 @@ fixture so you don't repeat this setup in every test module.</p>
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "navigation.tracking", "navigation.indexes", "content.code.copy", "content.code.annotate", "content.tabs.link", "toc.follow", "search.suggest", "search.highlight"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"default": "latest", "provider": "mike"}}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "navigation.tracking", "navigation.indexes", "content.code.copy", "content.code.annotate", "content.tabs.link", "toc.follow", "search.suggest", "search.highlight"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"default": "latest", "provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.79ae519e.min.js"></script>
       
     
   </body>

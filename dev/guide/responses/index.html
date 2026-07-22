@@ -912,6 +912,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#transport-faults" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Transport faults
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#other-formats" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1357,6 +1368,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#transport-faults" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Transport faults
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#other-formats" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1406,43 +1428,52 @@ your own too.</p>
 <h2 id="jsonresponse">JsonResponse<a class="headerlink" href="#jsonresponse" title="Permanent link">&para;</a></h2>
 <p><a class="autorefs autorefs-internal" title="            asyncly.srvmocker.responses.json.JsonResponse" href="../../reference/responses/#asyncly.srvmocker.responses.json.JsonResponse"><code>JsonResponse</code></a> serializes any object to a JSON
 body:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">from</span> <span class="nn">asyncly.srvmocker</span> <span class="kn">import</span> <span class="n">JsonResponse</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">from</span> <span class="nn">http</span> <span class="kn">import</span> <span class="n">HTTPStatus</span>
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="n">service</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s2">&quot;fact&quot;</span><span class="p">,</span> <span class="n">JsonResponse</span><span class="p">({</span><span class="s2">&quot;fact&quot;</span><span class="p">:</span> <span class="s2">&quot;Meow.&quot;</span><span class="p">,</span> <span class="s2">&quot;length&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">}))</span>
-<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="n">service</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s2">&quot;missing&quot;</span><span class="p">,</span> <span class="n">JsonResponse</span><span class="p">({</span><span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="s2">&quot;not found&quot;</span><span class="p">},</span> <span class="n">status</span><span class="o">=</span><span class="mi">404</span><span class="p">))</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="kn">from</span> <span class="nn">asyncly.srvmocker</span> <span class="kn">import</span> <span class="n">JsonResponse</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="n">service</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s2">&quot;fact&quot;</span><span class="p">,</span> <span class="n">JsonResponse</span><span class="p">({</span><span class="s2">&quot;fact&quot;</span><span class="p">:</span> <span class="s2">&quot;Meow.&quot;</span><span class="p">,</span> <span class="s2">&quot;length&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">}))</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="n">service</span><span class="o">.</span><span class="n">register</span><span class="p">(</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>    <span class="s2">&quot;missing&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>    <span class="n">JsonResponse</span><span class="p">({</span><span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="s2">&quot;not found&quot;</span><span class="p">},</span> <span class="n">status</span><span class="o">=</span><span class="n">HTTPStatus</span><span class="o">.</span><span class="n">NOT_FOUND</span><span class="p">),</span>
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="p">)</span>
 </code></pre></div>
 <h2 id="rawresponse">RawResponse<a class="headerlink" href="#rawresponse" title="Permanent link">&para;</a></h2>
 <p><a class="autorefs autorefs-internal" title="            asyncly.srvmocker.responses.raw.RawResponse" href="../../reference/responses/#asyncly.srvmocker.responses.raw.RawResponse"><code>RawResponse</code></a> returns arbitrary bytes with
 arbitrary headers — ideal for testing client behavior on malformed payloads,
 unexpected content types, or empty bodies:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kn">from</span> <span class="nn">asyncly.srvmocker</span> <span class="kn">import</span> <span class="n">RawResponse</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kn">from</span> <span class="nn">http</span> <span class="kn">import</span> <span class="n">HTTPStatus</span>
 <a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>
-<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="n">service</span><span class="o">.</span><span class="n">register</span><span class="p">(</span>
-<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>    <span class="s2">&quot;broken_json&quot;</span><span class="p">,</span>
-<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>    <span class="n">RawResponse</span><span class="p">(</span>
-<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>        <span class="n">body</span><span class="o">=</span><span class="sa">b</span><span class="s1">&#39;{&quot;truncated&quot;:&#39;</span><span class="p">,</span>
-<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>        <span class="n">status</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span>
-<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>        <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;Content-Type&quot;</span><span class="p">:</span> <span class="s2">&quot;application/json&quot;</span><span class="p">},</span>
-<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>    <span class="p">),</span>
-<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="p">)</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="kn">from</span> <span class="nn">asyncly.srvmocker</span> <span class="kn">import</span> <span class="n">RawResponse</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="n">service</span><span class="o">.</span><span class="n">register</span><span class="p">(</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>    <span class="s2">&quot;broken_json&quot;</span><span class="p">,</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>    <span class="n">RawResponse</span><span class="p">(</span>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>        <span class="n">body</span><span class="o">=</span><span class="sa">b</span><span class="s1">&#39;{&quot;truncated&quot;:&#39;</span><span class="p">,</span>
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>        <span class="n">status</span><span class="o">=</span><span class="n">HTTPStatus</span><span class="o">.</span><span class="n">OK</span><span class="p">,</span>
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>        <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;Content-Type&quot;</span><span class="p">:</span> <span class="s2">&quot;application/json&quot;</span><span class="p">},</span>
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>    <span class="p">),</span>
+<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="p">)</span>
 </code></pre></div>
 <h2 id="sequenceresponse">SequenceResponse<a class="headerlink" href="#sequenceresponse" title="Permanent link">&para;</a></h2>
 <p><a class="autorefs autorefs-internal" title="            asyncly.srvmocker.responses.sequence.SequenceResponse" href="../../reference/responses/#asyncly.srvmocker.responses.sequence.SequenceResponse"><code>SequenceResponse</code></a> returns a different
 response on each call, in order — useful for testing retries and pagination. The
 <code>on_exhausted</code> argument controls what happens after the last response:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="kn">from</span> <span class="nn">asyncly.srvmocker</span> <span class="kn">import</span> <span class="n">JsonResponse</span><span class="p">,</span> <span class="n">RawResponse</span><span class="p">,</span> <span class="n">SequenceResponse</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="kn">from</span> <span class="nn">http</span> <span class="kn">import</span> <span class="n">HTTPStatus</span>
 <a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>
-<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="n">service</span><span class="o">.</span><span class="n">register</span><span class="p">(</span>
-<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>    <span class="s2">&quot;flaky&quot;</span><span class="p">,</span>
-<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>    <span class="n">SequenceResponse</span><span class="p">(</span>
-<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>        <span class="p">[</span>
-<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>            <span class="n">RawResponse</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">503</span><span class="p">),</span>
-<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>            <span class="n">RawResponse</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">503</span><span class="p">),</span>
-<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>            <span class="n">JsonResponse</span><span class="p">({</span><span class="s2">&quot;ok&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}),</span>
-<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>        <span class="p">],</span>
-<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>        <span class="n">on_exhausted</span><span class="o">=</span><span class="s2">&quot;last&quot;</span><span class="p">,</span>  <span class="c1"># &quot;raise&quot; (default), &quot;cycle&quot;, or &quot;last&quot;</span>
-<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a>    <span class="p">),</span>
-<a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a><span class="p">)</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="kn">from</span> <span class="nn">asyncly.srvmocker</span> <span class="kn">import</span> <span class="n">JsonResponse</span><span class="p">,</span> <span class="n">RawResponse</span><span class="p">,</span> <span class="n">SequenceResponse</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="n">service</span><span class="o">.</span><span class="n">register</span><span class="p">(</span>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>    <span class="s2">&quot;flaky&quot;</span><span class="p">,</span>
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>    <span class="n">SequenceResponse</span><span class="p">(</span>
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>        <span class="p">[</span>
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>            <span class="n">RawResponse</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="n">HTTPStatus</span><span class="o">.</span><span class="n">SERVICE_UNAVAILABLE</span><span class="p">),</span>
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>            <span class="n">RawResponse</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="n">HTTPStatus</span><span class="o">.</span><span class="n">SERVICE_UNAVAILABLE</span><span class="p">),</span>
+<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>            <span class="n">JsonResponse</span><span class="p">({</span><span class="s2">&quot;ok&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}),</span>
+<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a>        <span class="p">],</span>
+<a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a>        <span class="n">on_exhausted</span><span class="o">=</span><span class="s2">&quot;last&quot;</span><span class="p">,</span>  <span class="c1"># &quot;raise&quot; (default), &quot;cycle&quot;, or &quot;last&quot;</span>
+<a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a>    <span class="p">),</span>
+<a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a><span class="p">)</span>
 </code></pre></div>
 <ul>
 <li><code>"raise"</code> (default) — raise <a class="autorefs autorefs-internal" title="            asyncly.srvmocker.exceptions.SequenceExhausted" href="../../reference/srvmocker/#asyncly.srvmocker.exceptions.SequenceExhausted"><code>SequenceExhausted</code></a>
@@ -1459,13 +1490,12 @@ response on each call, in order — useful for testing retries and pagination. T
       dataclass
   " href="../../reference/responses/#asyncly.srvmocker.responses.timeout.LatencyResponse"><code>LatencyResponse</code></a> wraps
 another response and delays it — the tool for testing timeouts:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="kn">from</span> <span class="nn">asyncly.srvmocker</span> <span class="kn">import</span> <span class="n">JsonResponse</span>
-<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="kn">from</span> <span class="nn">asyncly.srvmocker.responses.timeout</span> <span class="kn">import</span> <span class="n">LatencyResponse</span>
-<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>
-<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="n">service</span><span class="o">.</span><span class="n">register</span><span class="p">(</span>
-<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>    <span class="s2">&quot;slow&quot;</span><span class="p">,</span>
-<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>    <span class="n">LatencyResponse</span><span class="p">(</span><span class="n">wrapped</span><span class="o">=</span><span class="n">JsonResponse</span><span class="p">({</span><span class="s2">&quot;ok&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}),</span> <span class="n">latency</span><span class="o">=</span><span class="mf">1.5</span><span class="p">),</span>
-<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="kn">from</span> <span class="nn">asyncly.srvmocker</span> <span class="kn">import</span> <span class="n">JsonResponse</span><span class="p">,</span> <span class="n">LatencyResponse</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="n">service</span><span class="o">.</span><span class="n">register</span><span class="p">(</span>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>    <span class="s2">&quot;slow&quot;</span><span class="p">,</span>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>    <span class="n">LatencyResponse</span><span class="p">(</span><span class="n">wrapped</span><span class="o">=</span><span class="n">JsonResponse</span><span class="p">({</span><span class="s2">&quot;ok&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}),</span> <span class="n">latency</span><span class="o">=</span><span class="mf">1.5</span><span class="p">),</span>
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="p">)</span>
 </code></pre></div>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="kn">import</span> <span class="nn">asyncio</span>
 <a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="kn">import</span> <span class="nn">pytest</span>
@@ -1473,6 +1503,29 @@ another response and delays it — the tool for testing timeouts:</p>
 <a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">(</span><span class="n">asyncio</span><span class="o">.</span><span class="n">TimeoutError</span><span class="p">):</span>
 <a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>    <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">fetch_fact</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
 </code></pre></div>
+<h2 id="transport-faults">Transport faults<a class="headerlink" href="#transport-faults" title="Permanent link">&para;</a></h2>
+<p>Use real socket faults to verify retry and cleanup behavior without patching
+aiohttp internals:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="kn">from</span> <span class="nn">asyncly.srvmocker</span> <span class="kn">import</span> <span class="p">(</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>    <span class="n">DisconnectResponse</span><span class="p">,</span>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>    <span class="n">RawResponse</span><span class="p">,</span>
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>    <span class="n">SequenceResponse</span><span class="p">,</span>
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>    <span class="n">TruncatedResponse</span><span class="p">,</span>
+<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="p">)</span>
+<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a>
+<a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a><span class="n">service</span><span class="o">.</span><span class="n">register</span><span class="p">(</span>
+<a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a>    <span class="s2">&quot;flaky&quot;</span><span class="p">,</span>
+<a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a>    <span class="n">SequenceResponse</span><span class="p">([</span><span class="n">DisconnectResponse</span><span class="p">(),</span> <span class="n">RawResponse</span><span class="p">(</span><span class="n">body</span><span class="o">=</span><span class="sa">b</span><span class="s2">&quot;ok&quot;</span><span class="p">)]),</span>
+<a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a><span class="p">)</span>
+<a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a>
+<a id="__codelineno-5-13" name="__codelineno-5-13" href="#__codelineno-5-13"></a><span class="n">service</span><span class="o">.</span><span class="n">register</span><span class="p">(</span>
+<a id="__codelineno-5-14" name="__codelineno-5-14" href="#__codelineno-5-14"></a>    <span class="s2">&quot;broken_download&quot;</span><span class="p">,</span>
+<a id="__codelineno-5-15" name="__codelineno-5-15" href="#__codelineno-5-15"></a>    <span class="n">TruncatedResponse</span><span class="p">(</span><span class="n">body</span><span class="o">=</span><span class="sa">b</span><span class="s2">&quot;partial&quot;</span><span class="p">,</span> <span class="n">declared_length</span><span class="o">=</span><span class="mi">1024</span><span class="p">),</span>
+<a id="__codelineno-5-16" name="__codelineno-5-16" href="#__codelineno-5-16"></a><span class="p">)</span>
+</code></pre></div>
+<p><code>DisconnectResponse</code> closes the connection before headers arrive.
+<code>TruncatedResponse</code> sends headers and a partial body, then closes early so the
+client raises <code>aiohttp.ClientPayloadError</code> while reading.</p>
 <h2 id="other-formats">Other formats<a class="headerlink" href="#other-formats" title="Permanent link">&para;</a></h2>
 <p>For non-JSON wire formats, register the matching response (each takes the same
 <code>body</code>, <code>status</code>, <code>headers</code> arguments as <code>JsonResponse</code>). These pull their
@@ -1519,13 +1572,13 @@ plus an explicit <a class="autorefs autorefs-internal" title="            asyncl
   " href="../../reference/serializers/#asyncly.srvmocker.serialization.base.Serializer"><code>Serializer</code></a>
 that pairs a <code>dumps</code> callable with a content type. The format-specific responses
 above are thin wrappers over it. Use it to plug in a custom serializer:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="kn">from</span> <span class="nn">asyncly.srvmocker</span> <span class="kn">import</span> <span class="n">ContentResponse</span>
-<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="kn">from</span> <span class="nn">asyncly.srvmocker.serialization.json</span> <span class="kn">import</span> <span class="n">JsonSerializer</span>
-<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>
-<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="n">service</span><span class="o">.</span><span class="n">register</span><span class="p">(</span>
-<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>    <span class="s2">&quot;custom&quot;</span><span class="p">,</span>
-<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>    <span class="n">ContentResponse</span><span class="p">(</span><span class="n">body</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;ok&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">},</span> <span class="n">serializer</span><span class="o">=</span><span class="n">JsonSerializer</span><span class="p">),</span>
-<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="kn">from</span> <span class="nn">asyncly.srvmocker</span> <span class="kn">import</span> <span class="n">ContentResponse</span>
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="kn">from</span> <span class="nn">asyncly.srvmocker.serialization.json</span> <span class="kn">import</span> <span class="n">JsonSerializer</span>
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="n">service</span><span class="o">.</span><span class="n">register</span><span class="p">(</span>
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>    <span class="s2">&quot;custom&quot;</span><span class="p">,</span>
+<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>    <span class="n">ContentResponse</span><span class="p">(</span><span class="n">body</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;ok&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">},</span> <span class="n">serializer</span><span class="o">=</span><span class="n">JsonSerializer</span><span class="p">),</span>
+<a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a><span class="p">)</span>
 </code></pre></div>
 <p>Built-in serializers: <code>JsonSerializer</code>, <code>MsgpackSerializer</code>, <code>TomlSerializer</code>,
 <code>YamlSerializer</code>. See the <a href="../../reference/serializers/">serializers reference</a>.</p>

@@ -1417,8 +1417,8 @@ are <strong>not</strong> forwarded:</p>
 <p><code>MockProxyService</code> mirrors <a href="../mock-server/#asserting-what-your-client-sent"><code>MockService</code></a>'s
 helpers, reading from the history of forwarded requests:</p>
 <ul>
-<li><code>get_calls() -&gt; list[RequestHistory]</code></li>
-<li><code>last_call() -&gt; RequestHistory</code></li>
+<li><code>get_calls() -&gt; list[RecordedRequest]</code></li>
+<li><code>last_call() -&gt; RecordedRequest</code></li>
 <li><code>assert_called(*, times=, target=, method=, json=, body=, headers=, query=)</code></li>
 <li><code>assert_not_called()</code></li>
 </ul>
