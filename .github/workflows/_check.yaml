@@ -3,20 +3,43 @@ name: Check project in all branches
 on:
   workflow_call:
 
+permissions:
+  contents: read
+
 jobs:
-  check:
-    runs-on: ubuntu-22.04
+  workflow-security:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
-      - name: Setup python 3.10
-        uses: actions/setup-python@v5
+      - name: Run actionlint
+        run: >-
+          docker run --rm
+          -v "${GITHUB_WORKSPACE}:/repo"
+          -w /repo
+          rhysd/actionlint@sha256:b1934ee5f1c509618f2508e6eb47ee0d3520686341fec936f3b79331f9315667
+
+      - name: Run zizmor
+        uses: zizmorcore/zizmor-action@6599ee8b7a49aef6a770f63d261d214911a7ce02 # v0.6.0
         with:
-          python-version: '3.10'
+          version: "1.28.0"
+          advanced-security: false
+          annotations: true
+          persona: pedantic
 
-      - name: Install dependencies
-        run: make develop-ci
+  python-quality:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up Python 3.10
+        uses: ./.github/actions/setup-project
+        with:
+          python-version: "3.10"
 
       - name: Run CI linters
         run: make lint-ci
