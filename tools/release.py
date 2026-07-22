@@ -45,6 +45,10 @@ def _read_text(path: Path, description: str) -> str:
 def _write_text_atomic(path: Path, text: str, description: str) -> None:
     temporary: Path | None = None
     try:
+        try:
+            destination_mode = stat.S_IMODE(path.stat().st_mode)
+        except FileNotFoundError:
+            destination_mode = None
         with NamedTemporaryFile(
             "w",
             encoding="utf-8",
@@ -55,6 +59,8 @@ def _write_text_atomic(path: Path, text: str, description: str) -> None:
         ) as stream:
             temporary = Path(stream.name)
             stream.write(text)
+        if destination_mode is not None:
+            temporary.chmod(destination_mode)
         os.replace(temporary, path)
         temporary = None
     except OSError as exc:
@@ -99,8 +105,8 @@ def lock_version(path: Path) -> str:
 def update_comparison_links(text: str, *, previous: str, version: str) -> str:
     validate_next_version(version, previous)
     old = f"[Unreleased]: {_COMPARE_ROOT}/{previous}...HEAD"
-    definitions = re.findall(r"^\[Unreleased\]:[^\r\n]*$", text, re.M)
-    if len(definitions) != 1 or definitions[0] != old:
+    definitions = list(re.finditer(r"^\[Unreleased\]:[^\r\n]*$", text, re.M))
+    if len(definitions) != 1 or definitions[0].group() != old:
         raise ReleaseError(
             f"missing unique Unreleased link for {previous}; "
             "expected exactly one Unreleased definition"
@@ -108,11 +114,9 @@ def update_comparison_links(text: str, *, previous: str, version: str) -> str:
     release_link = f"[{version}]: {_COMPARE_ROOT}/{previous}...{version}"
     if re.search(rf"^\[{re.escape(version)}\]:[^\r\n]*$", text, re.M):
         raise ReleaseError(f"comparison link for {version} already exists")
-    return text.replace(
-        old,
-        f"[Unreleased]: {_COMPARE_ROOT}/{version}...HEAD\n{release_link}",
-        1,
-    )
+    start, end = definitions[0].span()
+    replacement = f"[Unreleased]: {_COMPARE_ROOT}/{version}...HEAD\n{release_link}"
+    return text[:start] + replacement + text[end:]
 
 
 def extract_release_notes(text: str, version: str) -> str:
@@ -211,8 +215,14 @@ def verify_wheel(directory: Path, version: str) -> None:
             names = [member.filename for member in members]
             _validate_member_names(names, "wheel")
             metadata_name = f"asyncly-{version}.dist-info/METADATA"
-            if metadata_name not in names:
-                raise ReleaseError("wheel must contain the exact METADATA path")
+            metadata_names = [
+                name for name in names if name.endswith(".dist-info/METADATA")
+            ]
+            if metadata_names != [metadata_name]:
+                raise ReleaseError(
+                    "wheel must contain the exact METADATA path as its only "
+                    "METADATA file"
+                )
             required = {
                 metadata_name,
                 "asyncly/client/retry.py",

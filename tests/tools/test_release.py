@@ -167,6 +167,21 @@ def test_update_comparison_links() -> None:
     )
 
 
+def test_update_comparison_links_rewrites_only_anchored_definition() -> None:
+    old = "https://github.com/andy-takker/asyncly/compare/0.9.0...HEAD"
+    new = "https://github.com/andy-takker/asyncly/compare/0.10.0...HEAD"
+    release = "https://github.com/andy-takker/asyncly/compare/0.9.0...0.10.0"
+    source = f"Prose quotes [Unreleased]: {old} here.\n\n[Unreleased]: {old}\n"
+    expected = (
+        f"Prose quotes [Unreleased]: {old} here.\n\n"
+        f"[Unreleased]: {new}\n[0.10.0]: {release}\n"
+    )
+
+    assert (
+        update_comparison_links(source, previous="0.9.0", version="0.10.0") == expected
+    )
+
+
 def test_update_comparison_links_requires_unique_unreleased_link() -> None:
     source = """[0.9.0]: https://github.com/andy-takker/asyncly/compare/0.8.0...0.9.0
 """
@@ -380,6 +395,16 @@ def test_verify_wheel_requires_exact_metadata_path(tmp_path: Path) -> None:
         verify_wheel(tmp_path, "0.10.0")
 
 
+def test_verify_wheel_rejects_additional_metadata_file(tmp_path: Path) -> None:
+    _write_wheel(
+        tmp_path / "asyncly-0.10.0-py3-none-any.whl",
+        extra="other-1.0.0.dist-info/METADATA",
+    )
+
+    with pytest.raises(ReleaseError, match="only METADATA"):
+        verify_wheel(tmp_path, "0.10.0")
+
+
 def test_verify_wheel_rejects_metadata_mismatch(tmp_path: Path) -> None:
     _write_wheel(
         tmp_path / "asyncly-0.10.0-py3-none-any.whl",
@@ -557,6 +582,30 @@ def test_main_updates_links(tmp_path: Path) -> None:
     )
     assert result == 0
     assert "[0.10.0]:" in changelog.read_text()
+
+
+def test_main_update_links_preserves_existing_mode(tmp_path: Path) -> None:
+    changelog = tmp_path / "CHANGELOG.md"
+    changelog.write_text(
+        "[Unreleased]: https://github.com/andy-takker/asyncly/compare/0.9.0...HEAD\n",
+        encoding="utf-8",
+    )
+    changelog.chmod(0o644)
+
+    result = main(
+        [
+            "update-links",
+            "--version",
+            "0.10.0",
+            "--previous",
+            "0.9.0",
+            "--changelog",
+            str(changelog),
+        ]
+    )
+
+    assert result == 0
+    assert stat.S_IMODE(changelog.stat().st_mode) == 0o644
 
 
 def test_main_validates_next_version(tmp_path: Path) -> None:
