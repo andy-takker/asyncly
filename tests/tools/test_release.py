@@ -1,6 +1,11 @@
 import hashlib
+import io
 import json
+import stat
 from pathlib import Path
+from tarfile import REGTYPE, SYMTYPE, TarFile, TarInfo
+from tarfile import open as open_tar
+from zipfile import ZipFile, ZipInfo
 
 import pytest
 
@@ -14,7 +19,107 @@ from tools.release import (
     stable_version,
     update_comparison_links,
     validate_next_version,
+    verify_sdist,
+    verify_wheel,
 )
+
+_PUBLIC_FILES = (
+    "asyncly/client/retry.py",
+    "asyncly/srvmocker/responses/faults.py",
+)
+
+
+def _metadata(version: str = "0.10.0", *, name: str = "asyncly") -> bytes:
+    return (
+        "Metadata-Version: 2.4\n"
+        f"Name: {name}\n"
+        f"Version: {version}\n"
+        "Requires-Python: <4,>=3.10\n\n"
+    ).encode()
+
+
+def _write_wheel(
+    path: Path,
+    *,
+    version: str = "0.10.0",
+    metadata: bytes | None = None,
+    metadata_path: str | None = None,
+    missing: str | None = None,
+    extra: str | None = None,
+    duplicate: str | None = None,
+    special: str | None = None,
+) -> None:
+    members = (
+        metadata_path or f"asyncly-{version}.dist-info/METADATA",
+        *_PUBLIC_FILES,
+    )
+    with ZipFile(path, "w") as archive:
+        for member in members:
+            if member == missing:
+                continue
+            contents = metadata if member.endswith("/METADATA") else b"contents"
+            if contents is None:
+                contents = _metadata(version)
+            if member == special:
+                info = ZipInfo(member)
+                info.create_system = 3
+                info.external_attr = (stat.S_IFLNK | 0o777) << 16
+                archive.writestr(info, b"target")
+            else:
+                archive.writestr(member, contents)
+        if extra is not None:
+            archive.writestr(extra, b"extra")
+        if duplicate is not None:
+            archive.writestr(duplicate, b"duplicate")
+
+
+def _add_tar_member(
+    archive: TarFile,
+    name: str,
+    contents: bytes,
+    *,
+    special: bool = False,
+) -> None:
+    info = TarInfo(name)
+    if special:
+        info.type = SYMTYPE
+        info.linkname = "target"
+    else:
+        info.type = REGTYPE
+        info.size = len(contents)
+    archive.addfile(info, io.BytesIO(contents))
+
+
+def _write_sdist(
+    path: Path,
+    *,
+    version: str = "0.10.0",
+    metadata: bytes | None = None,
+    missing: str | None = None,
+    extra: str | None = None,
+    duplicate: str | None = None,
+    special: str | None = None,
+) -> None:
+    prefix = f"asyncly-{version}/"
+    members = {
+        prefix + "PKG-INFO": metadata or _metadata(version),
+        prefix + "pyproject.toml": b"[project]\n",
+        prefix + _PUBLIC_FILES[0]: b"contents",
+        prefix + _PUBLIC_FILES[1]: b"contents",
+    }
+    with open_tar(path, "w:gz") as archive:
+        for name, contents in members.items():
+            if name != missing:
+                _add_tar_member(
+                    archive,
+                    name,
+                    contents,
+                    special=name == special,
+                )
+        if extra is not None:
+            _add_tar_member(archive, extra, b"extra")
+        if duplicate is not None:
+            _add_tar_member(archive, duplicate, b"duplicate")
 
 
 def test_stable_version_accepts_semver() -> None:
@@ -23,7 +128,15 @@ def test_stable_version_accepts_semver() -> None:
 
 @pytest.mark.parametrize(
     "value",
-    ["1.2", "v1.2.3", "1.2.3rc1", "01.2.3", "1.02.3", "1.2.03"],
+    [
+        "1.2",
+        "v1.2.3",
+        "1.2.3rc1",
+        "01.2.3",
+        "1.02.3",
+        "1.2.03",
+        "1.2٢.3",
+    ],
 )
 def test_stable_version_rejects_non_release_values(value: str) -> None:
     with pytest.raises(ReleaseError, match="stable X.Y.Z"):
@@ -69,6 +182,31 @@ def test_update_comparison_links_rejects_duplicate_unreleased_link() -> None:
         update_comparison_links(source, previous="0.9.0", version="0.10.0")
 
 
+def test_update_comparison_links_rejects_mixed_unreleased_definitions() -> None:
+    source = """[Unreleased]: https://github.com/andy-takker/asyncly/compare/0.9.0...HEAD
+[Unreleased]: https://example.com/conflicting
+"""
+    with pytest.raises(ReleaseError, match="exactly one Unreleased definition"):
+        update_comparison_links(source, previous="0.9.0", version="0.10.0")
+
+
+@pytest.mark.parametrize(
+    ("previous", "version"),
+    [("0.9.0", "0.9.0"), ("0.9.0", "invalid"), ("invalid", "0.10.0")],
+)
+def test_update_comparison_links_requires_increasing_stable_versions(
+    previous: str,
+    version: str,
+) -> None:
+    source = (
+        "[Unreleased]: "
+        f"https://github.com/andy-takker/asyncly/compare/{previous}...HEAD\n"
+    )
+
+    with pytest.raises(ReleaseError):
+        update_comparison_links(source, previous=previous, version=version)
+
+
 def test_update_comparison_links_rejects_existing_version_link() -> None:
     source = """[Unreleased]: https://github.com/andy-takker/asyncly/compare/0.9.0...HEAD
 [0.10.0]: https://github.com/andy-takker/asyncly/compare/0.9.0...0.10.0
@@ -81,6 +219,14 @@ def test_project_version(tmp_path: Path) -> None:
     pyproject = tmp_path / "pyproject.toml"
     pyproject.write_text('[project]\nname = "asyncly"\nversion = "0.10.0"\n')
     assert project_version(pyproject) == "0.10.0"
+
+
+def test_project_version_rejects_invalid_schema(tmp_path: Path) -> None:
+    pyproject = tmp_path / "pyproject.toml"
+    pyproject.write_text('name = "asyncly"\n', encoding="utf-8")
+
+    with pytest.raises(ReleaseError, match="invalid pyproject version schema"):
+        project_version(pyproject)
 
 
 def test_lock_version(tmp_path: Path) -> None:
@@ -105,6 +251,14 @@ def test_lock_version_rejects_duplicate_asyncly_packages(tmp_path: Path) -> None
         '[[package]]\nname = "asyncly"\nversion = "0.10.0"\n'
     )
     with pytest.raises(ReleaseError, match="exactly one asyncly package"):
+        lock_version(lock)
+
+
+def test_lock_version_rejects_invalid_schema(tmp_path: Path) -> None:
+    lock = tmp_path / "uv.lock"
+    lock.write_text('version = 1\npackage = "invalid"\n', encoding="utf-8")
+
+    with pytest.raises(ReleaseError, match="invalid uv.lock package schema"):
         lock_version(lock)
 
 
@@ -141,6 +295,19 @@ def test_extract_release_notes_rejects_empty_version_section() -> None:
 ## [0.9.0] - 2026-07-22
 """
     with pytest.raises(ReleaseError, match="empty changelog section for 0.10.0"):
+        extract_release_notes(changelog, "0.10.0")
+
+
+def test_extract_release_notes_rejects_duplicate_version_sections() -> None:
+    changelog = """## [0.10.0] - 2026-08-01
+
+First.
+
+## [0.10.0] - 2026-08-02
+
+Second.
+"""
+    with pytest.raises(ReleaseError, match="exactly one changelog section"):
         extract_release_notes(changelog, "0.10.0")
 
 
@@ -183,10 +350,193 @@ def test_artifact_manifest_rejects_unexpected_file(tmp_path: Path) -> None:
         artifact_manifest(tmp_path, "0.10.0")
 
 
+def test_artifact_manifest_allows_gitignore(tmp_path: Path) -> None:
+    (tmp_path / "asyncly-0.10.0-py3-none-any.whl").write_bytes(b"wheel")
+    (tmp_path / "asyncly-0.10.0.tar.gz").write_bytes(b"sdist")
+    (tmp_path / ".gitignore").write_text("*\n", encoding="utf-8")
+
+    assert len(artifact_manifest(tmp_path, "0.10.0")) == 2
+
+
 def test_manifest_is_json_serializable(tmp_path: Path) -> None:
     (tmp_path / "asyncly-0.10.0-py3-none-any.whl").write_bytes(b"wheel")
     (tmp_path / "asyncly-0.10.0.tar.gz").write_bytes(b"sdist")
     json.dumps(artifact_manifest(tmp_path, "0.10.0"))
+
+
+def test_verify_wheel_accepts_valid_archive(tmp_path: Path) -> None:
+    _write_wheel(tmp_path / "asyncly-0.10.0-py3-none-any.whl")
+
+    verify_wheel(tmp_path, "0.10.0")
+
+
+def test_verify_wheel_requires_exact_metadata_path(tmp_path: Path) -> None:
+    _write_wheel(
+        tmp_path / "asyncly-0.10.0-py3-none-any.whl",
+        metadata_path="wrong-0.10.0.dist-info/METADATA",
+    )
+
+    with pytest.raises(ReleaseError, match="exact METADATA"):
+        verify_wheel(tmp_path, "0.10.0")
+
+
+def test_verify_wheel_rejects_metadata_mismatch(tmp_path: Path) -> None:
+    _write_wheel(
+        tmp_path / "asyncly-0.10.0-py3-none-any.whl",
+        metadata=_metadata(name="other"),
+    )
+
+    with pytest.raises(ReleaseError, match="name/version metadata mismatch"):
+        verify_wheel(tmp_path, "0.10.0")
+
+
+def test_verify_wheel_rejects_requires_python_mismatch(tmp_path: Path) -> None:
+    metadata = _metadata().replace(b"<4,>=3.10", b">=3.10,<4")
+    _write_wheel(
+        tmp_path / "asyncly-0.10.0-py3-none-any.whl",
+        metadata=metadata,
+    )
+
+    with pytest.raises(ReleaseError, match="Requires-Python metadata mismatch"):
+        verify_wheel(tmp_path, "0.10.0")
+
+
+def test_verify_wheel_rejects_missing_public_file(tmp_path: Path) -> None:
+    _write_wheel(
+        tmp_path / "asyncly-0.10.0-py3-none-any.whl",
+        missing=_PUBLIC_FILES[0],
+    )
+
+    with pytest.raises(ReleaseError, match="wheel missing public files"):
+        verify_wheel(tmp_path, "0.10.0")
+
+
+def test_verify_wheel_rejects_duplicate_member(tmp_path: Path) -> None:
+    with pytest.warns(UserWarning, match="Duplicate name"):
+        _write_wheel(
+            tmp_path / "asyncly-0.10.0-py3-none-any.whl",
+            duplicate=_PUBLIC_FILES[0],
+        )
+
+    with pytest.raises(ReleaseError, match="unique member names"):
+        verify_wheel(tmp_path, "0.10.0")
+
+
+def test_verify_wheel_rejects_unsafe_member(tmp_path: Path) -> None:
+    _write_wheel(
+        tmp_path / "asyncly-0.10.0-py3-none-any.whl",
+        extra="../escape",
+    )
+
+    with pytest.raises(ReleaseError, match="unsafe member path"):
+        verify_wheel(tmp_path, "0.10.0")
+
+
+def test_verify_wheel_rejects_special_public_member(tmp_path: Path) -> None:
+    _write_wheel(
+        tmp_path / "asyncly-0.10.0-py3-none-any.whl",
+        special=_PUBLIC_FILES[0],
+    )
+
+    with pytest.raises(ReleaseError, match="regular file"):
+        verify_wheel(tmp_path, "0.10.0")
+
+
+def test_verify_wheel_rejects_non_utf8_metadata(tmp_path: Path) -> None:
+    _write_wheel(
+        tmp_path / "asyncly-0.10.0-py3-none-any.whl",
+        metadata=b"\xff",
+    )
+
+    with pytest.raises(ReleaseError, match="metadata is not valid UTF-8"):
+        verify_wheel(tmp_path, "0.10.0")
+
+
+def test_verify_wheel_rejects_malformed_metadata(tmp_path: Path) -> None:
+    _write_wheel(
+        tmp_path / "asyncly-0.10.0-py3-none-any.whl",
+        metadata=_metadata().replace(b"\n\n", b"\nName: duplicate\n\n"),
+    )
+
+    with pytest.raises(ReleaseError, match="metadata is malformed"):
+        verify_wheel(tmp_path, "0.10.0")
+
+
+def test_verify_wheel_validates_version_before_archive_access(tmp_path: Path) -> None:
+    with pytest.raises(ReleaseError, match="stable X.Y.Z"):
+        verify_wheel(tmp_path, "invalid")
+
+
+def test_verify_sdist_accepts_valid_archive(tmp_path: Path) -> None:
+    _write_sdist(tmp_path / "asyncly-0.10.0.tar.gz")
+
+    verify_sdist(tmp_path, "0.10.0")
+
+
+def test_verify_sdist_rejects_metadata_mismatch(tmp_path: Path) -> None:
+    _write_sdist(
+        tmp_path / "asyncly-0.10.0.tar.gz",
+        metadata=_metadata("0.9.0"),
+    )
+
+    with pytest.raises(ReleaseError, match="name/version metadata mismatch"):
+        verify_sdist(tmp_path, "0.10.0")
+
+
+def test_verify_sdist_rejects_requires_python_mismatch(tmp_path: Path) -> None:
+    metadata = _metadata().replace(b"<4,>=3.10", b">=3.10,<4")
+    _write_sdist(
+        tmp_path / "asyncly-0.10.0.tar.gz",
+        metadata=metadata,
+    )
+
+    with pytest.raises(ReleaseError, match="Requires-Python metadata mismatch"):
+        verify_sdist(tmp_path, "0.10.0")
+
+
+def test_verify_sdist_rejects_missing_public_file(tmp_path: Path) -> None:
+    _write_sdist(
+        tmp_path / "asyncly-0.10.0.tar.gz",
+        missing="asyncly-0.10.0/asyncly/client/retry.py",
+    )
+
+    with pytest.raises(ReleaseError, match="sdist missing public files"):
+        verify_sdist(tmp_path, "0.10.0")
+
+
+def test_verify_sdist_rejects_duplicate_member(tmp_path: Path) -> None:
+    _write_sdist(
+        tmp_path / "asyncly-0.10.0.tar.gz",
+        duplicate="asyncly-0.10.0/pyproject.toml",
+    )
+
+    with pytest.raises(ReleaseError, match="unique member names"):
+        verify_sdist(tmp_path, "0.10.0")
+
+
+def test_verify_sdist_rejects_unsafe_member(tmp_path: Path) -> None:
+    _write_sdist(
+        tmp_path / "asyncly-0.10.0.tar.gz",
+        extra="../escape",
+    )
+
+    with pytest.raises(ReleaseError, match="unsafe member path"):
+        verify_sdist(tmp_path, "0.10.0")
+
+
+def test_verify_sdist_rejects_special_required_member(tmp_path: Path) -> None:
+    _write_sdist(
+        tmp_path / "asyncly-0.10.0.tar.gz",
+        special="asyncly-0.10.0/asyncly/client/retry.py",
+    )
+
+    with pytest.raises(ReleaseError, match="regular file"):
+        verify_sdist(tmp_path, "0.10.0")
+
+
+def test_verify_sdist_validates_version_before_archive_access(tmp_path: Path) -> None:
+    with pytest.raises(ReleaseError, match="stable X.Y.Z"):
+        verify_sdist(tmp_path, "invalid")
 
 
 def test_main_updates_links(tmp_path: Path) -> None:
@@ -207,6 +557,162 @@ def test_main_updates_links(tmp_path: Path) -> None:
     )
     assert result == 0
     assert "[0.10.0]:" in changelog.read_text()
+
+
+def test_main_validates_next_version(tmp_path: Path) -> None:
+    pyproject = tmp_path / "pyproject.toml"
+    pyproject.write_text('[project]\nversion = "0.9.0"\n', encoding="utf-8")
+
+    result = main(
+        [
+            "validate-next",
+            "--version",
+            "0.10.0",
+            "--pyproject",
+            str(pyproject),
+        ]
+    )
+
+    assert result == 0
+
+
+def test_main_validates_release(tmp_path: Path) -> None:
+    pyproject = tmp_path / "pyproject.toml"
+    pyproject.write_text('[project]\nversion = "0.10.0"\n', encoding="utf-8")
+    lockfile = tmp_path / "uv.lock"
+    lockfile.write_text(
+        'version = 1\n[[package]]\nname = "asyncly"\nversion = "0.10.0"\n',
+        encoding="utf-8",
+    )
+    changelog = tmp_path / "CHANGELOG.md"
+    changelog.write_text(
+        "## [0.10.0] - 2026-08-01\n\n### Added\n- Item.\n",
+        encoding="utf-8",
+    )
+
+    result = main(
+        [
+            "validate-release",
+            "--version",
+            "0.10.0",
+            "--pyproject",
+            str(pyproject),
+            "--lockfile",
+            str(lockfile),
+            "--changelog",
+            str(changelog),
+        ]
+    )
+
+    assert result == 0
+
+
+def test_main_writes_release_notes(tmp_path: Path) -> None:
+    changelog = tmp_path / "CHANGELOG.md"
+    changelog.write_text(
+        "## [0.10.0] - 2026-08-01\n\n### Added\n- Item.\n",
+        encoding="utf-8",
+    )
+    output = tmp_path / "release-notes.md"
+
+    result = main(
+        [
+            "notes",
+            "--version",
+            "0.10.0",
+            "--changelog",
+            str(changelog),
+            "--output",
+            str(output),
+        ]
+    )
+
+    assert result == 0
+    assert output.read_text(encoding="utf-8") == "### Added\n- Item.\n"
+
+
+def test_main_validates_artifacts_and_writes_manifest(tmp_path: Path) -> None:
+    _write_wheel(tmp_path / "asyncly-0.10.0-py3-none-any.whl")
+    _write_sdist(tmp_path / "asyncly-0.10.0.tar.gz")
+    (tmp_path / ".gitignore").write_text("*\n", encoding="utf-8")
+    output = tmp_path / "SHA256SUMS.json"
+
+    result = main(
+        [
+            "artifacts",
+            "--version",
+            "0.10.0",
+            "--directory",
+            str(tmp_path),
+            "--output",
+            str(output),
+        ]
+    )
+
+    assert result == 0
+    assert json.loads(output.read_text(encoding="utf-8")) == artifact_manifest(
+        tmp_path, "0.10.0"
+    )
+
+
+def test_main_update_links_does_not_mutate_on_validation_failure(
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    changelog = tmp_path / "CHANGELOG.md"
+    original = "[Unreleased]: https://example.com/conflicting\n"
+    changelog.write_text(original, encoding="utf-8")
+
+    result = main(
+        [
+            "update-links",
+            "--version",
+            "0.10.0",
+            "--previous",
+            "0.9.0",
+            "--changelog",
+            str(changelog),
+        ]
+    )
+
+    assert result == 1
+    assert changelog.read_text(encoding="utf-8") == original
+    assert capsys.readouterr().err.startswith("release validation failed:")
+
+
+def test_main_notes_cleans_up_after_atomic_replace_failure(
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    changelog = tmp_path / "CHANGELOG.md"
+    changelog.write_text(
+        "## [0.10.0] - 2026-08-01\n\n### Added\n- Item.\n",
+        encoding="utf-8",
+    )
+    output = tmp_path / "release-notes.md"
+
+    def fail_replace(source: object, destination: object) -> None:
+        raise OSError("replace failed")
+
+    monkeypatch.setattr("os.replace", fail_replace)
+
+    result = main(
+        [
+            "notes",
+            "--version",
+            "0.10.0",
+            "--changelog",
+            str(changelog),
+            "--output",
+            str(output),
+        ]
+    )
+
+    assert result == 1
+    assert not output.exists()
+    assert [path.name for path in tmp_path.iterdir()] == ["CHANGELOG.md"]
+    assert capsys.readouterr().err.startswith("release validation failed:")
 
 
 def test_main_reports_release_mismatch(
@@ -234,5 +740,170 @@ def test_main_reports_release_mismatch(
             str(changelog),
         ]
     )
+    assert result == 1
+    assert capsys.readouterr().err.startswith("release validation failed:")
+
+
+def test_main_artifacts_does_not_overwrite_distribution_alias(
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    wheel = tmp_path / "asyncly-0.10.0-py3-none-any.whl"
+    _write_wheel(wheel)
+    _write_sdist(tmp_path / "asyncly-0.10.0.tar.gz")
+    original = wheel.read_bytes()
+
+    result = main(
+        [
+            "artifacts",
+            "--version",
+            "0.10.0",
+            "--directory",
+            str(tmp_path),
+            "--output",
+            str(wheel),
+        ]
+    )
+
+    assert result == 1
+    assert wheel.read_bytes() == original
+    assert capsys.readouterr().err.startswith("release validation failed:")
+
+
+def test_main_artifacts_reports_output_resolution_failure(
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    def fail_resolve(path: Path) -> Path:
+        raise OSError("resolution failed")
+
+    monkeypatch.setattr(Path, "resolve", fail_resolve)
+
+    result = main(
+        [
+            "artifacts",
+            "--version",
+            "0.10.0",
+            "--directory",
+            str(tmp_path),
+            "--output",
+            str(tmp_path / "SHA256SUMS.json"),
+        ]
+    )
+
+    assert result == 1
+    assert capsys.readouterr().err.startswith("release validation failed:")
+
+
+def test_main_validate_release_reports_missing_pyproject(
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    result = main(
+        [
+            "validate-release",
+            "--version",
+            "0.10.0",
+            "--pyproject",
+            str(tmp_path / "missing.toml"),
+            "--lockfile",
+            str(tmp_path / "uv.lock"),
+            "--changelog",
+            str(tmp_path / "CHANGELOG.md"),
+        ]
+    )
+
+    assert result == 1
+    assert capsys.readouterr().err.startswith("release validation failed:")
+
+
+def test_main_validate_release_reports_malformed_pyproject(
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    pyproject = tmp_path / "pyproject.toml"
+    pyproject.write_text("[project\n", encoding="utf-8")
+
+    result = main(
+        [
+            "validate-release",
+            "--version",
+            "0.10.0",
+            "--pyproject",
+            str(pyproject),
+            "--lockfile",
+            str(tmp_path / "uv.lock"),
+            "--changelog",
+            str(tmp_path / "CHANGELOG.md"),
+        ]
+    )
+
+    assert result == 1
+    assert capsys.readouterr().err.startswith("release validation failed:")
+
+
+def test_main_notes_reports_missing_changelog(
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    result = main(
+        [
+            "notes",
+            "--version",
+            "0.10.0",
+            "--changelog",
+            str(tmp_path / "missing.md"),
+            "--output",
+            str(tmp_path / "notes.md"),
+        ]
+    )
+
+    assert result == 1
+    assert capsys.readouterr().err.startswith("release validation failed:")
+
+
+def test_main_artifacts_reports_corrupt_wheel(
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    (tmp_path / "asyncly-0.10.0-py3-none-any.whl").write_bytes(b"corrupt")
+    _write_sdist(tmp_path / "asyncly-0.10.0.tar.gz")
+
+    result = main(
+        [
+            "artifacts",
+            "--version",
+            "0.10.0",
+            "--directory",
+            str(tmp_path),
+            "--output",
+            str(tmp_path / "SHA256SUMS.json"),
+        ]
+    )
+
+    assert result == 1
+    assert capsys.readouterr().err.startswith("release validation failed:")
+
+
+def test_main_artifacts_reports_corrupt_sdist(
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    _write_wheel(tmp_path / "asyncly-0.10.0-py3-none-any.whl")
+    (tmp_path / "asyncly-0.10.0.tar.gz").write_bytes(b"corrupt")
+
+    result = main(
+        [
+            "artifacts",
+            "--version",
+            "0.10.0",
+            "--directory",
+            str(tmp_path),
+            "--output",
+            str(tmp_path / "SHA256SUMS.json"),
+        ]
+    )
+
     assert result == 1
     assert capsys.readouterr().err.startswith("release validation failed:")
