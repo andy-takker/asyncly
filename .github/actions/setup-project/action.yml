@@ -1,0 +1,23 @@
+name: Set up Asyncly
+description: Install uv, the requested Python, and locked project dependencies
+
+inputs:
+  python-version:
+    description: Python version to install
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Install uv and Python
+      uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+      with:
+        version: "0.11.31"
+        python-version: ${{ inputs.python-version }}
+        enable-cache: true
+        cache-python: true
+        activate-environment: true
+
+    - name: Sync locked dependencies
+      shell: bash
+      run: uv sync --locked --all-groups --all-extras
