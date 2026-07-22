@@ -30,6 +30,8 @@ jobs:
           python-version: "3.10"
 
       - name: Run zizmor
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: uv run zizmor --persona pedantic --format github .
 
   python-quality:
