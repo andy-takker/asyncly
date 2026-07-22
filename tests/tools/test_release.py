@@ -9,6 +9,7 @@ from tools.release import (
     artifact_manifest,
     extract_release_notes,
     lock_version,
+    main,
     project_version,
     stable_version,
     update_comparison_links,
@@ -186,3 +187,52 @@ def test_manifest_is_json_serializable(tmp_path: Path) -> None:
     (tmp_path / "asyncly-0.10.0-py3-none-any.whl").write_bytes(b"wheel")
     (tmp_path / "asyncly-0.10.0.tar.gz").write_bytes(b"sdist")
     json.dumps(artifact_manifest(tmp_path, "0.10.0"))
+
+
+def test_main_updates_links(tmp_path: Path) -> None:
+    changelog = tmp_path / "CHANGELOG.md"
+    changelog.write_text(
+        "[Unreleased]: https://github.com/andy-takker/asyncly/compare/0.9.0...HEAD\n"
+    )
+    result = main(
+        [
+            "update-links",
+            "--version",
+            "0.10.0",
+            "--previous",
+            "0.9.0",
+            "--changelog",
+            str(changelog),
+        ]
+    )
+    assert result == 0
+    assert "[0.10.0]:" in changelog.read_text()
+
+
+def test_main_reports_release_mismatch(
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    pyproject = tmp_path / "pyproject.toml"
+    pyproject.write_text('[project]\nname = "asyncly"\nversion = "0.9.0"\n')
+    lockfile = tmp_path / "uv.lock"
+    lockfile.write_text(
+        'version = 1\n[[package]]\nname = "asyncly"\nversion = "0.10.0"\n'
+    )
+    changelog = tmp_path / "CHANGELOG.md"
+    changelog.write_text("## [0.10.0] - 2026-08-01\n\n### Added\n- Item.\n")
+    result = main(
+        [
+            "validate-release",
+            "--version",
+            "0.10.0",
+            "--pyproject",
+            str(pyproject),
+            "--lockfile",
+            str(lockfile),
+            "--changelog",
+            str(changelog),
+        ]
+    )
+    assert result == 1
+    assert capsys.readouterr().err.startswith("release validation failed:")
