@@ -8,11 +8,14 @@ permissions:
 
 jobs:
   workflow-security:
+    name: Workflow security
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
       - name: Checkout code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
 
       - name: Run actionlint
         run: >-
@@ -24,17 +27,20 @@ jobs:
       - name: Run zizmor
         uses: zizmorcore/zizmor-action@6599ee8b7a49aef6a770f63d261d214911a7ce02 # v0.6.0
         with:
-          version: "1.28.0"
+          version: "1.27.0"
           advanced-security: false
           annotations: true
           persona: pedantic
 
   python-quality:
+    name: Python quality
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
       - name: Checkout code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
 
       - name: Set up Python 3.10
         uses: ./.github/actions/setup-project
