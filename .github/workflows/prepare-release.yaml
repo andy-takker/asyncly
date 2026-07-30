@@ -60,11 +60,18 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          LOCAL_TAG="$(git tag --list "${RELEASE_VERSION}")"
+          test -z "${LOCAL_TAG}"
           REMOTE_TAG="$(git ls-remote --tags origin "refs/tags/${RELEASE_VERSION}")"
           test -z "${REMOTE_TAG}"
           REMOTE_BRANCH="$(git ls-remote --heads origin "refs/heads/release/${RELEASE_VERSION}")"
           test -z "${REMOTE_BRANCH}"
           ! gh release view "${RELEASE_VERSION}" >/dev/null 2>&1
+
+      - name: Require a tracked changelog fragment
+        run: |
+          TRACKED_FRAGMENTS="$(git ls-files -- 'changes/*.md' ':!changes/README.md' ':!changes/template.md')"
+          test -n "${TRACKED_FRAGMENTS}"
 
       - name: Build changelog
         run: >-
