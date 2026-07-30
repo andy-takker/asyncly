@@ -131,12 +131,69 @@ jobs:
             dist/*.tar.gz
 
       - name: Create GitHub Release
-        uses: softprops/action-gh-release@3d0d9888cb7fd7b750713d6e236d1fcb99157228 # v3.0.2
-        with:
-          name: ${{ inputs.version }}
-          tag_name: ${{ inputs.version }}
-          body_path: release-notes.md
-          draft: false
-          prerelease: false
-          files: |
+        env:
+          GH_REPO: ${{ github.repository }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+
+          release_json="${RUNNER_TEMP}/github-release.json"
+          if gh release view "${RELEASE_VERSION}" \
+            --json assets,body,isDraft,isPrerelease,name,tagName \
+            > "${release_json}"; then
+            is_draft="$(jq -r '.isDraft' "${release_json}")"
+            if [[ "${is_draft}" == "true" ]]; then
+              gh release delete "${RELEASE_VERSION}" --yes
+            elif [[ "${is_draft}" != "false" ]]; then
+              echo "Existing release has an invalid draft state" >&2
+              exit 1
+            else
+              existing_tag="$(jq -r '.tagName' "${release_json}")"
+              existing_name="$(jq -r '.name' "${release_json}")"
+              is_prerelease="$(jq -r '.isPrerelease' "${release_json}")"
+              if [[ "${existing_tag}" != "${RELEASE_VERSION}" ]] ||
+                [[ "${existing_name}" != "${RELEASE_VERSION}" ]] ||
+                [[ "${is_prerelease}" != "false" ]]; then
+                echo "Published release metadata does not match the verified release" >&2
+                exit 1
+              fi
+
+              existing_notes="${RUNNER_TEMP}/github-release-notes.md"
+              jq -j '.body' "${release_json}" > "${existing_notes}"
+              if ! cmp --silent release-notes.md "${existing_notes}"; then
+                echo "Published release notes do not match the verified release" >&2
+                exit 1
+              fi
+
+              expected_assets="${RUNNER_TEMP}/expected-release-assets.txt"
+              published_assets="${RUNNER_TEMP}/published-release-assets.txt"
+              for asset in dist/*; do
+                basename "${asset}"
+              done | sort > "${expected_assets}"
+              jq -r '.assets[].name' "${release_json}" |
+                sort > "${published_assets}"
+              if ! cmp --silent "${expected_assets}" "${published_assets}"; then
+                echo "Published release assets do not match the verified release" >&2
+                exit 1
+              fi
+
+              download_dir="${RUNNER_TEMP}/published-release-assets"
+              mkdir "${download_dir}"
+              gh release download "${RELEASE_VERSION}" --dir "${download_dir}"
+              for asset in dist/*; do
+                asset_name="$(basename "${asset}")"
+                if ! cmp --silent \
+                  "${asset}" "${download_dir}/${asset_name}"; then
+                  echo "Published release asset ${asset_name} differs from the verified artifact" >&2
+                  exit 1
+                fi
+              done
+              exit 0
+            fi
+          fi
+
+          gh release create "${RELEASE_VERSION}" \
+            --verify-tag \
+            --title "${RELEASE_VERSION}" \
+            --notes-file release-notes.md \
             dist/*
