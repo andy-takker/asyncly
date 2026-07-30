@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- towncrier release notes start -->
 
+## [0.10.1] - 2026-07-30
+### Fixed
+
+- Use the installed Cosign CLI for release signing so project Python settings
+  cannot interfere with Sigstore's environment.
+### Documentation
+
+- Added the project logo to the README and documentation header and favicon.
 ## [0.10.0] - 2026-07-30
 ### Changed
 
@@ -160,7 +168,8 @@ No functional changes to the library — documentation and packaging only.
 ### Fixed
 - `SequenceResponse([])` now raises `ValueError` eagerly instead of failing on first use.
 
-[Unreleased]: https://github.com/andy-takker/asyncly/compare/0.10.0...HEAD
+[Unreleased]: https://github.com/andy-takker/asyncly/compare/0.10.1...HEAD
+[0.10.1]: https://github.com/andy-takker/asyncly/compare/0.10.0...0.10.1
 [0.10.0]: https://github.com/andy-takker/asyncly/compare/0.9.0...0.10.0
 [0.9.0]: https://github.com/andy-takker/asyncly/compare/0.8.0...0.9.0
 [0.8.0]: https://github.com/andy-takker/asyncly/compare/0.7.1...0.8.0
