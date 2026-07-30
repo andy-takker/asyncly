@@ -10,25 +10,27 @@
       
       
       
+        <link rel="canonical" href="https://andy-takker.github.io/asyncly/dev/superpowers/specs/2026-07-22-actions-hardening-design/">
+      
       
       
       
         
       
       
-      <link rel="icon" href="/asyncly/dev/assets/images/favicon.png">
+      <link rel="icon" href="../../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
     
     
       
-        <title>asyncly</title>
+        <title>Asyncly CI, Release, and Changelog Hardening Design - asyncly</title>
       
     
     
-      <link rel="stylesheet" href="/asyncly/dev/assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.484c7ddc.min.css">
       
         
-        <link rel="stylesheet" href="/asyncly/dev/assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
       
       
 
@@ -47,9 +49,9 @@
       
     
     
-      <link rel="stylesheet" href="/asyncly/dev/assets/_mkdocstrings.css">
+      <link rel="stylesheet" href="../../../assets/_mkdocstrings.css">
     
-    <script>__md_scope=new URL("/asyncly/dev",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -73,6 +75,11 @@
     <label class="md-overlay" for="__drawer"></label>
     <div data-md-component="skip">
       
+        
+        <a href="#asyncly-ci-release-and-changelog-hardening-design" class="md-skip">
+          Skip to content
+        </a>
+      
     </div>
     <div data-md-component="announce">
       
@@ -87,7 +94,7 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="/asyncly/dev/." title="asyncly" class="md-header__button md-logo" aria-label="asyncly" data-md-component="logo">
+    <a href="../../.." title="asyncly" class="md-header__button md-logo" aria-label="asyncly" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -107,7 +114,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              
+              Asyncly CI, Release, and Changelog Hardening Design
             
           </span>
         </div>
@@ -220,7 +227,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="/asyncly/dev/." class="md-tabs__link">
+      <a href="../../.." class="md-tabs__link">
         
   
   
@@ -239,7 +246,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="/asyncly/dev/installation/" class="md-tabs__link">
+      <a href="../../../installation/" class="md-tabs__link">
         
   
   
@@ -258,7 +265,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="/asyncly/dev/quickstart/" class="md-tabs__link">
+      <a href="../../../quickstart/" class="md-tabs__link">
         
   
   
@@ -279,7 +286,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="/asyncly/dev/why/testing-strategies/" class="md-tabs__link">
+        <a href="../../../why/testing-strategies/" class="md-tabs__link">
           
   
   
@@ -301,7 +308,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="/asyncly/dev/guide/http-client/" class="md-tabs__link">
+        <a href="../../../guide/http-client/" class="md-tabs__link">
           
   
   
@@ -323,7 +330,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="/asyncly/dev/reference/" class="md-tabs__link">
+        <a href="../../../reference/" class="md-tabs__link">
           
   
   
@@ -343,7 +350,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="/asyncly/dev/changelog/" class="md-tabs__link">
+      <a href="../../../changelog/" class="md-tabs__link">
         
   
   
@@ -378,7 +385,7 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="/asyncly/dev/." title="asyncly" class="md-nav__button md-logo" aria-label="asyncly" data-md-component="logo">
+    <a href="../../.." title="asyncly" class="md-nav__button md-logo" aria-label="asyncly" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -408,7 +415,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/asyncly/dev/." class="md-nav__link">
+      <a href="../../.." class="md-nav__link">
         
   
   
@@ -435,7 +442,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/asyncly/dev/installation/" class="md-nav__link">
+      <a href="../../../installation/" class="md-nav__link">
         
   
   
@@ -462,7 +469,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/asyncly/dev/quickstart/" class="md-nav__link">
+      <a href="../../../quickstart/" class="md-nav__link">
         
   
   
@@ -545,7 +552,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/asyncly/dev/why/testing-strategies/" class="md-nav__link">
+      <a href="../../../why/testing-strategies/" class="md-nav__link">
         
   
   
@@ -652,7 +659,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/asyncly/dev/guide/http-client/" class="md-nav__link">
+      <a href="../../../guide/http-client/" class="md-nav__link">
         
   
   
@@ -680,7 +687,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/asyncly/dev/guide/response-handlers/" class="md-nav__link">
+      <a href="../../../guide/response-handlers/" class="md-nav__link">
         
   
   
@@ -708,7 +715,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/asyncly/dev/guide/instrumentation/" class="md-nav__link">
+      <a href="../../../guide/instrumentation/" class="md-nav__link">
         
   
   
@@ -736,7 +743,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/asyncly/dev/guide/mock-server/" class="md-nav__link">
+      <a href="../../../guide/mock-server/" class="md-nav__link">
         
   
   
@@ -764,7 +771,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/asyncly/dev/guide/request-matching/" class="md-nav__link">
+      <a href="../../../guide/request-matching/" class="md-nav__link">
         
   
   
@@ -792,7 +799,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/asyncly/dev/guide/responses/" class="md-nav__link">
+      <a href="../../../guide/responses/" class="md-nav__link">
         
   
   
@@ -820,7 +827,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/asyncly/dev/guide/proxy-testing/" class="md-nav__link">
+      <a href="../../../guide/proxy-testing/" class="md-nav__link">
         
   
   
@@ -848,7 +855,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/asyncly/dev/guide/pytest-plugin/" class="md-nav__link">
+      <a href="../../../guide/pytest-plugin/" class="md-nav__link">
         
   
   
@@ -876,7 +883,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/asyncly/dev/guide/contributing/" class="md-nav__link">
+      <a href="../../../guide/contributing/" class="md-nav__link">
         
   
   
@@ -946,7 +953,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="/asyncly/dev/reference/" class="md-nav__link ">
+            <a href="../../../reference/" class="md-nav__link ">
               
   
   
@@ -990,7 +997,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/asyncly/dev/reference/client/" class="md-nav__link">
+      <a href="../../../reference/client/" class="md-nav__link">
         
   
   
@@ -1018,7 +1025,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/asyncly/dev/reference/handlers/" class="md-nav__link">
+      <a href="../../../reference/handlers/" class="md-nav__link">
         
   
   
@@ -1046,7 +1053,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/asyncly/dev/reference/metrics/" class="md-nav__link">
+      <a href="../../../reference/metrics/" class="md-nav__link">
         
   
   
@@ -1074,7 +1081,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/asyncly/dev/reference/srvmocker/" class="md-nav__link">
+      <a href="../../../reference/srvmocker/" class="md-nav__link">
         
   
   
@@ -1102,7 +1109,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/asyncly/dev/reference/responses/" class="md-nav__link">
+      <a href="../../../reference/responses/" class="md-nav__link">
         
   
   
@@ -1130,7 +1137,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/asyncly/dev/reference/serializers/" class="md-nav__link">
+      <a href="../../../reference/serializers/" class="md-nav__link">
         
   
   
@@ -1165,7 +1172,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/asyncly/dev/changelog/" class="md-nav__link">
+      <a href="../../../changelog/" class="md-nav__link">
         
   
   
@@ -1202,6 +1209,226 @@
   
   
   
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#goals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goals
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#non-goals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Non-goals
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#workflow-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Workflow Architecture
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Workflow Architecture">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ci-orchestrator" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CI orchestrator
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#shared-project-setup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Shared project setup
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ci-gates" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CI Gates
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="CI Gates">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#workflow-security-and-syntax" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Workflow security and syntax
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#python-quality" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Python quality
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#documentation-and-package-verification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Documentation and package verification
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#changelog-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Changelog Model
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#release-preparation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Release Preparation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tag-triggered-release" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tag-triggered Release
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#permissions-and-failure-handling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Permissions and Failure Handling
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#documentation-deployment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Documentation Deployment
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#repository-rulesets" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Repository Rulesets
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rollout" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rollout
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#acceptance-criteria" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Acceptance Criteria
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
   
 </nav>
                   </div>
@@ -1214,8 +1441,282 @@
               
               <article class="md-content__inner md-typeset">
                 
-  <h1>404 - Not found</h1>
+                  
 
+
+  
+  
+
+
+<h1 id="asyncly-ci-release-and-changelog-hardening-design">Asyncly CI, Release, and Changelog Hardening Design<a class="headerlink" href="#asyncly-ci-release-and-changelog-hardening-design" title="Permanent link">&para;</a></h1>
+<h2 id="summary">Summary<a class="headerlink" href="#summary" title="Permanent link">&para;</a></h2>
+<p>Harden Asyncly's GitHub Actions without replacing the project's existing release
+model or versioned documentation system. The target is the agreed "2+" scope:
+secure and complete CI, a stable required check, tag-safe releases, artifact
+provenance, a tested minimum-dependency lane, and Towncrier-based changelog
+automation.</p>
+<p>The design retains reusable workflows, PyPI trusted publishing, Sigstore signing,
+and Mike-managed documentation. It does not introduce release-please, automatic
+tagging, or a new Pages backend.</p>
+<h2 id="goals">Goals<a class="headerlink" href="#goals" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Run the same meaningful quality gates on pull requests, merge-queue commits,
+  <code>master</code>, and release tags.</li>
+<li>Expose one stable <code>CI required</code> status for the default-branch ruleset.</li>
+<li>Remove deprecated GitHub Actions runtimes and pin every external action to a
+  full commit SHA.</li>
+<li>Use <code>setup-uv</code>, dependency caching, and locked installs.</li>
+<li>Test all declared Python versions, including Python 3.14, plus the minimum
+  supported <code>aiohttp</code> version.</li>
+<li>Verify distributions by metadata and isolated wheel installation before they
+  can reach PyPI.</li>
+<li>Make releases tag-only, validate the tag against project metadata, and publish
+  the exact artifacts that passed verification.</li>
+<li>Add GitHub build-provenance attestations while preserving downloadable Sigstore
+  bundles.</li>
+<li>Assemble <code>CHANGELOG.md</code> from reviewable fragments and generate release PRs.</li>
+<li>Enable branch and tag rulesets only after the new status names have been
+  observed in a real pull request.</li>
+</ul>
+<h2 id="non-goals">Non-goals<a class="headerlink" href="#non-goals" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Migrating to release-please or generating release prose from commit messages.</li>
+<li>Automatically creating release tags after a release PR merges.</li>
+<li>Replacing Mike or the <code>gh-pages</code> branch with the GitHub Pages artifact backend.</li>
+<li>Adding path-filtered CI, a broad operating-system matrix, or a merge queue.
+  The workflow supports the <code>merge_group</code> event, but enabling a repository merge
+  queue is a separate future decision.</li>
+<li>Refactoring library runtime code.</li>
+</ul>
+<h2 id="workflow-architecture">Workflow Architecture<a class="headerlink" href="#workflow-architecture" title="Permanent link">&para;</a></h2>
+<h3 id="ci-orchestrator">CI orchestrator<a class="headerlink" href="#ci-orchestrator" title="Permanent link">&para;</a></h3>
+<p>Replace the branch-push-only feature pipeline with a single CI orchestrator. It
+runs for:</p>
+<ul>
+<li><code>pull_request</code> targeting <code>master</code>;</li>
+<li><code>merge_group</code>;</li>
+<li>pushes to <code>master</code>;</li>
+<li><code>workflow_dispatch</code> for release branches and diagnostics.</li>
+</ul>
+<p>The orchestrator calls focused reusable workflows for static checks, test
+matrices, documentation, and package verification. A final job named
+<code>CI required</code> uses <code>if: always()</code> and fails unless every required dependency is
+either successful or intentionally skipped. Repository settings require only
+this stable status, so internal matrix changes do not invalidate the ruleset.</p>
+<h3 id="shared-project-setup">Shared project setup<a class="headerlink" href="#shared-project-setup" title="Permanent link">&para;</a></h3>
+<p>A repository-local composite action centralizes repeated environment setup:</p>
+<ul>
+<li>install a selected Python version through <code>setup-uv</code>;</li>
+<li>enable the uv cache;</li>
+<li>run a locked dependency sync with the requested extras and groups.</li>
+</ul>
+<p>External actions used by the composite action and workflows are pinned to full
+commit SHAs. Dependabot continues to update GitHub Actions references in a
+grouped pull request.</p>
+<p>The publish job does not use the full project setup because it only needs uv and
+the already-built distributions.</p>
+<h2 id="ci-gates">CI Gates<a class="headerlink" href="#ci-gates" title="Permanent link">&para;</a></h2>
+<h3 id="workflow-security-and-syntax">Workflow security and syntax<a class="headerlink" href="#workflow-security-and-syntax" title="Permanent link">&para;</a></h3>
+<p>Run actionlint and zizmor before the more expensive test jobs. They validate
+workflow syntax, expressions, permissions, unsafe interpolation, and action
+pinning. The workflow starts with no token permissions and grants the minimum at
+job level.</p>
+<h3 id="python-quality">Python quality<a class="headerlink" href="#python-quality" title="Permanent link">&para;</a></h3>
+<p>Static checks cover <code>asyncly</code>, <code>tests</code>, and <code>examples</code>:</p>
+<ul>
+<li><code>ruff format --check</code>;</li>
+<li><code>ruff check</code>;</li>
+<li>mypy for the package.</li>
+</ul>
+<p>The main test matrix runs on Python 3.10 through 3.14 using the committed lockfile
+and all supported extras. Coverage remains at or above the configured 90 percent
+threshold. The normal pytest invocation includes the executable examples instead
+of limiting collection to <code>tests/</code>. Once the 3.14 lane passes, project metadata
+adds the matching Python classifier.</p>
+<p>A separate compatibility job installs the project's lowest supported direct
+dependency set, including <code>aiohttp==3.13.3</code>, and runs the core suite. This lane
+detects accidental reliance on APIs introduced after the declared minimum.</p>
+<h3 id="documentation-and-package-verification">Documentation and package verification<a class="headerlink" href="#documentation-and-package-verification" title="Permanent link">&para;</a></h3>
+<p>Every pull request builds documentation with <code>mkdocs build --strict</code>; deployment
+remains separate.</p>
+<p>The package job builds wheel and sdist once, then verifies:</p>
+<ul>
+<li>standard package metadata;</li>
+<li>expected name, version, Python constraint, and public files;</li>
+<li>isolated installation of the wheel outside the source tree;</li>
+<li>imports of the public retry and srvmocker APIs;</li>
+<li>SHA-256 digests for later release steps.</li>
+</ul>
+<p>The verified files are uploaded as one workflow artifact. Release workflows use
+artifacts built and checked in their own tag-triggered run, so the published bytes
+come from the exact tagged commit.</p>
+<h2 id="changelog-model">Changelog Model<a class="headerlink" href="#changelog-model" title="Permanent link">&para;</a></h2>
+<p>Towncrier is the changelog source assembler. Significant pull requests add one or
+more fragments under <code>changes/</code>:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>changes/123.added.md
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>changes/123.fixed.md
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>changes/123.breaking.md
+</code></pre></div>
+<p>Supported fragment types are:</p>
+<ul>
+<li><code>added</code>;</li>
+<li><code>changed</code>;</li>
+<li><code>breaking</code>;</li>
+<li><code>fixed</code>;</li>
+<li><code>deprecated</code>;</li>
+<li><code>security</code>;</li>
+<li><code>docs</code>.</li>
+</ul>
+<p>A custom Towncrier template preserves the existing Keep a Changelog structure,
+including the explicit <code>Changed (breaking)</code> heading and comparison links.</p>
+<p>For ordinary pull requests, CI requires a fragment relative to <code>origin/master</code>.
+A maintainer may apply <code>skip-changelog</code> for changes that should not appear in
+release notes. Generated release pull requests use the <code>release</code> label and are
+exempt because their fragments have already been consumed. Commit-message markers
+cannot bypass this policy.</p>
+<h2 id="release-preparation">Release Preparation<a class="headerlink" href="#release-preparation" title="Permanent link">&para;</a></h2>
+<p>A manually dispatched <code>Prepare release</code> workflow accepts a stable <code>X.Y.Z</code>
+version and a <code>dry_run</code> flag. Before changing files it verifies that:</p>
+<ul>
+<li>the input is valid stable SemVer and is greater than the current version;</li>
+<li>the workflow is operating from the current <code>master</code> commit;</li>
+<li>no local or remote tag and no GitHub Release exists for that version;</li>
+<li>releasable Towncrier fragments exist.</li>
+</ul>
+<p>Preparation performs these deterministic changes:</p>
+<ol>
+<li>Assemble the dated changelog section from fragments.</li>
+<li>Update <code>pyproject.toml</code> and <code>uv.lock</code> to the requested version.</li>
+<li>Point <code>[Unreleased]</code> at the new version and add the new comparison link.</li>
+<li>Remove the consumed fragments.</li>
+<li>Verify the generated diff and run the focused release-helper tests.</li>
+</ol>
+<p>With <code>dry_run=true</code>, the workflow uploads the patch and generated release notes
+without pushing a branch. A normal run creates <code>release/X.Y.Z</code>, commits the
+generated files, opens a pull request carrying the <code>release</code> label, and dispatches
+the CI workflow on the new ref.</p>
+<p>The explicit dispatch is required because GitHub suppresses most recursive
+workflow events created with <code>GITHUB_TOKEN</code>. It avoids a long-lived personal
+access token while still producing the required status on the release commit.</p>
+<p>After the release PR merges, the maintainer creates and pushes an annotated
+version tag. Tag creation remains the deliberate publication boundary.</p>
+<h2 id="tag-triggered-release">Tag-triggered Release<a class="headerlink" href="#tag-triggered-release" title="Permanent link">&para;</a></h2>
+<p>The release workflow has no manual dispatch entry point. It runs only for stable
+SemVer tags and validates, before requesting an OIDC token, that:</p>
+<ul>
+<li>the ref is an annotated tag;</li>
+<li>the tag name matches the versions in <code>pyproject.toml</code> and <code>uv.lock</code>;</li>
+<li>the matching changelog section exists;</li>
+<li>the tagged commit is contained in <code>origin/master</code>.</li>
+</ul>
+<p>The tag run repeats the critical static, test, documentation, and package gates
+against the exact release commit. Its build job produces one wheel/sdist pair.
+Those same files are then:</p>
+<ol>
+<li>recorded with SHA-256 digests;</li>
+<li>covered by a GitHub build-provenance attestation;</li>
+<li>published to PyPI using trusted publishing and the protected <code>pypi</code>
+   environment;</li>
+<li>signed with Sigstore;</li>
+<li>attached, with signature bundles, to a GitHub Release whose body is extracted
+   from the matching changelog section;</li>
+<li>followed by an explicit versioned-documentation workflow dispatch.</li>
+</ol>
+<p>The publish and GitHub Release jobs remain separate. If a retry sees the version
+on PyPI, it compares the published filenames and SHA-256 digests. Matching files
+make publishing a safe no-op so downstream release creation can resume. A missing
+file or digest mismatch fails closed because PyPI artifacts are immutable.</p>
+<h2 id="permissions-and-failure-handling">Permissions and Failure Handling<a class="headerlink" href="#permissions-and-failure-handling" title="Permanent link">&para;</a></h2>
+<p>Workflows declare empty top-level permissions. Individual jobs grant only what
+they need:</p>
+<ul>
+<li>ordinary CI: <code>contents: read</code>;</li>
+<li>changelog-fragment inspection: <code>contents: read</code> and <code>pull-requests: read</code>;</li>
+<li>release preparation: <code>contents: write</code>, <code>pull-requests: write</code>,
+  <code>issues: write</code>, and <code>actions: write</code>;</li>
+<li>PyPI publishing: <code>contents: read</code> and <code>id-token: write</code>;</li>
+<li>provenance: <code>contents: read</code>, <code>id-token: write</code>, and <code>attestations: write</code>;</li>
+<li>Sigstore: <code>contents: read</code> and <code>id-token: write</code>;</li>
+<li>GitHub Release creation: <code>contents: write</code>;</li>
+<li>Mike deployment: <code>contents: write</code>.</li>
+</ul>
+<p>All jobs have explicit timeouts. CI cancels obsolete runs for the same pull
+request. Release and documentation deployments serialize without cancelling an
+in-progress publication.</p>
+<p>Non-trivial parsing is kept out of YAML shell blocks. Small Python release helpers
+handle version validation, comparison-link updates, release-note extraction, and
+artifact metadata/digest verification. Their pure behavior is covered by unit
+tests.</p>
+<h2 id="documentation-deployment">Documentation Deployment<a class="headerlink" href="#documentation-deployment" title="Permanent link">&para;</a></h2>
+<p>Mike, the <code>gh-pages</code> branch, <code>dev</code>, and version aliases remain unchanged. The docs
+workflow receives the same action pinning, setup-uv, locked install, least-
+privilege permissions, concurrency, and timeout treatment as the other
+workflows. <code>master</code> still deploys <code>dev</code>; a successful package release explicitly
+dispatches the version/<code>latest</code> deployment so invalid or failed tags cannot
+publish release documentation. The stale manual default version is removed; a
+manual deployment requires an explicit version input.</p>
+<h2 id="repository-rulesets">Repository Rulesets<a class="headerlink" href="#repository-rulesets" title="Permanent link">&para;</a></h2>
+<p>Ruleset changes happen only after the workflow pull request has demonstrated its
+actual check names.</p>
+<p>The <code>master</code> ruleset is enabled with:</p>
+<ul>
+<li>pull requests required;</li>
+<li><code>CI required</code> as the only required status;</li>
+<li>strict up-to-date branch checks;</li>
+<li>force-push and deletion blocked;</li>
+<li>zero mandatory approvals for a solo-maintainer workflow;</li>
+<li>administrative bypass reserved for emergencies.</li>
+</ul>
+<p>A separate tag ruleset protects stable SemVer release tags from force updates and
+deletion. It does not require signed Git tags because artifact provenance and
+Sigstore verify the released bytes; tags are still required to be annotated by
+the release workflow.</p>
+<h2 id="rollout">Rollout<a class="headerlink" href="#rollout" title="Permanent link">&para;</a></h2>
+<ol>
+<li>Implement the repository changes on <code>chore/actions-hardening</code> while the old
+   ruleset remains disabled.</li>
+<li>Run local YAML, security, Python, docs, and package gates.</li>
+<li>Open the hardening pull request and observe a successful <code>CI required</code> check.</li>
+<li>Merge the pull request so the new manually dispatched workflow exists on the
+   default branch.</li>
+<li>Exercise <code>Prepare release</code> in dry-run mode and inspect its patch artifact.</li>
+<li>Update and enable the <code>master</code> and tag rulesets through the GitHub API.</li>
+<li>Open a small validation pull request and prove that the ruleset blocks merge
+   until <code>CI required</code> succeeds.</li>
+<li>Use the normal release preparation flow for the next real version; do not
+   create a synthetic PyPI release solely to test publishing.</li>
+</ol>
+<h2 id="acceptance-criteria">Acceptance Criteria<a class="headerlink" href="#acceptance-criteria" title="Permanent link">&para;</a></h2>
+<ul>
+<li>actionlint and zizmor pass with all external actions pinned by commit SHA.</li>
+<li>Ruff formatting/lint, mypy, Python 3.10-3.14 tests, examples, coverage, strict
+  docs, minimum dependencies, and package smoke tests pass.</li>
+<li>An ordinary pull request without a fragment fails the changelog gate; a
+  maintainer-applied <code>skip-changelog</code> label and a generated <code>release</code> pull request
+  skip it intentionally.</li>
+<li>Towncrier dry-run produces the expected dated section, version changes,
+  comparison links, release body, and consumed-fragment deletion.</li>
+<li>The release workflow rejects a non-annotated tag, mismatched tag/version,
+  missing changelog section, or tag outside <code>master</code> before publication.</li>
+<li>GitHub and PyPI receive the exact verified artifact pair, with provenance and
+  Sigstore evidence.</li>
+<li>Mike continues to deploy <code>dev</code> from <code>master</code>; version/<code>latest</code> deployment starts only after the release workflow dispatches the tagged documentation build.</li>
+<li>The enabled default-branch ruleset requires only the observed <code>CI required</code>
+  context and prevents unverified merges.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
               </article>
             </div>
           
@@ -1291,10 +1792,10 @@
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "/asyncly/dev", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "navigation.tracking", "navigation.indexes", "content.code.copy", "content.code.annotate", "content.tabs.link", "toc.follow", "search.suggest", "search.highlight"], "search": "/asyncly/dev/assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"default": "latest", "provider": "mike"}}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "navigation.tracking", "navigation.indexes", "content.code.copy", "content.code.annotate", "content.tabs.link", "toc.follow", "search.suggest", "search.highlight"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"default": "latest", "provider": "mike"}}</script>
     
     
-      <script src="/asyncly/dev/assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.79ae519e.min.js"></script>
       
     
   </body>
