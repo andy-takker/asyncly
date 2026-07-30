@@ -1245,6 +1245,45 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#0101-2026-07-30" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        0.10.1 - 2026-07-30
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="0.10.1 - 2026-07-30">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fixed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fixed
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Documentation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#0100-2026-07-30" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1508,7 +1547,7 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#fixed" class="md-nav__link">
+  <a href="#fixed_1" class="md-nav__link">
     <span class="md-ellipsis">
       
         Fixed
@@ -1569,6 +1608,45 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#0101-2026-07-30" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        0.10.1 - 2026-07-30
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="0.10.1 - 2026-07-30">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fixed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fixed
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Documentation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#0100-2026-07-30" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1832,7 +1910,7 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#fixed" class="md-nav__link">
+  <a href="#fixed_1" class="md-nav__link">
     <span class="md-ellipsis">
       
         Fixed
@@ -1871,9 +1949,19 @@
 <p>All notable changes to this project will be documented in this file.</p>
 <p>The format is based on <a href="https://keepachangelog.com/en/1.1.0/">Keep a Changelog</a>,
 and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semantic Versioning</a>.</p>
-<h2 id="unreleased"><a href="https://github.com/andy-takker/asyncly/compare/0.10.0...HEAD">Unreleased</a><a class="headerlink" href="#unreleased" title="Permanent link">&para;</a></h2>
+<h2 id="unreleased"><a href="https://github.com/andy-takker/asyncly/compare/0.10.1...HEAD">Unreleased</a><a class="headerlink" href="#unreleased" title="Permanent link">&para;</a></h2>
 <!-- towncrier release notes start -->
 
+<h2 id="0101-2026-07-30"><a href="https://github.com/andy-takker/asyncly/compare/0.10.0...0.10.1">0.10.1</a> - 2026-07-30<a class="headerlink" href="#0101-2026-07-30" title="Permanent link">&para;</a></h2>
+<h3 id="fixed">Fixed<a class="headerlink" href="#fixed" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Use the installed Cosign CLI for release signing so project Python settings
+  cannot interfere with Sigstore's environment.</li>
+</ul>
+<h3 id="documentation">Documentation<a class="headerlink" href="#documentation" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Added the project logo to the README and documentation header and favicon.</li>
+</ul>
 <h2 id="0100-2026-07-30"><a href="https://github.com/andy-takker/asyncly/compare/0.9.0...0.10.0">0.10.0</a> - 2026-07-30<a class="headerlink" href="#0100-2026-07-30" title="Permanent link">&para;</a></h2>
 <h3 id="changed">Changed<a class="headerlink" href="#changed" title="Permanent link">&para;</a></h3>
 <ul>
@@ -2026,7 +2114,7 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
 <li><code>SequenceResponse</code> on exhaustion now raises a typed <code>SequenceExhausted</code> instead of bubbling <code>RuntimeError</code> from PEP 479. Default behavior otherwise unchanged.</li>
 <li><code>Match</code> defensively copies <code>headers</code> and <code>query</code> dict arguments at construction time — caller-side mutation of the original dict no longer affects matcher behavior.</li>
 </ul>
-<h3 id="fixed">Fixed<a class="headerlink" href="#fixed" title="Permanent link">&para;</a></h3>
+<h3 id="fixed_1">Fixed<a class="headerlink" href="#fixed_1" title="Permanent link">&para;</a></h3>
 <ul>
 <li><code>SequenceResponse([])</code> now raises <code>ValueError</code> eagerly instead of failing on first use.</li>
 </ul>
