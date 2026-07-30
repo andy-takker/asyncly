@@ -6,8 +6,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
 <!-- towncrier release notes start -->
 
+## [0.10.0] - 2026-07-30
+### Changed
+
+- Hardened CI and release automation with immutable Actions, complete quality
+  gates, artifact provenance, protected release tags, and automated changelog
+  assembly.
 ## [0.9.0] - 2026-07-22
 
 ### Added
@@ -153,7 +160,8 @@ No functional changes to the library — documentation and packaging only.
 ### Fixed
 - `SequenceResponse([])` now raises `ValueError` eagerly instead of failing on first use.
 
-[Unreleased]: https://github.com/andy-takker/asyncly/compare/0.9.0...HEAD
+[Unreleased]: https://github.com/andy-takker/asyncly/compare/0.10.0...HEAD
+[0.10.0]: https://github.com/andy-takker/asyncly/compare/0.9.0...0.10.0
 [0.9.0]: https://github.com/andy-takker/asyncly/compare/0.8.0...0.9.0
 [0.8.0]: https://github.com/andy-takker/asyncly/compare/0.7.1...0.8.0
 [0.7.1]: https://github.com/andy-takker/asyncly/compare/0.7.0...0.7.1
