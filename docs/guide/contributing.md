@@ -24,7 +24,7 @@ exempt because they consume the fragments.
 1. Run `Prepare release` with `dry_run=true` and inspect its patch artifact.
 2. Run it again with `dry_run=false` to open `release/X.Y.Z`.
 3. Review and merge the release pull request after `CI required` succeeds.
-4. Create and push an annotated `X.Y.Z` tag matching `pyproject.toml`.
+4. Create and push an annotated `X.Y.Z` tag that matches `pyproject.toml`.
 5. Watch package publication, GitHub Release creation, and versioned docs.
 
 If publication partially fails, rerun only the failed GitHub jobs so the
