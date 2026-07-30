@@ -9,6 +9,8 @@ copyright: Copyright &copy; Sergey Natalenko
 theme:
   name: material
   language: en
+  logo: assets/logo-white.svg
+  favicon: assets/logo.svg
   palette:
     - media: "(prefers-color-scheme: light)"
       scheme: default

@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="docs/assets/logo.svg" alt="asyncly logo" width="120">
+</p>
+
 # Asyncly
 
 [![PyPI version](https://img.shields.io/pypi/v/asyncly.svg)](https://pypi.org/project/asyncly/)
