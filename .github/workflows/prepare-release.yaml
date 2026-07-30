@@ -1,0 +1,180 @@
+name: Prepare release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Stable X.Y.Z version to prepare
+        required: true
+        type: string
+      dry_run:
+        description: Generate release artifacts without creating refs
+        required: true
+        type: boolean
+        default: true
+
+permissions: {}
+
+concurrency:
+  group: prepare-release
+  cancel-in-progress: false
+
+env:
+  RELEASE_VERSION: ${{ inputs.version }}
+
+jobs:
+  prepare-release:
+    name: Prepare release
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      actions: write # Dispatch CI for the release branch.
+      contents: write # Push the generated release branch.
+      issues: write # Apply the release label through the issues API.
+      pull-requests: write # Open the release pull request.
+    steps:
+      - name: Checkout master
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: master
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Set up Python 3.10
+        uses: ./.github/actions/setup-project
+        with:
+          python-version: "3.10"
+
+      - name: Verify current master
+        run: |
+          git fetch origin master --tags
+          test "$(git rev-parse HEAD)" = "$(git rev-parse origin/master)"
+
+      - name: Validate next version
+        run: >-
+          uv run python -m tools.release validate-next
+          --version "${RELEASE_VERSION}"
+          --pyproject pyproject.toml
+
+      - name: Verify release does not exist
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          LOCAL_TAG="$(git tag --list "${RELEASE_VERSION}")"
+          test -z "${LOCAL_TAG}"
+          REMOTE_TAG="$(git ls-remote --tags origin "refs/tags/${RELEASE_VERSION}")"
+          test -z "${REMOTE_TAG}"
+          REMOTE_BRANCH="$(git ls-remote --heads origin "refs/heads/release/${RELEASE_VERSION}")"
+          test -z "${REMOTE_BRANCH}"
+          RELEASE_STATUS="$(curl \
+            --silent \
+            --show-error \
+            --output /dev/null \
+            --write-out '%{http_code}' \
+            --header "Accept: application/vnd.github+json" \
+            --header "Authorization: Bearer ${GH_TOKEN}" \
+            --header "X-GitHub-Api-Version: 2022-11-28" \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/releases/tags/${RELEASE_VERSION}")"
+          test "${RELEASE_STATUS}" = "404"
+
+      - name: Require a tracked changelog fragment
+        run: |
+          TRACKED_FRAGMENTS="$(git ls-files -- 'changes/*.md' ':!changes/README.md' ':!changes/template.md')"
+          test -n "${TRACKED_FRAGMENTS}"
+
+      - name: Build changelog
+        run: >-
+          uv run towncrier build --yes
+          --version "${RELEASE_VERSION}"
+          --date "$(date -u +%F)"
+
+      - name: Record previous version
+        run: echo "PREVIOUS_VERSION=$(uv version --short)" >> "${GITHUB_ENV}"
+
+      - name: Update project version
+        run: uv version "${RELEASE_VERSION}" --no-sync
+
+      - name: Update changelog links
+        run: >-
+          uv run python -m tools.release update-links
+          --version "${RELEASE_VERSION}"
+          --previous "${PREVIOUS_VERSION}"
+          --changelog CHANGELOG.md
+
+      - name: Generate release notes
+        run: >-
+          uv run python -m tools.release notes
+          --version "${RELEASE_VERSION}"
+          --changelog CHANGELOG.md
+          --output release-notes.md
+
+      - name: Check generated diff
+        run: git diff --check
+
+      - name: Test release helpers
+        run: uv run pytest tests/tools/test_release.py
+
+      - name: Create dry-run patch
+        if: inputs.dry_run == true
+        run: git diff --binary > release.patch
+
+      - name: Upload dry-run artifacts
+        if: inputs.dry_run == true
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: release-${{ inputs.version }}-dry-run
+          path: |
+            release.patch
+            release-notes.md
+          if-no-files-found: error
+
+      - name: Commit release changes
+        if: inputs.dry_run == false
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git switch -c "release/${RELEASE_VERSION}"
+          git add CHANGELOG.md pyproject.toml uv.lock changes
+          git commit -m "chore: release ${RELEASE_VERSION}"
+
+      - name: Push release branch and open pull request
+        if: inputs.dry_run == false
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh auth setup-git
+          BRANCH_CREATED=false
+          PR_URL=""
+          PUSHED_SHA="$(git rev-parse HEAD)"
+          cleanup() {
+            ORIGINAL_STATUS=$?
+            trap - EXIT
+            if test -n "${PR_URL}"; then
+              if ! gh pr close "${PR_URL}"; then
+                echo "Failed to close ${PR_URL}" >&2
+              fi
+            fi
+            if test "${BRANCH_CREATED}" = true; then
+              if ! git push \
+                --force-with-lease="refs/heads/release/${RELEASE_VERSION}:${PUSHED_SHA}" \
+                origin \
+                ":refs/heads/release/${RELEASE_VERSION}"; then
+                echo "Failed to delete release/${RELEASE_VERSION}" >&2
+              fi
+            fi
+            exit "${ORIGINAL_STATUS}"
+          }
+          trap cleanup EXIT
+          git push \
+            --force-with-lease="refs/heads/release/${RELEASE_VERSION}:" \
+            origin \
+            "HEAD:refs/heads/release/${RELEASE_VERSION}"
+          BRANCH_CREATED=true
+          PR_URL="$(gh pr create \
+            --base master \
+            --head "release/${RELEASE_VERSION}" \
+            --label release \
+            --title "chore: release ${RELEASE_VERSION}" \
+            --body-file release-notes.md)"
+          gh workflow run ci.yaml --ref "release/${RELEASE_VERSION}"
+          trap - EXIT

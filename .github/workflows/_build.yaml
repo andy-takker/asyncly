@@ -3,28 +3,42 @@ name: Build Python distribution
 on:
   workflow_call:
 
-jobs:
+permissions:
+  contents: read
 
-  build:
-    name: Build distribution
-    runs-on: ubuntu-22.04
+jobs:
+  package:
+    name: Build package
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
 
       - name: Set up Python 3.10
-        uses: actions/setup-python@v5
+        uses: ./.github/actions/setup-project
         with:
-          python-version: '3.10'
-
-      - name: Install dependencies
-        run: make develop-ci
+          python-version: "3.10"
 
       - name: Build distribution
         run: make build-ci
 
+      - name: Export package version
+        run: echo "PACKAGE_VERSION=$(uv version --short)" >> "${GITHUB_ENV}"
+
+      - name: Smoke-test the built wheel
+        shell: bash
+        run: |
+          cd "${RUNNER_TEMP}"
+          uv run --isolated --no-project \
+            --with "${GITHUB_WORKSPACE}/dist/asyncly-${PACKAGE_VERSION}-py3-none-any.whl" \
+            python -c 'from importlib.metadata import version; from asyncly import RetryPolicy; from asyncly.srvmocker import DisconnectResponse, RecordedRequest; print(version("asyncly"), RetryPolicy.__name__, DisconnectResponse.__name__, RecordedRequest.__name__)'
+
       - name: Store the distribution packages
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: python-package-dist
           path: dist/
+          if-no-files-found: error

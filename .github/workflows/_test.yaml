@@ -3,24 +3,46 @@ name: Run auto tests
 on:
   workflow_call:
 
+permissions:
+  contents: read
+
 jobs:
   test:
-    name: Run service tests with pytest
+    name: Run tests with Python ${{ matrix.python-version }}
     strategy:
+      fail-fast: false
       matrix:
-        python-version: ['3.10', '3.11', '3.12', '3.13']
-    runs-on: ubuntu-22.04
+        python-version: ["3.10", "3.11", "3.12", "3.13", "3.14"]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
 
-      - name: Setup python ${{ matrix.python-version }}
-        uses: actions/setup-python@v5
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: ./.github/actions/setup-project
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: Install dependencies
-        run: make develop-ci
-
       - name: Run tests
         run: make test-ci
+
+  minimum-direct-dependencies:
+    name: Minimum direct dependencies
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up Python 3.10
+        uses: ./.github/actions/setup-project
+        with:
+          python-version: "3.10"
+
+      - name: Test minimum direct dependencies
+        run: make test-minimum-ci

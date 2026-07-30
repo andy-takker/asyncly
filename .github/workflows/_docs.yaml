@@ -1,0 +1,26 @@
+name: Build documentation
+
+on:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  strict-docs:
+    name: Strict documentation build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up Python 3.10
+        uses: ./.github/actions/setup-project
+        with:
+          python-version: "3.10"
+
+      - name: Build strict documentation
+        run: make docs-build

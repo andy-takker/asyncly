@@ -106,6 +106,7 @@ nav:
       - Responses & serializers: guide/responses.md
       - Proxy testing: guide/proxy-testing.md
       - Pytest plugin: guide/pytest-plugin.md
+      - Contributing: guide/contributing.md
   - API reference:
       - Overview: reference/index.md
       - Client: reference/client.md

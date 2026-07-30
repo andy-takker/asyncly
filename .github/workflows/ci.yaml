@@ -1,0 +1,94 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [master]
+    types: [opened, synchronize, reopened, edited, labeled, unlabeled]
+  merge_group:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: ci-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: Check
+    permissions:
+      contents: read
+    uses: ./.github/workflows/_check.yaml
+
+  test:
+    name: Test
+    needs: check
+    permissions:
+      contents: read
+    uses: ./.github/workflows/_test.yaml
+
+  docs:
+    name: Docs
+    needs: check
+    permissions:
+      contents: read
+    uses: ./.github/workflows/_docs.yaml
+
+  build:
+    name: Build
+    needs: check
+    permissions:
+      contents: read
+    uses: ./.github/workflows/_build.yaml
+
+  changelog:
+    name: Changelog
+    if: >-
+      github.event_name == 'pull_request' &&
+      !contains(github.event.pull_request.labels.*.name, 'skip-changelog') &&
+      !contains(github.event.pull_request.labels.*.name, 'release')
+    permissions:
+      contents: read
+      pull-requests: read # Read labels for changelog gate exemptions.
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Set up Python 3.10
+        uses: ./.github/actions/setup-project
+        with:
+          python-version: "3.10"
+
+      - name: Require a changelog fragment
+        run: uv run towncrier check --compare-with origin/master
+
+  required:
+    name: CI required
+    if: always()
+    needs: [check, test, docs, build, changelog]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 2
+    steps:
+      - name: Verify required jobs
+        env:
+          CHECK_RESULT: ${{ needs.check.result }}
+          TEST_RESULT: ${{ needs.test.result }}
+          DOCS_RESULT: ${{ needs.docs.result }}
+          BUILD_RESULT: ${{ needs.build.result }}
+          CHANGELOG_RESULT: ${{ needs.changelog.result }}
+        run: |
+          python - <<'PY'
+          import os
+          allowed = {"success", "skipped"}
+          names = ("CHECK", "TEST", "DOCS", "BUILD", "CHANGELOG")
+          failed = {name: os.environ[f"{name}_RESULT"] for name in names if os.environ[f"{name}_RESULT"] not in allowed}
+          if failed:
+              raise SystemExit(f"required jobs failed: {failed}")
+          PY

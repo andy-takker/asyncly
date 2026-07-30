@@ -27,6 +27,7 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Topic :: Internet",
     "Topic :: Internet :: WWW/HTTP",
     "Topic :: Software Development :: Libraries :: Python Modules",
@@ -36,7 +37,10 @@ classifiers = [
 dependencies = ["aiohttp>=3.13.3,<4"]
 
 [project.optional-dependencies]
-msgspec = ["msgspec>=0.19.0,<0.20"]
+msgspec = [
+    "msgspec>=0.19.0,<0.20; python_version < '3.14'",
+    "msgspec>=0.20.0,<0.22; python_version >= '3.14'",
+]
 pydantic = ["pydantic>=2.8.2,<3"]
 orjson = ["orjson>=3.10.6,<4"]
 prometheus = [
@@ -64,6 +68,8 @@ dev = [
     "pytest>=8.3.3,<9",
     "pytest-asyncio>=0.24.0,<0.25",
     "pytest-cov>=6.0.0,<7",
+    "towncrier>=25.8.0,<26",
+    "zizmor==1.28.0",
     "types-pyyaml>=6.0.12.20250822",
     "types-toml>=0.10.8.20240310",
     "toml>=0.10.2",
@@ -176,3 +182,49 @@ module = [
     "orjson.*",
 ]
 ignore_missing_imports = true
+
+[tool.towncrier]
+directory = "changes"
+filename = "CHANGELOG.md"
+template = "changes/template.md"
+start_string = "<!-- towncrier release notes start -->\n"
+title_format = "## [{version}] - {project_date}"
+issue_format = "[#{issue}](https://github.com/andy-takker/asyncly/issues/{issue})"
+issue_pattern = "\\d+"
+orphan_prefix = "+"
+ignore = []
+
+[[tool.towncrier.type]]
+directory = "added"
+name = "Added"
+showcontent = true
+
+[[tool.towncrier.type]]
+directory = "changed"
+name = "Changed"
+showcontent = true
+
+[[tool.towncrier.type]]
+directory = "breaking"
+name = "Changed (breaking)"
+showcontent = true
+
+[[tool.towncrier.type]]
+directory = "fixed"
+name = "Fixed"
+showcontent = true
+
+[[tool.towncrier.type]]
+directory = "deprecated"
+name = "Deprecated"
+showcontent = true
+
+[[tool.towncrier.type]]
+directory = "security"
+name = "Security"
+showcontent = true
+
+[[tool.towncrier.type]]
+directory = "docs"
+name = "Documentation"
+showcontent = true
