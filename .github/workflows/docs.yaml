@@ -4,20 +4,14 @@ on:
   push:
     branches:
       - master
-    tags:
-      - '[0-9]+.[0-9]+.[0-9]+'
-  # Manual bootstrap / re-deploy of a released version as `latest`.
-  # Use this once after enabling GitHub Pages to publish the root redirect,
-  # since the `latest` alias and default are only set on a tag push.
   workflow_dispatch:
     inputs:
       version:
         description: "Version label to deploy as latest (e.g. 0.7.0)"
         required: true
-        default: "0.7.0"
+        type: string
 
-permissions:
-  contents: write
+permissions: {}
 
 concurrency:
   group: docs-deploy
@@ -25,22 +19,49 @@ concurrency:
 
 jobs:
   deploy-docs:
-    runs-on: ubuntu-22.04
+    name: Deploy documentation
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: write # Publish documentation to gh-pages.
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - name: Checkout master
+        if: github.event_name == 'push'
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          ref: master
           fetch-depth: 0
+          persist-credentials: false
 
-      - name: Set up Python 3.10
-        uses: actions/setup-python@v5
+      - name: Checkout release tag
+        if: github.event_name == 'workflow_dispatch'
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          python-version: '3.10'
+          ref: refs/tags/${{ inputs.version }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Validate release tag
+        if: github.event_name == 'workflow_dispatch'
+        env:
+          DOCS_VERSION: ${{ inputs.version }}
+        run: |
+          [[ "${DOCS_VERSION}" =~ ^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$ ]]
+          test "$(git cat-file -t "refs/tags/${DOCS_VERSION}")" = tag
+          git fetch origin master
+          git merge-base --is-ancestor \
+            "refs/tags/${DOCS_VERSION}^{commit}" origin/master
+
+      - name: Install uv and Python
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: "0.11.31"
+          checksum: "8cc1cd82d434ec565376f98bd938d4b715b5791a80ff2d3aa78821cf85091b4b"
+          python-version: "3.10"
+          enable-cache: false
 
       - name: Install dependencies
-        run: |
-          python -m pip install -U pip uv
-          uv sync --all-extras --group docs
+        run: uv sync --locked --all-extras --group docs
 
       - name: Configure git identity for mike
         run: |
@@ -48,21 +69,30 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
       - name: Fetch gh-pages branch
-        run: git fetch origin gh-pages --depth=1 || true
-
-      - name: Deploy release version
-        if: startsWith(github.ref, 'refs/tags/')
         run: |
-          uv run mike deploy --push --update-aliases "${{ github.ref_name }}" latest
-          uv run mike set-default --push latest
+          if git ls-remote --exit-code --heads origin gh-pages; then
+            git fetch origin gh-pages --depth=1
+          else
+            STATUS=$?
+            if test "${STATUS}" -ne 2; then
+              exit "${STATUS}"
+            fi
+          fi
 
       - name: Deploy dev version
-        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        if: github.event_name == 'push'
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
+          gh auth setup-git
           uv run mike deploy --push --update-aliases dev
 
-      - name: Bootstrap latest (manual)
+      - name: Deploy release version
         if: github.event_name == 'workflow_dispatch'
+        env:
+          DOCS_VERSION: ${{ inputs.version }}
+          GH_TOKEN: ${{ github.token }}
         run: |
-          uv run mike deploy --push --update-aliases "${{ inputs.version }}" latest
+          gh auth setup-git
+          uv run mike deploy --push --update-aliases "${DOCS_VERSION}" latest
           uv run mike set-default --push latest
