@@ -23,7 +23,7 @@
       
       
       <link rel="icon" href="../../assets/logo.svg">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
@@ -31,7 +31,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -1565,7 +1565,10 @@
 
 
 
-  <div class="doc doc-children">
+
+
+<div class="doc doc-children">
+
 
 
 
@@ -1602,6 +1605,7 @@
     <div class="doc doc-contents first">
             <p class="doc doc-class-bases">
               Bases: <code><a class="autorefs autorefs-internal" title="            asyncly.srvmocker.responses.base.BaseMockResponse" href="#asyncly.srvmocker.responses.base.BaseMockResponse">BaseMockResponse</a></code></p>
+
 
 
         <p>A mock response that serializes <code>body</code> to JSON.</p>
@@ -1675,7 +1679,8 @@
 
 
 
-                  <details class="quote">
+
+                  <details class="mkdocstrings-source">
                     <summary>Source code in <code>asyncly/srvmocker/responses/json.py</code></summary>
                     <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-24">24</a></span>
 <span class="normal"><a href="#__codelineno-0-25">25</a></span>
@@ -1688,7 +1693,7 @@
 <span class="normal"><a href="#__codelineno-0-32">32</a></span>
 <span class="normal"><a href="#__codelineno-0-33">33</a></span>
 <span class="normal"><a href="#__codelineno-0-34">34</a></span>
-<span class="normal"><a href="#__codelineno-0-35">35</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-24" name="__codelineno-0-24"></a><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<span class="normal"><a href="#__codelineno-0-35">35</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-24" name="__codelineno-0-24"></a><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
 <a id="__codelineno-0-25" name="__codelineno-0-25"></a>    <span class="bp">self</span><span class="p">,</span>
 <a id="__codelineno-0-26" name="__codelineno-0-26"></a>    <span class="n">body</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
 <a id="__codelineno-0-27" name="__codelineno-0-27"></a>    <span class="n">status</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">HTTPStatus</span><span class="o">.</span><span class="n">OK</span><span class="p">,</span>
@@ -1705,7 +1710,8 @@
 
 
 
-  <div class="doc doc-children">
+<div class="doc doc-children">
+
 
 
 
@@ -1744,6 +1750,7 @@
               Bases: <code><a class="autorefs autorefs-internal" title="            asyncly.srvmocker.responses.base.BaseMockResponse" href="#asyncly.srvmocker.responses.base.BaseMockResponse">BaseMockResponse</a></code></p>
 
 
+
         <p>Return arbitrary bytes with arbitrary headers — useful for testing client
 behavior on malformed data, unexpected content-types, or empty bodies.</p>
 
@@ -1753,7 +1760,8 @@ behavior on malformed data, unexpected content-types, or empty bodies.</p>
 
 
 
-                  <details class="quote">
+
+                  <details class="mkdocstrings-source">
                     <summary>Source code in <code>asyncly/srvmocker/responses/raw.py</code></summary>
                     <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-14">14</a></span>
 <span class="normal"><a href="#__codelineno-0-15">15</a></span>
@@ -1763,7 +1771,7 @@ behavior on malformed data, unexpected content-types, or empty bodies.</p>
 <span class="normal"><a href="#__codelineno-0-19">19</a></span>
 <span class="normal"><a href="#__codelineno-0-20">20</a></span>
 <span class="normal"><a href="#__codelineno-0-21">21</a></span>
-<span class="normal"><a href="#__codelineno-0-22">22</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-14" name="__codelineno-0-14"></a><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<span class="normal"><a href="#__codelineno-0-22">22</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-14" name="__codelineno-0-14"></a><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
 <a id="__codelineno-0-15" name="__codelineno-0-15"></a>    <span class="bp">self</span><span class="p">,</span>
 <a id="__codelineno-0-16" name="__codelineno-0-16"></a>    <span class="n">body</span><span class="p">:</span> <span class="nb">bytes</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
 <a id="__codelineno-0-17" name="__codelineno-0-17"></a>    <span class="n">status</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">HTTPStatus</span><span class="o">.</span><span class="n">OK</span><span class="p">,</span>
@@ -1777,7 +1785,8 @@ behavior on malformed data, unexpected content-types, or empty bodies.</p>
 
 
 
-  <div class="doc doc-children">
+<div class="doc doc-children">
+
 
 
 
@@ -1824,6 +1833,7 @@ behavior on malformed data, unexpected content-types, or empty bodies.</p>
     <div class="doc doc-contents first">
             <p class="doc doc-class-bases">
               Bases: <code><a class="autorefs autorefs-internal" title="            asyncly.srvmocker.responses.base.BaseMockResponse" href="#asyncly.srvmocker.responses.base.BaseMockResponse">BaseMockResponse</a></code></p>
+
 
 
         <p>General mock response: a body plus an explicit serializer.</p>
@@ -1903,7 +1913,9 @@ and <code>Content-Type</code>.</p>
 
 
 
-  <div class="doc doc-children">
+
+<div class="doc doc-children">
+
 
 
 
@@ -1941,6 +1953,7 @@ and <code>Content-Type</code>.</p>
               Bases: <code><a class="autorefs autorefs-internal" title="            asyncly.srvmocker.responses.base.BaseMockResponse" href="#asyncly.srvmocker.responses.base.BaseMockResponse">BaseMockResponse</a></code></p>
 
 
+
         <p>Return a different response on each call, in order.</p>
 <p><code>on_exhausted</code> controls behavior after the last response is consumed:</p>
 <ul>
@@ -1957,7 +1970,8 @@ and <code>Content-Type</code>.</p>
 
 
 
-                  <details class="quote">
+
+                  <details class="mkdocstrings-source">
                     <summary>Source code in <code>asyncly/srvmocker/responses/sequence.py</code></summary>
                     <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-26">26</a></span>
 <span class="normal"><a href="#__codelineno-0-27">27</a></span>
@@ -1968,7 +1982,7 @@ and <code>Content-Type</code>.</p>
 <span class="normal"><a href="#__codelineno-0-32">32</a></span>
 <span class="normal"><a href="#__codelineno-0-33">33</a></span>
 <span class="normal"><a href="#__codelineno-0-34">34</a></span>
-<span class="normal"><a href="#__codelineno-0-35">35</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-26" name="__codelineno-0-26"></a><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<span class="normal"><a href="#__codelineno-0-35">35</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-26" name="__codelineno-0-26"></a><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
 <a id="__codelineno-0-27" name="__codelineno-0-27"></a>    <span class="bp">self</span><span class="p">,</span>
 <a id="__codelineno-0-28" name="__codelineno-0-28"></a>    <span class="n">responses</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">BaseMockResponse</span><span class="p">],</span>
 <a id="__codelineno-0-29" name="__codelineno-0-29"></a>    <span class="n">on_exhausted</span><span class="p">:</span> <span class="n">OnExhausted</span> <span class="o">=</span> <span class="s2">&quot;raise&quot;</span><span class="p">,</span>
@@ -1983,7 +1997,8 @@ and <code>Content-Type</code>.</p>
 
 
 
-  <div class="doc doc-children">
+<div class="doc doc-children">
+
 
 
 
@@ -2022,6 +2037,7 @@ and <code>Content-Type</code>.</p>
     <div class="doc doc-contents first">
             <p class="doc doc-class-bases">
               Bases: <code><a class="autorefs autorefs-internal" title="            asyncly.srvmocker.responses.base.BaseMockResponse" href="#asyncly.srvmocker.responses.base.BaseMockResponse">BaseMockResponse</a></code></p>
+
 
 
         <p>Delay another response by a fixed latency — for testing timeouts.</p>
@@ -2071,7 +2087,9 @@ and <code>Content-Type</code>.</p>
 
 
 
-  <div class="doc doc-children">
+
+<div class="doc doc-children">
+
 
 
 
@@ -2105,6 +2123,7 @@ and <code>Content-Type</code>.</p>
               Bases: <code><a class="autorefs autorefs-internal" title="            asyncly.srvmocker.responses.base.BaseMockResponse" href="#asyncly.srvmocker.responses.base.BaseMockResponse">BaseMockResponse</a></code></p>
 
 
+
         <p>Disconnect the socket before response headers are sent.</p>
 
 
@@ -2116,7 +2135,9 @@ and <code>Content-Type</code>.</p>
 
 
 
-  <div class="doc doc-children">
+
+<div class="doc doc-children">
+
 
 
 
@@ -2157,6 +2178,7 @@ and <code>Content-Type</code>.</p>
               Bases: <code><a class="autorefs autorefs-internal" title="            asyncly.srvmocker.responses.base.BaseMockResponse" href="#asyncly.srvmocker.responses.base.BaseMockResponse">BaseMockResponse</a></code></p>
 
 
+
         <p>Send fewer body bytes than declared and terminate the connection.</p>
 
 
@@ -2165,7 +2187,8 @@ and <code>Content-Type</code>.</p>
 
 
 
-                  <details class="quote">
+
+                  <details class="mkdocstrings-source">
                     <summary>Source code in <code>asyncly/srvmocker/responses/faults.py</code></summary>
                     <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-24">24</a></span>
 <span class="normal"><a href="#__codelineno-0-25">25</a></span>
@@ -2181,7 +2204,7 @@ and <code>Content-Type</code>.</p>
 <span class="normal"><a href="#__codelineno-0-35">35</a></span>
 <span class="normal"><a href="#__codelineno-0-36">36</a></span>
 <span class="normal"><a href="#__codelineno-0-37">37</a></span>
-<span class="normal"><a href="#__codelineno-0-38">38</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-24" name="__codelineno-0-24"></a><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<span class="normal"><a href="#__codelineno-0-38">38</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-24" name="__codelineno-0-24"></a><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
 <a id="__codelineno-0-25" name="__codelineno-0-25"></a>    <span class="bp">self</span><span class="p">,</span>
 <a id="__codelineno-0-26" name="__codelineno-0-26"></a>    <span class="n">body</span><span class="p">:</span> <span class="nb">bytes</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
 <a id="__codelineno-0-27" name="__codelineno-0-27"></a>    <span class="o">*</span><span class="p">,</span>
@@ -2201,7 +2224,8 @@ and <code>Content-Type</code>.</p>
 
 
 
-  <div class="doc doc-children">
+<div class="doc doc-children">
+
 
 
 
@@ -2240,6 +2264,7 @@ and <code>Content-Type</code>.</p>
               Bases: <code><a class="autorefs autorefs-internal" title="            asyncly.srvmocker.responses.base.BaseMockResponse" href="#asyncly.srvmocker.responses.base.BaseMockResponse">BaseMockResponse</a></code></p>
 
 
+
         <p>A mock response that serializes <code>body</code> to msgpack (needs <code>msgspec</code>).</p>
 
 
@@ -2248,7 +2273,8 @@ and <code>Content-Type</code>.</p>
 
 
 
-                  <details class="quote">
+
+                  <details class="mkdocstrings-source">
                     <summary>Source code in <code>asyncly/srvmocker/responses/msgpack.py</code></summary>
                     <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-18">18</a></span>
 <span class="normal"><a href="#__codelineno-0-19">19</a></span>
@@ -2261,7 +2287,7 @@ and <code>Content-Type</code>.</p>
 <span class="normal"><a href="#__codelineno-0-26">26</a></span>
 <span class="normal"><a href="#__codelineno-0-27">27</a></span>
 <span class="normal"><a href="#__codelineno-0-28">28</a></span>
-<span class="normal"><a href="#__codelineno-0-29">29</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-18" name="__codelineno-0-18"></a><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<span class="normal"><a href="#__codelineno-0-29">29</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-18" name="__codelineno-0-18"></a><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
 <a id="__codelineno-0-19" name="__codelineno-0-19"></a>    <span class="bp">self</span><span class="p">,</span>
 <a id="__codelineno-0-20" name="__codelineno-0-20"></a>    <span class="n">body</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
 <a id="__codelineno-0-21" name="__codelineno-0-21"></a>    <span class="n">status</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">HTTPStatus</span><span class="o">.</span><span class="n">OK</span><span class="p">,</span>
@@ -2278,7 +2304,8 @@ and <code>Content-Type</code>.</p>
 
 
 
-  <div class="doc doc-children">
+<div class="doc doc-children">
+
 
 
 
@@ -2317,6 +2344,7 @@ and <code>Content-Type</code>.</p>
               Bases: <code><a class="autorefs autorefs-internal" title="            asyncly.srvmocker.responses.base.BaseMockResponse" href="#asyncly.srvmocker.responses.base.BaseMockResponse">BaseMockResponse</a></code></p>
 
 
+
         <p>A mock response that serializes <code>body</code> to TOML.</p>
 
 
@@ -2325,7 +2353,8 @@ and <code>Content-Type</code>.</p>
 
 
 
-                  <details class="quote">
+
+                  <details class="mkdocstrings-source">
                     <summary>Source code in <code>asyncly/srvmocker/responses/toml.py</code></summary>
                     <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-18">18</a></span>
 <span class="normal"><a href="#__codelineno-0-19">19</a></span>
@@ -2338,7 +2367,7 @@ and <code>Content-Type</code>.</p>
 <span class="normal"><a href="#__codelineno-0-26">26</a></span>
 <span class="normal"><a href="#__codelineno-0-27">27</a></span>
 <span class="normal"><a href="#__codelineno-0-28">28</a></span>
-<span class="normal"><a href="#__codelineno-0-29">29</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-18" name="__codelineno-0-18"></a><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<span class="normal"><a href="#__codelineno-0-29">29</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-18" name="__codelineno-0-18"></a><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
 <a id="__codelineno-0-19" name="__codelineno-0-19"></a>    <span class="bp">self</span><span class="p">,</span>
 <a id="__codelineno-0-20" name="__codelineno-0-20"></a>    <span class="n">body</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
 <a id="__codelineno-0-21" name="__codelineno-0-21"></a>    <span class="n">status</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">HTTPStatus</span><span class="o">.</span><span class="n">OK</span><span class="p">,</span>
@@ -2355,7 +2384,8 @@ and <code>Content-Type</code>.</p>
 
 
 
-  <div class="doc doc-children">
+<div class="doc doc-children">
+
 
 
 
@@ -2394,6 +2424,7 @@ and <code>Content-Type</code>.</p>
               Bases: <code><a class="autorefs autorefs-internal" title="            asyncly.srvmocker.responses.base.BaseMockResponse" href="#asyncly.srvmocker.responses.base.BaseMockResponse">BaseMockResponse</a></code></p>
 
 
+
         <p>A mock response that serializes <code>body</code> to YAML.</p>
 
 
@@ -2402,7 +2433,8 @@ and <code>Content-Type</code>.</p>
 
 
 
-                  <details class="quote">
+
+                  <details class="mkdocstrings-source">
                     <summary>Source code in <code>asyncly/srvmocker/responses/yaml.py</code></summary>
                     <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-18">18</a></span>
 <span class="normal"><a href="#__codelineno-0-19">19</a></span>
@@ -2415,7 +2447,7 @@ and <code>Content-Type</code>.</p>
 <span class="normal"><a href="#__codelineno-0-26">26</a></span>
 <span class="normal"><a href="#__codelineno-0-27">27</a></span>
 <span class="normal"><a href="#__codelineno-0-28">28</a></span>
-<span class="normal"><a href="#__codelineno-0-29">29</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-18" name="__codelineno-0-18"></a><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<span class="normal"><a href="#__codelineno-0-29">29</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-18" name="__codelineno-0-18"></a><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
 <a id="__codelineno-0-19" name="__codelineno-0-19"></a>    <span class="bp">self</span><span class="p">,</span>
 <a id="__codelineno-0-20" name="__codelineno-0-20"></a>    <span class="n">body</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
 <a id="__codelineno-0-21" name="__codelineno-0-21"></a>    <span class="n">status</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">HTTPStatus</span><span class="o">.</span><span class="n">OK</span><span class="p">,</span>
@@ -2432,7 +2464,8 @@ and <code>Content-Type</code>.</p>
 
 
 
-  <div class="doc doc-children">
+<div class="doc doc-children">
+
 
 
 
@@ -2540,7 +2573,7 @@ and <code>Content-Type</code>.</p>
       <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "navigation.tracking", "navigation.indexes", "content.code.copy", "content.code.annotate", "content.tabs.link", "toc.follow", "search.suggest", "search.highlight"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"default": "latest", "provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
       
     
   </body>

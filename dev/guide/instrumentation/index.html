@@ -23,7 +23,7 @@
       
       
       <link rel="icon" href="../../assets/logo.svg">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
@@ -31,7 +31,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -1532,10 +1532,10 @@ extends <a href="../http-client/"><code>BaseHttpClient</code></a> with request m
 pluggable <strong>sink</strong>. When no sink is enabled it behaves exactly like
 <code>BaseHttpClient</code> with negligible overhead.</p>
 <p>Subclass it the same way you would <code>BaseHttpClient</code>:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">from</span> <span class="nn">asyncly.client.metrics.instrumentable_client</span> <span class="kn">import</span> <span class="n">InstrumentableHttpClient</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">asyncly.client.metrics.instrumentable_client</span><span class="w"> </span><span class="kn">import</span> <span class="n">InstrumentableHttpClient</span>
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
 <a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>
-<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="k">class</span> <span class="nc">CatfactClient</span><span class="p">(</span><span class="n">InstrumentableHttpClient</span><span class="p">):</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="k">class</span><span class="w"> </span><span class="nc">CatfactClient</span><span class="p">(</span><span class="n">InstrumentableHttpClient</span><span class="p">):</span>
 <a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>    <span class="o">...</span>
 </code></pre></div>
 <h2 id="enabling-a-sink">Enabling a sink<a class="headerlink" href="#enabling-a-sink" title="Permanent link">&para;</a></h2>
@@ -1603,7 +1603,7 @@ requests with statuses <code>503</code> and <code>200</code>. Logical retry deci
 separately through <code>_make_req(retry_observer=...)</code>.</p>
 <h2 id="operation-label"><code>operation</code> label<a class="headerlink" href="#operation-label" title="Permanent link">&para;</a></h2>
 <p><code>operation</code> is a stable, low-cardinality logical name. Pass it per endpoint:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="k">async</span> <span class="k">def</span> <span class="nf">get_wallet_balance</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_wallet_balance</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>    <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_make_req</span><span class="p">(</span>
 <a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>        <span class="n">method</span><span class="o">=</span><span class="n">hdrs</span><span class="o">.</span><span class="n">METH_GET</span><span class="p">,</span>
 <a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>        <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_url</span> <span class="o">/</span> <span class="s2">&quot;v5/account/wallet-balance&quot;</span><span class="p">,</span>
@@ -1615,7 +1615,7 @@ separately through <code>_make_req(retry_observer=...)</code>.</p>
 <h2 id="sinks">Sinks<a class="headerlink" href="#sinks" title="Permanent link">&para;</a></h2>
 <h3 id="prometheus">Prometheus<a class="headerlink" href="#prometheus" title="Permanent link">&para;</a></h3>
 <p>Requires the <code>prometheus</code> extra. The default metric prefix is <code>http_client_*</code>.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="kn">from</span> <span class="nn">asyncly.client.metrics.sinks.prometheus</span> <span class="kn">import</span> <span class="n">PrometheusSink</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">asyncly.client.metrics.sinks.prometheus</span><span class="w"> </span><span class="kn">import</span> <span class="n">PrometheusSink</span>
 <a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>
 <a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="n">sink</span> <span class="o">=</span> <span class="n">PrometheusSink</span><span class="p">()</span>  <span class="c1"># -&gt; http_client_*</span>
 <a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="n">client</span><span class="o">.</span><span class="n">enable_metrics</span><span class="p">(</span><span class="n">sink</span><span class="p">)</span>
@@ -1631,8 +1631,8 @@ To keep the old names on upgrade, construct
 <code>MultiProcessCollector</code> as usual.</p>
 <h3 id="opentelemetry">OpenTelemetry<a class="headerlink" href="#opentelemetry" title="Permanent link">&para;</a></h3>
 <p>Requires the <code>opentelemetry</code> extra. Metric names match the Prometheus defaults.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="kn">from</span> <span class="nn">opentelemetry</span> <span class="kn">import</span> <span class="n">metrics</span>
-<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="kn">from</span> <span class="nn">asyncly.client.metrics.sinks.opentelemetry</span> <span class="kn">import</span> <span class="n">OpenTelemetrySink</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">opentelemetry</span><span class="w"> </span><span class="kn">import</span> <span class="n">metrics</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">asyncly.client.metrics.sinks.opentelemetry</span><span class="w"> </span><span class="kn">import</span> <span class="n">OpenTelemetrySink</span>
 <a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>
 <a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="n">sink</span> <span class="o">=</span> <span class="n">OpenTelemetrySink</span><span class="p">(</span><span class="n">meter</span><span class="o">=</span><span class="n">metrics</span><span class="o">.</span><span class="n">get_meter</span><span class="p">(</span><span class="s2">&quot;asyncly&quot;</span><span class="p">))</span>
 <a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="n">client</span><span class="o">.</span><span class="n">enable_metrics</span><span class="p">(</span><span class="n">sink</span><span class="p">)</span>
@@ -1645,12 +1645,12 @@ nothing and adds no overhead.</p>
 stats come from aiohttp's <code>TraceConfig</code> and connector. Because the session is
 injected, the library supplies the <code>TraceConfig</code>; you wire it in when
 constructing the session:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="kn">from</span> <span class="nn">aiohttp</span> <span class="kn">import</span> <span class="n">ClientSession</span><span class="p">,</span> <span class="n">TCPConnector</span>
-<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="kn">from</span> <span class="nn">asyncly.client.metrics.sinks.prometheus</span> <span class="kn">import</span> <span class="p">(</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">aiohttp</span><span class="w"> </span><span class="kn">import</span> <span class="n">ClientSession</span><span class="p">,</span> <span class="n">TCPConnector</span>
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">asyncly.client.metrics.sinks.prometheus</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
 <a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>    <span class="n">PrometheusSink</span><span class="p">,</span>
 <a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>    <span class="n">PrometheusPoolCollector</span><span class="p">,</span>
 <a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="p">)</span>
-<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a><span class="kn">from</span> <span class="nn">asyncly.client.metrics.trace_config</span> <span class="kn">import</span> <span class="n">build_trace_config</span>
+<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a><span class="kn">from</span><span class="w"> </span><span class="nn">asyncly.client.metrics.trace_config</span><span class="w"> </span><span class="kn">import</span> <span class="n">build_trace_config</span>
 <a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a>
 <a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a><span class="n">sink</span> <span class="o">=</span> <span class="n">PrometheusSink</span><span class="p">()</span>
 <a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a><span class="n">connector</span> <span class="o">=</span> <span class="n">TCPConnector</span><span class="p">(</span><span class="n">limit</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
@@ -1682,8 +1682,8 @@ to customize this.</p>
 Only <code>observe_request</code> is required; <code>on_request_start</code> / <code>on_request_end</code>
 (in-flight) and <code>observe_phase</code> (phases) are optional and feature-detected when
 the sink is enabled.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="k">class</span> <span class="nc">LoggingSink</span><span class="p">:</span>
-<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>    <span class="k">def</span> <span class="nf">observe_request</span><span class="p">(</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="k">class</span><span class="w"> </span><span class="nc">LoggingSink</span><span class="p">:</span>
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">observe_request</span><span class="p">(</span>
 <a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>        <span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">client</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">route</span><span class="p">,</span> <span class="n">operation</span><span class="p">,</span>
 <a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>        <span class="n">status</span><span class="p">,</span> <span class="n">outcome</span><span class="p">,</span> <span class="n">duration_seconds</span><span class="p">,</span> <span class="n">error_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -1785,7 +1785,7 @@ the sink is enabled.</p>
       <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "navigation.tracking", "navigation.indexes", "content.code.copy", "content.code.annotate", "content.tabs.link", "toc.follow", "search.suggest", "search.highlight"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"default": "latest", "provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
       
     
   </body>
