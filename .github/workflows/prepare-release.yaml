@@ -66,7 +66,16 @@ jobs:
           test -z "${REMOTE_TAG}"
           REMOTE_BRANCH="$(git ls-remote --heads origin "refs/heads/release/${RELEASE_VERSION}")"
           test -z "${REMOTE_BRANCH}"
-          ! gh release view "${RELEASE_VERSION}" >/dev/null 2>&1
+          RELEASE_STATUS="$(curl \
+            --silent \
+            --show-error \
+            --output /dev/null \
+            --write-out '%{http_code}' \
+            --header "Accept: application/vnd.github+json" \
+            --header "Authorization: Bearer ${GH_TOKEN}" \
+            --header "X-GitHub-Api-Version: 2022-11-28" \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/releases/tags/${RELEASE_VERSION}")"
+          test "${RELEASE_STATUS}" = "404"
 
       - name: Require a tracked changelog fragment
         run: |
@@ -134,11 +143,38 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           gh auth setup-git
-          git push origin "HEAD:release/${RELEASE_VERSION}"
-          gh pr create \
+          BRANCH_CREATED=false
+          PR_URL=""
+          PUSHED_SHA="$(git rev-parse HEAD)"
+          cleanup() {
+            ORIGINAL_STATUS=$?
+            trap - EXIT
+            if test -n "${PR_URL}"; then
+              if ! gh pr close "${PR_URL}"; then
+                echo "Failed to close ${PR_URL}" >&2
+              fi
+            fi
+            if test "${BRANCH_CREATED}" = true; then
+              if ! git push \
+                --force-with-lease="refs/heads/release/${RELEASE_VERSION}:${PUSHED_SHA}" \
+                origin \
+                ":refs/heads/release/${RELEASE_VERSION}"; then
+                echo "Failed to delete release/${RELEASE_VERSION}" >&2
+              fi
+            fi
+            exit "${ORIGINAL_STATUS}"
+          }
+          trap cleanup EXIT
+          git push \
+            --force-with-lease="refs/heads/release/${RELEASE_VERSION}:" \
+            origin \
+            "HEAD:refs/heads/release/${RELEASE_VERSION}"
+          BRANCH_CREATED=true
+          PR_URL="$(gh pr create \
             --base master \
             --head "release/${RELEASE_VERSION}" \
             --label release \
             --title "chore: release ${RELEASE_VERSION}" \
-            --body-file release-notes.md
+            --body-file release-notes.md)"
           gh workflow run ci.yaml --ref "release/${RELEASE_VERSION}"
+          trap - EXIT
