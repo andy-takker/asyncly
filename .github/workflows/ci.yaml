@@ -3,15 +3,13 @@ name: CI
 on:
   pull_request:
     branches: [master]
-    types: [opened, synchronize, reopened, labeled, unlabeled]
+    types: [opened, synchronize, reopened, edited, labeled, unlabeled]
   merge_group:
   push:
     branches: [master]
   workflow_dispatch:
 
-permissions:
-  contents: read
-  pull-requests: read # Read PR metadata for the label-aware changelog gate.
+permissions: {}
 
 concurrency:
   group: ci-${{ github.event.pull_request.number || github.ref }}
