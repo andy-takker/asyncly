@@ -266,8 +266,7 @@ def verify_wheel(directory: Path, version: str) -> None:
             )
             if unsupported:
                 raise ReleaseError(
-                    "wheel members must be regular files or directories: "
-                    f"{unsupported}"
+                    f"wheel members must be regular files or directories: {unsupported}"
                 )
             corrupt_member = archive.testzip()
             if corrupt_member is not None:
@@ -336,8 +335,7 @@ def verify_sdist(directory: Path, version: str) -> None:
             )
             if unsupported:
                 raise ReleaseError(
-                    "sdist members must be regular files or directories: "
-                    f"{unsupported}"
+                    f"sdist members must be regular files or directories: {unsupported}"
                 )
             missing = sorted(required - set(names))
             if missing:
