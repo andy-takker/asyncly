@@ -1,30 +1,95 @@
-name: Release new version of package and publish to PyPI
+name: Release
 
 on:
-  workflow_dispatch:
   push:
     tags:
-      - '[0-9]+.[0-9]+.[0-9]+'
+      - "[0-9]+.[0-9]+.[0-9]+"
+
+permissions: {}
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
+  validate:
+    name: Validate release tag
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout tag history
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Set up Python 3.10
+        uses: ./.github/actions/setup-project
+        with:
+          python-version: "3.10"
+
+      - name: Validate release
+        run: |
+          test "$(git cat-file -t "refs/tags/${GITHUB_REF_NAME}")" = tag
+          git fetch origin master
+          git merge-base --is-ancestor "${GITHUB_SHA}" origin/master
+          uv run python -m tools.release validate-release \
+            --version "${GITHUB_REF_NAME}" \
+            --pyproject pyproject.toml \
+            --lockfile uv.lock \
+            --changelog CHANGELOG.md
+
   check:
-    name: Lint code and check format
+    name: Check
+    needs: validate
     uses: ./.github/workflows/_check.yaml
+    permissions:
+      contents: read
 
   test:
-    name: Run tests
-    needs: check
+    name: Test
+    needs: validate
     uses: ./.github/workflows/_test.yaml
+    permissions:
+      contents: read
+
+  docs:
+    name: Documentation
+    needs: validate
+    uses: ./.github/workflows/_docs.yaml
+    permissions:
+      contents: read
 
   build:
-    name: Build dists
-    needs: test
+    name: Build
+    needs: validate
     uses: ./.github/workflows/_build.yaml
+    permissions:
+      contents: read
 
   publish:
-    name: Publish package to PyPI and make release on Github
-    needs: build
+    name: Publish
+    needs: [check, test, docs, build]
     uses: ./.github/workflows/_publish.yaml
+    with:
+      version: ${{ github.ref_name }}
     permissions:
-      id-token: write
-      contents: write
+      contents: write # Create the GitHub Release.
+      id-token: write # Authenticate PyPI, provenance, and Sigstore.
+      attestations: write # Publish build provenance.
+
+  deploy-release-docs:
+    name: Deploy release documentation
+    needs: publish
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      actions: write # Dispatch the documentation workflow.
+    steps:
+      - name: Dispatch documentation deployment
+        env:
+          GH_REPO: ${{ github.repository }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh workflow run docs.yaml -f version="${GITHUB_REF_NAME}"
