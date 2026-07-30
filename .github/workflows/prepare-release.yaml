@@ -116,7 +116,7 @@ jobs:
 
       - name: Create dry-run patch
         if: inputs.dry_run == true
-        run: git diff --binary > release.patch
+        run: git diff --binary HEAD > release.patch
 
       - name: Upload dry-run artifacts
         if: inputs.dry_run == true
