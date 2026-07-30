@@ -25,16 +25,19 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
+      - name: Validate annotated tag ancestry
+        run: |
+          test "$(git cat-file -t "refs/tags/${GITHUB_REF_NAME}")" = tag
+          git fetch origin master
+          git merge-base --is-ancestor "${GITHUB_SHA}" origin/master
+
       - name: Set up Python 3.10
         uses: ./.github/actions/setup-project
         with:
           python-version: "3.10"
 
-      - name: Validate release
+      - name: Validate release metadata
         run: |
-          test "$(git cat-file -t "refs/tags/${GITHUB_REF_NAME}")" = tag
-          git fetch origin master
-          git merge-base --is-ancestor "${GITHUB_SHA}" origin/master
           uv run python -m tools.release validate-release \
             --version "${GITHUB_REF_NAME}" \
             --pyproject pyproject.toml \
